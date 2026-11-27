@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Bili Daily",
+  "version": "1.1.0",
+  "description": "在本地记录 B 站视频观看情况，不上传数据。Neon Edition。",
+  "action": {
+    "default_title": "Bili Daily",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.bilibili.com/video/*"],
+      "js": [
+        "storage.js",
+        "discovered-candidate-store.js",
+        "candidate-discovery.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

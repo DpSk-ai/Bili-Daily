@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bili Daily C2-2 验收报告：候选身份可信度、来源证据与数据质量控制</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --accent: #2f5f9e;
+    --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa;
+    --warn-bg: #fff8e6;
+    --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(24, 39, 75, 0.07);
+    padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .meta div + div { margin-top: 2px; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.4; color: #16202e; }
+  h1 {
+    font-size: 27px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 38px 0 14px;
+    padding-left: 12px;
+    border-left: 5px solid var(--accent);
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(47, 95, 158, .35); }
+  a:hover { border-bottom-color: var(--accent); }
+  strong { color: #101826; }
+  code {
+    font-family: Consolas, "Cascadia Code", "SFMono-Regular", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid #e3e8ef;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #9a3412;
+    word-break: break-word;
+  }
+  pre.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #24303f;
+    font-size: 13.5px;
+    white-space: pre;
+  }
+  pre.code[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 9px;
+    font-size: 11px;
+    color: #7b8594;
+    background: #eef1f5;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 7px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eef2f8; color: #1b2a41; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+  tbody tr:hover { background: #f2f6fc; }
+  .al-center { text-align: center; }
+  .al-right { text-align: right; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    border-radius: 4px;
+    color: #5c4a17;
+  }
+  blockquote p { margin: 6px 0; }
+  ul, ol { margin: 10px 0; padding-left: 26px; }
+  li { margin: 5px 0; }
+  li.li-nested { margin-left: 20px; }
+  .toc {
+    margin: 0 0 34px;
+    padding: 16px 22px;
+    background: #f8f9fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 8px; color: #16202e; letter-spacing: .5px; }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 4px 0; break-inside: avoid; }
+  .footer {
+    margin-top: 44px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #8a93a1;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    body { padding: 12px 8px 32px; font-size: 15px; }
+    .page { padding: 24px 18px 32px; border-radius: 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18.5px; }
+    .toc ol { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11.5pt; }
+    .page { max-width: none; border: 0; box-shadow: none; padding: 0; }
+    .toc { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    pre.code, table, blockquote, tr { break-inside: avoid; }
+    a { color: inherit; border: 0; }
+    .footer { color: #777; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Bili Daily C2-2 验收报告：候选身份可信度、来源证据与数据质量控制</h1>
+  <div class="meta">
+    <div><strong>来源：</strong>C2-2-quality-report.md</div>
+    <div><strong>生成时间：</strong>2026/11/11 13:37:21</div>
+  </div>
+  <nav class="toc"><div class="toc-title">目录</div><ol><li><a href="#sec-1">1. 实际修改及新建文件</a></li><li><a href="#sec-2">2. 身份可信度语义</a></li><li><a href="#sec-3">3. UID 冲突处理策略</a></li><li><a href="#sec-4">4. 来源证据合并规则</a></li><li><a href="#sec-5">5. stale / unknown 的判断方式</a></li><li><a href="#sec-6">6. eligible / review / excluded 的筛选规则</a></li><li><a href="#sec-7">7. 新增测试数量及结果</a></li><li><a href="#sec-8">8. 原有 115 项测试结果</a></li><li><a href="#sec-9">9. 语法检查结果</a></li><li><a href="#sec-10">10. 已知限制与风险</a></li><li><a href="#sec-11">11. PowerShell 验收命令</a></li><li><a href="#sec-12">12. 回滚方式</a></li></ol></nav>
+<ul><li><strong>阶段</strong>：C2-2（纯函数逻辑 + 测试，不含排序、持久化与 UI）</li><li><strong>日期</strong>：2026-11-11</li><li><strong>模块</strong>：<code>candidate-pool.js</code>（扩展）、<code>test-candidate-quality.js</code>（新增）</li><li><strong>依赖</strong>：必须先加载 <code>stats.js</code></li></ul>
+<hr>
+<h2 id="sec-1">1. 实际修改及新建文件</h2>
+<h3>新建</h3>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>说明</th></tr></thead><tbody><tr><td><code>test-candidate-quality.js</code></td><td>28 个质量评估用例，全部注入固定时间 <code>NOW</code></td></tr><tr><td><code>docs/acceptance/C2-2/C2-2-quality-report.md</code></td><td>本报告</td></tr><tr><td><code>rollback/before-c2-2-quality/</code></td><td>修改前快照（<code>candidate-pool.js</code>、<code>test-candidate-pool.js</code>）</td></tr></tbody></table></div>
+<h3>修改</h3>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>改动</th><th>兼容性影响</th></tr></thead><tbody><tr><td><code>candidate-pool.js</code></td><td>① <code>evidence</code> 新增 <code>conflictVideoCount</code> / <code>conflicts</code> / <code>nameConflict</code>；② 新增 <code>assessCandidateFreshness</code> / <code>assessCandidate</code> / <code>filterEligibleCandidates</code> / <code>DEFAULT_STALE_DAYS</code></td><td>纯增量。既有字段、函数签名、<code>watchedBefore</code>、<code>candidateType</code>、UID 去重规则、观看时长口径均未变</td></tr><tr><td><code>test-candidate-pool.js</code></td><td>仅更新第 23 条&quot;evidence 键集合严格比对&quot;的期望键（新增 3 个键），断言方式未放松</td><td>用例数与严格程度不变</td></tr><tr><td><code>docs/design/C2-1-candidate-pool.md</code></td><td>追加第 11 节 C2-2 扩展说明</td><td>文档</td></tr></tbody></table></div>
+<p><strong>未修改</strong>：<code>manifest.json</code>、<code>popup.html</code>、<code>popup.css</code>、<code>popup.js</code>、<code>content.js</code>、<code>storage.js</code>、<code>stats.js</code>、<code>interest-profile.js</code>、四个既有测试文件、<code>chrome.storage.local</code> 数据。</p>
+<hr>
+<h2 id="sec-2">2. 身份可信度语义</h2>
+<p>严格区分五件事：</p>
+<div class="table-wrap"><table><thead><tr><th>维度</th><th>字段</th><th>含义</th></tr></thead><tbody><tr><td>格式合法</td><td><code>evidence.uidFormatValid</code></td><td>正整数、安全整数、统一字符串。<strong>只说明格式对</strong></td></tr><tr><td>来源可靠</td><td><code>evidence.fromWatchHistory</code> / <code>fromUserInput</code></td><td>观看记录（content.js 从页面 <code>owner.mid</code> 采集）或用户手动输入</td></tr><tr><td>身份冲突</td><td><code>evidence.conflictVideoCount</code> / <code>conflicts</code></td><td>同一视频被记录成多个 UID</td></tr><tr><td>在线核验</td><td><code>evidence.onlineVerified</code></td><td><strong>恒为 false</strong>；调用方自称 <code>true</code> 也会被忽略</td></tr><tr><td>是否进入排序</td><td><code>assessCandidate().eligibility</code></td><td>eligible / review / excluded</td></tr></tbody></table></div>
+<p><code>uidVerified</code> 的语义保持不变：<strong>格式合法 + 至少一条本地观看记录</strong>。它不是&quot;B 站官方认证&quot;，也不是&quot;已在线核验&quot;。本阶段不联网，任何输出里都不存在可信的在线核验结果。</p>
+<hr>
+<h2 id="sec-3">3. UID 冲突处理策略</h2>
+<h3>3.1 证据保留</h3>
+<p><code>buildFromRecords</code> 在记录层收集 <code>bvid → Map(UID → 首次观察到的日期键)</code>。同一 BV 出现 ≥2 个 UID 时：</p>
+<ul><li><code>diagnostics.uidConflictVideos</code> 计数；</li><li>每个涉及的 UID 都获得一条冲突明细 <code>{ otherUid, dateKey }</code>；</li><li><code>conflictVideoCount</code> 记录该 UID 涉及冲突的视频数，<strong>与 <code>watchedVideoCount</code> 分开</strong>。</li></ul>
+<h3>3.2 不猜测、不覆盖</h3>
+<ul><li>不判断&quot;哪个 UID 才对&quot;，不修改原始观看记录，不写 <code>chrome.storage.local</code>。</li><li>视频数仍按 C2-1 的合并规则归属主 UID（先出现者），另一个 UID 保留为候选但<code>watchedVideoCount</code> 为 0 —— 冲突和正常观看不会被混为一谈。</li><li>昵称从不参与身份判定：同名不同 UID 不合并，同 UID 改名也不拆开。</li></ul>
+<h3>3.3 资格影响</h3>
+<p>存在冲突的候选默认进入 <code>review</code>，<strong>不会静默进入 eligible 集合</strong>；不删除、不降级为 excluded（除非 UID 本身非法）。<code>filterEligibleCandidates</code> 的诊断里单独统计 <code>conflictCandidates</code>。</p>
+<h3>3.4 兼容扩展</h3>
+<p>C2-1 的候选对象原本只有聚合级的 <code>diagnostics.uidConflictVideos</code>，无法定位到候选。C2-2 以最小方式在 <code>evidence</code> 上追加上述三个字段，未引入新的顶层结构，JSON 序列化能力不变。</p>
+<hr>
+<h2 id="sec-4">4. 来源证据合并规则</h2>
+<ol><li>身份只按 UID；<code>sources</code> 取并集，顺序固定 <code>watched → manual</code>。</li><li><code>watchedVideoCount</code> / <code>watchedWatchMs</code> / <code>conflictVideoCount</code> 取各输入的<strong>最大值</strong>，重复合并同一池子不会把计数翻倍。</li><li>手动输入只能说明&quot;用户提供过这个数字&quot;：<code>fromUserInput</code>，<code>uidVerified</code> 仍为 false。</li><li>观看记录只能说明&quot;插件曾观察并记录过这个身份&quot;：<code>fromWatchHistory</code>。</li><li>手动昵称与历史昵称不一致时：<code>nameConflict: true</code> + <code>nickname-mismatch</code>（info），<strong>展示昵称仍以观看记录为准</strong>，身份不被覆盖。</li><li>时间取各来源可靠值的 min / max；缺失不补。</li><li>诊断只保留 <code>otherUid</code> 与 <code>dateKey</code>，不写标题、昵称或原始记录。</li></ol>
+<hr>
+<h2 id="sec-5">5. stale / unknown 的判断方式</h2>
+<p><code>assessCandidateFreshness(candidate, { now, staleDays })</code>：</p>
+<div class="table-wrap"><table><thead><tr><th>情况</th><th>state</th><th>reason</th></tr></thead><tbody><tr><td><code>ageDays &gt; staleDays</code></td><td><code>stale</code></td><td><code>stale-observation</code></td></tr><tr><td><code>0 ≤ ageDays ≤ staleDays</code></td><td><code>fresh</code></td><td><code>&quot;&quot;</code></td></tr><tr><td>缺少 <code>lastObservedAt</code></td><td><code>unknown</code></td><td><code>missing-observation-time</code></td></tr><tr><td>时间无法解析</td><td><code>unknown</code></td><td><code>invalid-observation-time</code></td></tr><tr><td>时间晚于 <code>now</code></td><td><code>unknown</code></td><td><code>future-observation-time</code></td></tr></tbody></table></div>
+<ul><li>默认阈值 <strong>90 天</strong>，可通过 <code>staleDays</code> 覆盖。</li><li><strong>恰好等于阈值算 fresh</strong>（只有严格超过才算 stale）。</li><li>时间差按毫秒计算，与本地时区无关。</li><li><code>stale</code> 的文案明确写&quot;不代表账号已注销&quot;；候选保留在 <code>review</code>，不删除。</li><li><code>unknown</code> 不等于 <code>stale</code>：<code>assessment.stale</code> 只在 <code>state === &quot;stale&quot;</code> 时为 true。</li></ul>
+<hr>
+<h2 id="sec-6">6. eligible / review / excluded 的筛选规则</h2>
+<p><code>filterEligibleCandidates(pool, options)</code> 返回：</p>
+<pre class="code" data-lang="js"><code>{
+  eligible: [{ candidate, assessment }],
+  review:   [{ candidate, assessment }],
+  excluded: [{ candidate, assessment }],
+  summary:  { total, eligible, review, excluded },
+  diagnostics: {
+    now, staleDays, onlineVerified: 0, reasonCounts,
+    conflictCandidates, staleCandidates, unknownFreshnessCandidates,
+    manualOnlyCandidates, nameMismatchCandidates, malformedCandidates
+  }
+}</code></pre>
+<div class="table-wrap"><table><thead><tr><th>资格</th><th>条件</th></tr></thead><tbody><tr><td><strong>excluded</strong></td><td>不是对象，或没有合法 UID</td></tr><tr><td><strong>review</strong></td><td>身份冲突、仅手动来源、无来源证据、观察时间缺失/非法/未来、超过过期阈值</td></tr><tr><td><strong>eligible</strong></td><td>合法 UID + 观看历史证据 + 无冲突 + 新鲜度正常</td></tr></tbody></table></div>
+<p>附加规则：</p>
+<ul><li><strong>new 候选不因&quot;尚未观看&quot;被排除</strong>，而是进入 <code>review</code> 待核验。</li><li><code>nickname-mismatch</code> 只记 info，不改变资格。</li><li>结果顺序与池内候选顺序一致；不修改输入；可 JSON 往返。</li><li>不计算任何兴趣匹配分数，不生成推荐结果，不因来源数量或臆造分数覆盖身份规则。</li></ul>
+<hr>
+<h2 id="sec-7">7. 新增测试数量及结果</h2>
+<p><strong>新增 28 个用例</strong>（<code>test-candidate-quality.js</code>），覆盖任务要求的 26 项，另补：</p>
+<ul><li>过期阈值可配置（默认 90 天）；</li><li>重复合并同一冲突池不翻倍。</li></ul>
+<blockquote><p>⚠️ <strong>执行结果：本会话未能执行</strong>。<code>node</code>、<code>Agent</code> 均被安全分类服务拦截，只有只读命令可用。未伪造任何通过结果。请用第 11 节命令执行后回填本节。</p></blockquote>
+<hr>
+<h2 id="sec-8">8. 原有 115 项测试结果</h2>
+<p><strong>本会话未能重新执行</strong>，原因同上。</p>
+<p>静态核对：<code>test-candidate-pool.js</code> 33、<code>test-interest-profile.js</code> 24、<code>test-uid.js</code> 21、<code>test-up-stats.js</code> 17、<code>test-stats.js</code> 20，合计 <strong>115</strong>。</p>
+<p><code>test-candidate-pool.js</code> 仅按严格方式更新了 evidence 键集合的期望值（新增 3 个键），其余用例与断言未改动。</p>
+<hr>
+<h2 id="sec-9">9. 语法检查结果</h2>
+<p><strong>未能执行</strong>（<code>node --check</code> 同样被拦截）。已在代码层人工复核括号、导出与闭包结构，但这不构成语法验证。命令见第 11 节。</p>
+<hr>
+<h2 id="sec-10">10. 已知限制与风险</h2>
+<ol><li>无在线核验：<code>onlineVerified</code> 恒为 false，<code>uidVerified</code> 不等同平台认证。</li><li>冲突只能定位到 <code>otherUid + dateKey</code>，不保存 BV 号与标题；多个同日冲突会合并成一条。</li><li>冲突视频数按&quot;主 UID 计视频、另一 UID 计 0&quot;的既有口径，不重新归属。</li><li><code>unknown</code> 新鲜度会让老记录（无时间字段）进入 <code>review</code>，可能造成大量待复核项。</li><li>默认 90 天是经验值，不是账号失效判定；不可据此提示&quot;账号已注销&quot;。</li><li>手动昵称冲突只做提示，不自动改名。</li><li>本阶段不产出推荐分，也不保证 <code>eligible</code> 的候选&quot;值得推荐&quot;。</li><li>新增 evidence 字段是<strong>数据形状变更</strong>：任何逐键快照式断言都需要同步更新（已更新一处）。</li></ol>
+<hr>
+<h2 id="sec-11">11. PowerShell 验收命令</h2>
+<pre class="code" data-lang="powershell"><code>cd D:\Bili-Daily
+chcp 65001 &gt; $null
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+node test-candidate-quality.js
+if ($LASTEXITCODE -ne 0) { Write-Host &quot;FAILED: candidate-quality&quot; -ForegroundColor Red }
+
+node test-candidate-pool.js
+if ($LASTEXITCODE -ne 0) { Write-Host &quot;FAILED: candidate-pool&quot; -ForegroundColor Red }
+
+node test-interest-profile.js
+if ($LASTEXITCODE -ne 0) { Write-Host &quot;FAILED: interest-profile&quot; -ForegroundColor Red }
+
+node test-uid.js
+if ($LASTEXITCODE -ne 0) { Write-Host &quot;FAILED: uid&quot; -ForegroundColor Red }
+
+node test-up-stats.js
+if ($LASTEXITCODE -ne 0) { Write-Host &quot;FAILED: up-stats&quot; -ForegroundColor Red }
+
+node test-stats.js
+if ($LASTEXITCODE -ne 0) { Write-Host &quot;FAILED: stats&quot; -ForegroundColor Red }
+
+node --check candidate-pool.js
+node --check test-candidate-quality.js
+node --check test-candidate-pool.js
+node --check interest-profile.js
+node --check stats.js
+node --check storage.js
+node --check content.js
+node --check popup.js
+if ($LASTEXITCODE -eq 0) { Write-Host &quot;语法检查通过&quot; -ForegroundColor Green }</code></pre>
+<p><strong>期望</strong>：<code>test-candidate-quality.js</code> 输出 <code>28/28 通过</code>；既有 115 项保持通过；语法检查无输出。</p>
+<hr>
+<h2 id="sec-12">12. 回滚方式</h2>
+<p>修改前快照在 <code>rollback/before-c2-2-quality/</code>（<code>candidate-pool.js</code>、<code>test-candidate-pool.js</code>）。</p>
+<pre class="code" data-lang="powershell"><code>cd D:\Bili-Daily
+Copy-Item rollback\before-c2-2-quality\candidate-pool.js candidate-pool.js -Force
+Copy-Item rollback\before-c2-2-quality\test-candidate-pool.js test-candidate-pool.js -Force
+Remove-Item test-candidate-quality.js</code></pre>
+<p>回滚后跑 <code>node test-candidate-pool.js</code>，应恢复 C2-1 的 33 项通过。回滚不影响 <code>chrome.storage.local</code>；扩展运行时行为不变（<code>manifest.json</code> / <code>popup.html</code> 未引用该模块）。</p>
+  <div class="footer">
+    <span>Bili Daily · 开发报告</span>
+    <span>Bili Daily C2-2 验收报告：候选身份可信度、来源证据与数据质量控制</span>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bili Daily C2-4A 验收报告：新 UP 主候选来源技术评审</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --accent: #2f5f9e;
+    --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa;
+    --warn-bg: #fff8e6;
+    --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(24, 39, 75, 0.07);
+    padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .meta div + div { margin-top: 2px; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.4; color: #16202e; }
+  h1 {
+    font-size: 27px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 38px 0 14px;
+    padding-left: 12px;
+    border-left: 5px solid var(--accent);
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(47, 95, 158, .35); }
+  a:hover { border-bottom-color: var(--accent); }
+  strong { color: #101826; }
+  code {
+    font-family: Consolas, "Cascadia Code", "SFMono-Regular", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid #e3e8ef;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #9a3412;
+    word-break: break-word;
+  }
+  pre.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #24303f;
+    font-size: 13.5px;
+    white-space: pre;
+  }
+  pre.code[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 9px;
+    font-size: 11px;
+    color: #7b8594;
+    background: #eef1f5;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 7px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eef2f8; color: #1b2a41; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+  tbody tr:hover { background: #f2f6fc; }
+  .al-center { text-align: center; }
+  .al-right { text-align: right; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    border-radius: 4px;
+    color: #5c4a17;
+  }
+  blockquote p { margin: 6px 0; }
+  ul, ol { margin: 10px 0; padding-left: 26px; }
+  li { margin: 5px 0; }
+  li.li-nested { margin-left: 20px; }
+  .toc {
+    margin: 0 0 34px;
+    padding: 16px 22px;
+    background: #f8f9fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 8px; color: #16202e; letter-spacing: .5px; }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 4px 0; break-inside: avoid; }
+  .footer {
+    margin-top: 44px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #8a93a1;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    body { padding: 12px 8px 32px; font-size: 15px; }
+    .page { padding: 24px 18px 32px; border-radius: 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18.5px; }
+    .toc ol { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11.5pt; }
+    .page { max-width: none; border: 0; box-shadow: none; padding: 0; }
+    .toc { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    pre.code, table, blockquote, tr { break-inside: avoid; }
+    a { color: inherit; border: 0; }
+    .footer { color: #777; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Bili Daily C2-4A 验收报告：新 UP 主候选来源技术评审</h1>
+  <div class="meta">
+    <div><strong>来源：</strong>C2-4A-research-report.md</div>
+    <div><strong>生成时间：</strong>2026/11/11 15:46:32</div>
+  </div>
+  <nav class="toc"><div class="toc-title">目录</div><ol><li><a href="#sec-1">0. 验收状态</a></li><li><a href="#sec-2">1. 五类候选来源对比</a></li><li><a href="#sec-3">2. 真实 UID 和内容特征的获取方式</a></li><li><a href="#sec-4">3. 平台规则与隐私风险</a></li><li><a href="#sec-5">4. 现有 C2 模块兼容性</a></li><li><a href="#sec-6">5. 新候选身份资格设计</a></li><li><a href="#sec-7">6. 最推荐的最小数据来源</a></li><li><a href="#sec-8">7. C2-4B 数据接口草案</a></li><li><a href="#sec-9">8. 单元测试计划</a></li><li><a href="#sec-10">9. 已知限制和待核查问题</a></li><li><a href="#sec-11">10. 是否可以进入 C2-4B</a></li><li><a href="#sec-12">11. 实际执行结果</a></li><li><a href="#sec-13">12. 回滚与停止</a></li><li><a href="#sec-14">附录：参考来源</a></li><li><a href="#sec-15">生成记录</a></li></ol></nav>
+<ul><li><strong>阶段</strong>：C2-4A（仅研究与设计，不修改正式业务代码）</li><li><strong>日期</strong>：2026-11-11</li><li><strong>项目路径</strong>：<code>D:\Bili-Daily</code></li><li><strong>前置状态</strong>：C1、C2-1、C2-2、C2-3 已验收；181 项自动化测试已由项目所有者复核通过</li><li><strong>本阶段交付</strong>：来源评审、平台规则与隐私分析、C2-4B 接口草案、测试计划</li><li><strong>详细设计</strong>：见 <a href="../design/C2-4A-candidate-source-review.md"><code>docs/design/C2-4A-candidate-source-review.md</code></a></li></ul>
+<hr>
+<h2 id="sec-1">0. 验收状态</h2>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>状态</th><th>说明</th></tr></thead><tbody><tr><td>五类来源研究</td><td>已完成</td><td>A–E 逐项分析，含降级策略</td></tr><tr><td>官方平台资料核查</td><td>部分完成</td><td>robots.txt 已实际读取；开放平台/协议页面为 JS 渲染，正文使用搜索摘要并标记待复核</td></tr><tr><td>现有 C2 模块兼容性分析</td><td>已完成</td><td>读取 <code>candidate-pool.js</code>、<code>candidate-features.js</code>、<code>interest-profile.js</code>、<code>stats.js</code>、C2-1/C2-2/C2-3 文档</td></tr><tr><td>C2-4B 接口草案</td><td>已完成</td><td>设计草案，未实现</td></tr><tr><td>代码修改</td><td>无</td><td>与 C2-3 快照 / 评审前哈希一致</td></tr><tr><td>181 项测试</td><td>未重跑</td><td>按本阶段要求，正式代码未变；用户已复核通过</td></tr><tr><td>HTML 报告</td><td><strong>已归档</strong></td><td>文件 <code>docs/acceptance/C2-4A/C2-4A-research-report.html</code> 已存在（用户确认归档）；本会话未能执行命令复核其与 Markdown 的同步性，详见 11.3</td></tr><tr><td>C2-4B / C3</td><td>未进入</td><td>本阶段停止，等待审核</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-2">1. 五类候选来源对比</h2>
+<div class="table-wrap"><table><thead><tr><th>维度</th><th>A 本地历史</th><th>B 手动 UID</th><th>C 用户导入视频+元数据</th><th>D 当前页相关推荐</th><th>E 官方授权 API</th></tr></thead><tbody><tr><td>数据来源</td><td>本地观看记录</td><td>用户输入</td><td>用户导入文件/文本</td><td>当前页 DOM</td><td>开放平台 OAuth</td></tr><tr><td>发现未观看 UP</td><td>否</td><td>是（用户已知）</td><td>是</td><td>是</td><td>按官方摘要：否，仅授权账号</td></tr><tr><td>真实 UID</td><td>部分</td><td>仅格式</td><td>用户提供，未在线核验</td><td>可能（卡片链接）</td><td>是（授权账号）</td></tr><tr><td>真实标题</td><td>是</td><td>否</td><td>用户提供</td><td>通常是（可能截断）</td><td>是（授权稿件）</td></tr><tr><td>真实分区</td><td>部分</td><td>否</td><td>用户提供</td><td>通常否</td><td>可能（取决于 scope）</td></tr><tr><td>标签</td><td>否（未采集）</td><td>否</td><td>可选，用户提供</td><td>否</td><td>取决于接口</td></tr><tr><td>网络请求</td><td>否</td><td>否</td><td>否（纯本地导入）</td><td>通常否（读页面）</td><td>是</td></tr><tr><td>新增权限</td><td>否</td><td>否</td><td>否</td><td>可能不需要 host 权限，但新增采集</td><td>是（OAuth/网络/后端）</td></tr><tr><td>用户授权</td><td>使用扩展/访问页面</td><td>主动输入</td><td>主动导入</td><td>隐含访问页面</td><td>明确 OAuth + UP 主授权</td></tr><tr><td>来源证据</td><td>平台观察 + 本地</td><td>用户自述</td><td>用户自述</td><td>页面观察（DOM 派生）</td><td>官方授权</td></tr><tr><td>公开发布适用性</td><td>高</td><td>高</td><td><strong>最高</strong></td><td>中（需核实）</td><td>低（个人不可行）</td></tr><tr><td>无法获取时降级</td><td>未知桶/空</td><td>待核验</td><td>部分/缺失</td><td>跳过/空</td><td>回退 A/B/C</td></tr><tr><td>本阶段结论</td><td>保留</td><td>保留</td><td><strong>C2-4B 首选</strong></td><td>暂缓</td><td>暂不采用</td></tr></tbody></table></div>
+<h3>1.1 各来源要点</h3>
+<p><strong>A. 本地历史观看记录</strong></p>
+<ul><li>来自 <code>biliDailyRecords</code>，由 <code>content.js</code> 在当前视频页采集。</li><li>只能发现已观看/接触过的 UP 主，不能发现全新的 UP 主。</li><li>UID、标题、分区来自平台页面；缺失时为空，不猜测。</li><li>无需网络、无需新增权限，现有 Edge 扩展可继续使用。</li><li>是本项目最可靠的“历史候选 + 兴趣画像”来源，但不是候选发现来源。</li></ul>
+<p><strong>B. 用户手动添加 UID</strong></p>
+<ul><li>只能证明“用户输入过这个 UID”，不能证明账号真实存在。</li><li>没有标题、分区、标签；C2-3 <code>featureStatus</code> 为 <code>missing</code>。</li><li>无需网络、无需权限；C2-2 资格为 <code>review</code>（<code>manual-unverified</code>）。</li><li>适合做身份种子，不适合单独构成“可推荐的新 UP 主”。</li></ul>
+<p><strong>C. 用户主动导入视频链接及元数据</strong></p>
+<ul><li>用户提供 UID、BV、标题、分区、可选标签和观察时间。</li><li>视频 URL 只含 BV，不含 UP 主 UID、标题或分区；这些必须由用户提供或另行取得。</li><li>纯本地导入，无需网络、无需新增权限；是 C2-4B 的首选。</li><li>所有内容标记为 <code>user-provided</code>，不等于平台观察或在线核验。</li></ul>
+<p><strong>D. 当前视频页已展示的相关推荐</strong></p>
+<ul><li>技术上可从 DOM 读取卡片，可能发现未观看 UP 主。</li><li>UID 依赖卡片链接，标题可能截断，分区/标签通常没有。</li><li>需要新的页面采集逻辑；DOM 不稳定，卡片可能含广告/直播/课程。</li><li>现有 <code>content.js</code> 刻意不读取推荐/评论 mid，避免误配；采用 D 需要新的锚定与测试。</li><li>平台规则需进一步核实；本阶段不实现。</li></ul>
+<p><strong>E. B 站官方授权能力</strong></p>
+<ul><li>官方开放平台提供 OAuth 2.0、账号/视频管理、数据开放等能力。</li><li>官方文档摘要显示个人开发者入驻暂未开放，需企业资质、应用审核、后端密钥。</li><li>官方 API 围绕已授权用户/UP 主自己的账号与稿件，不是任意公开视频目录/搜索接口。</li><li>不能解决“发现任意新 UP 主”的问题；不适合作为 C2-4B 的最小原型。</li></ul>
+<hr>
+<h2 id="sec-3">2. 真实 UID 和内容特征的获取方式</h2>
+<h3>2.1 URL 能提供什么</h3>
+<div class="table-wrap"><table><thead><tr><th>输入</th><th>可解析</th><th>不能解析</th></tr></thead><tbody><tr><td><code>https://www.bilibili.com/video/BV1xx411c7mD</code></td><td>BV</td><td>UID、标题、分区、标签</td></tr><tr><td><code>https://space.bilibili.com/123456</code></td><td>UID</td><td>视频标题、分区、标签</td></tr><tr><td><code>https://b23.tv/xxxx</code></td><td>短链，需网络跳转</td><td>本阶段不解析、不访问</td></tr><tr><td>仅 <code>av123456</code></td><td>av 号</td><td>不能离线映射为 BV；本阶段不采用</td></tr><tr><td>仅昵称</td><td>无</td><td>不能作为身份</td></tr></tbody></table></div>
+<p><strong>结论：链接不是元数据。</strong> 单独粘贴视频链接只能得到 BV；要得到标题、分区、UP 主，必须另有来源（用户填写、页面观察或官方接口）。</p>
+<h3>2.2 内容元数据可信等级</h3>
+<div class="table-wrap"><table><thead><tr><th>等级</th><th>来源</th><th>本项目标记</th><th>能否称为“真实平台数据”</th></tr></thead><tbody><tr><td>L0</td><td>用户凭记忆填写</td><td><code>user-provided</code></td><td>否，用户自述</td></tr><tr><td>L1</td><td>用户从 B 站页面复制后导入</td><td><code>user-provided</code> + <code>sourceUrl</code></td><td>否，仍是用户自述；链接只作线索</td></tr><tr><td>L2</td><td>扩展在当前页 DOM/结构化数据中观察</td><td><code>platform-observed</code>（未来）</td><td>是，但受页面结构和时效限制</td></tr><tr><td>L3</td><td>B 站官方授权接口</td><td><code>official-authorized</code>（未来）</td><td>是，受 scope 和授权范围限制</td></tr></tbody></table></div>
+<p>C2-4B 只实现 L0/L1。<strong>L1 不会自动升级为 L2</strong>：“用户说它来自 B 站页面”不等于“扩展观察到了 B 站页面”。</p>
+<h3>2.3 不能做的事</h3>
+<ul><li>不根据标题、昵称、封面或推荐卡片文字猜测 UID。</li><li>不根据标题猜测分区。</li><li>不把缺失字段填成默认值。</li><li>不把用户导入的内容写成观看记录。</li><li>不在没有授权的情况下调用 B 站接口或抓取页面。</li></ul>
+<hr>
+<h2 id="sec-4">3. 平台规则与隐私风险</h2>
+<h3>3.1 核查方法与证据等级</h3>
+<ul><li><strong>已实际读取</strong>：<code>https://www.bilibili.com/robots.txt</code>。</li><li><strong>尝试读取但只取得标题（JS 渲染）</strong>：</li><li class="li-nested"><code>https://openhome.bilibili.com/doc</code></li><li class="li-nested"><code>https://openhome.bilibili.com/doc/4/eaf0e2b5-bde9-b9a0-9be1-019bb455701c</code>（账号授权）</li><li class="li-nested"><code>https://open.bilibili.com/agreement/developer-service</code></li><li class="li-nested"><code>https://www.bilibili.com/protocal/licence.html</code></li><li>对上述页面，使用搜索引擎返回的<strong>官方页面摘要</strong>作为线索，在本文标记“待人工复核”，不作为最终法律结论。</li><li>第三方 API 文档（Apifox 镜像、GitHub <code>bilibili-API-collect</code> 等）<strong>没有</strong>被用来认定官方授权能力。</li></ul>
+<h3>3.2 robots.txt（已实际读取）</h3>
+<p>本次读取到的关键规则：</p>
+<ul><li><code>User-agent: *</code> 禁止 <code>/medialist/detail/</code>、<code>/index.html</code>、<code>/zh-Hant/</code>、<code>/en/</code>、<code>/ja/</code>、<code>/es/</code>、<code>/pt/</code>、<code>/id/</code>、<code>/th/</code>、<code>/ar/</code>。</li><li>针对 <code>facebookexternalhit</code>、<code>Facebot</code>、<code>Twitterbot</code>、<code>LinkedInBot</code>、<code>Slackbot</code>、<code>TelegramBot</code>、<code>Discordbot</code>、<code>WhatsApp</code>，只禁止<code>/medialist/detail/</code> 与 <code>/index.html</code>。</li><li>未看到 <code>Allow</code>；未看到对 <code>/video/*</code> 的禁止。</li></ul>
+<p><strong>解释边界：</strong> robots.txt 不是授权，也不等于允许商业使用；未禁止 <code>/video/*</code> 不代表可以批量抓取视频页。用户协议另有约束。</p>
+<h3>3.3 用户协议（官方页面摘要，待复核）</h3>
+<p>根据搜索引擎对官方《哔哩哔哩弹幕网用户使用协议》的条款摘录：</p>
+<div class="table-wrap"><table><thead><tr><th>条款（摘要）</th><th>内容要点</th><th>对本项目的含义</th></tr></thead><tbody><tr><td>§1.2</td><td>服务仅供非商业性使用；未经事先书面同意不得商业使用</td><td>免费本地工具风险较低，但发布前仍需确认</td></tr><tr><td>§1.3</td><td>官方公布的方式是使用服务的唯一合法方式；其他途径获取可能被视为非法所得</td><td>不使用非官方接口、破解或绕过访问控制</td></tr><tr><td>§5.6(3)</td><td>未经事先明确书面许可，不得以机器人、蜘蛛、爬虫等自动程序获取平台服务、内容、数据</td><td>批量抓取页面/接口有明确风险；技术上可读不等于允许</td></tr></tbody></table></div>
+<blockquote><p>以上为搜索摘要，未取得官方页面完整正文；发布前必须在浏览器中人工复核条款编号与原文。</p></blockquote>
+<h3>3.4 开放平台（官方文档摘要，待复核）</h3>
+<ul><li>提供 OAuth 2.0、用户管理、视频管理、数据开放等能力。</li><li>常见 scope：<code>USER_INFO</code>（授权用户基础信息）、<code>ARC_BASE</code>（稿件基础操作）、<code>ARC_DATA</code>（单个稿件数据）。</li><li>官方文档摘要显示：<strong>“暂未开通个人开发者的申请入驻”</strong>；入驻需要企业营业执照、申请公函、ICP 备案等资质；应用需审核，用户需在管理中心接受授权。</li><li>官方 API 的数据范围是<strong>已授权用户/UP 主自己的账号与稿件</strong>，不是任意公开视频/UP 主的目录或搜索接口。</li></ul>
+<p><strong>结论：</strong></p>
+<ul><li>官方授权能力可作为未来的高可信来源，但<strong>不能解决 C2-4B 的“发现未知 UP 主”问题</strong>。</li><li>个人开发者当前无法直接入驻；企业资质、服务端密钥、隐私合规都是硬门槛。</li><li>本文不把任何第三方镜像文档当作官方授权依据。</li></ul>
+<h3>3.5 隐私风险</h3>
+<ul><li>用户导入的 UID、标题、分区、备注可能构成个人信息或关联到个人；即使来自公开页面，也应本地处理、最小化、可删除。</li><li>不读取 Cookie、登录凭据、token；不采集 IP、设备信息、浏览器指纹。</li><li>不上传数据；不接入分析/广告 SDK；不保存原始页面 HTML、评论区、弹幕。</li><li>用户导入的 URL 可能含 <code>spm_id_from</code>、<code>vd_source</code> 等追踪参数；只保留 BV/UID，去掉 query/hash。</li><li>发布前需更新隐私说明，明确“本地处理、用户主动导入、未在线核验”。</li></ul>
+<h3>3.6 四个层次必须分开</h3>
+<div class="table-wrap"><table><thead><tr><th>层次</th><th>例子</th><th>本项目结论</th></tr></thead><tbody><tr><td>技术上能读取</td><td>当前页 DOM、内嵌 JSON、robots 未禁止的路径</td><td>不代表允许；D 暂缓</td></tr><tr><td>用户明确授权提供</td><td>手动 UID、导入文件</td><td>可作为 C2-4B 输入；标记 <code>user-provided</code></td></tr><tr><td>平台规则允许使用</td><td>官方 OAuth scope 内的授权数据</td><td>需企业资质/审核；当前不作为 C2-4B</td></tr><tr><td>仍需进一步核实</td><td>读取推荐区是否属于“自动获取数据”；个人开发者入驻状态；条款最新版本</td><td>发布前人工/法务复核</td></tr></tbody></table></div>
+<h3>3.7 红线</h3>
+<ul><li>不读取 Cookie / 登录凭据 / token。</li><li>不调用非官方 B 站 API。</li><li>不设计绕过反爬、验证码、登录、频率限制或访问控制的方案。</li><li>不批量抓取页面；不滚动/等待推荐流。</li><li>不上传用户数据；不接入分析/广告 SDK。</li><li>不把用户导入数据说成“平台核验”或“官方授权”。</li><li>不在扩展中保存 client_secret / access_token；未来官方 API 必须服务端换 token。</li></ul>
+<hr>
+<h2 id="sec-5">4. 现有 C2 模块兼容性</h2>
+<h3>4.1 字段语义</h3>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>现有语义</th><th>导入内容应如何表达</th><th>不能做什么</th></tr></thead><tbody><tr><td><code>sources</code></td><td>固定 <code>watched</code> → <code>manual</code>；<code>mergePools</code> 只识别这两个</td><td>新增 <code>content-import</code> 需 C2-4B 明确扩展；原型阶段放 sidecar</td><td>不能直接塞进现有池而不测试</td></tr><tr><td><code>evidence.fromWatchHistory</code></td><td>有本地观看记录</td><td>导入内容不设置</td><td>不能写成 <code>true</code></td></tr><tr><td><code>evidence.fromUserInput</code></td><td>用户手动提供 UID</td><td>导入内容可设置</td><td>不能等同于平台观察</td></tr><tr><td><code>candidateType</code></td><td><code>returning</code> / <code>new</code> / <code>unknown</code></td><td>导入候选保持 <code>new</code></td><td>不能因导入内容改成 <code>returning</code></td></tr><tr><td><code>uidVerified</code></td><td>格式合法 + 有观看历史</td><td>导入候选仍为 <code>false</code></td><td>不能因 UID 格式对而设为 <code>true</code></td></tr><tr><td><code>onlineVerified</code></td><td>恒为 <code>false</code></td><td>仍为 <code>false</code></td><td>不能因导入/粘贴链接而设为 <code>true</code></td></tr><tr><td><code>eligibility</code></td><td>C2-2：eligible / review / excluded</td><td>导入候选在 C2-2 中仍是 <code>review</code></td><td>不能自动提升为 <code>eligible</code></td></tr><tr><td><code>featureStatus</code></td><td>C2-3：ready / partial / missing，基于观看数据</td><td>导入-only 候选仍是 <code>missing</code></td><td>不能把“内容完整”写成 C2-3 <code>ready</code></td></tr><tr><td><code>partitionCoverage</code></td><td>C2-3：已识别观看时长 / 总观看时长</td><td>导入-only 为 <code>null</code> / <code>no-data</code></td><td>不能用导入视频数伪造观看时长</td></tr><tr><td><code>titleCoverage</code></td><td>C2-3：有 bigram 的视频数 / 观察视频数</td><td>导入-only 为 <code>null</code> / <code>no-data</code></td><td>不能把导入标题混入观看覆盖率</td></tr></tbody></table></div>
+<h3>4.2 为什么不能写入 <code>biliDailyRecords</code></h3>
+<p>如果把导入视频伪造成观看记录：</p>
+<ul><li>会改变 <code>watchMs</code>、<code>watchedVideoCount</code>、30 秒有效观看阈值；</li><li>会改变 C1 的 7 天 / 30 天窗口、分区占比、UP 主排名；</li><li>会改变 C2-1 的 <code>watchedBefore</code>、<code>candidateType</code>、<code>firstObservedAt</code>；</li><li>会改变 C2-2 的新鲜度、<code>fromWatchHistory</code>、<code>eligibility</code>；</li><li>会让 C2-3 的 <code>observedVideoCount</code>、<code>partitionCoverage</code>、<code>titleCoverage</code> 失真；</li><li>会让用户无法区分“我看过”和“我导入过”。</li></ul>
+<p><strong>因此：导入内容必须是独立 sidecar，不能进入观看记录。</strong></p>
+<h3>4.3 <code>sources</code> 扩展的兼容性问题</h3>
+<p>现有 <code>candidate-pool.js</code> 的 <code>mergePools</code> 只识别 <code>watched</code> 和 <code>manual</code>；直接传 <code>sources: [&quot;content-import&quot;]</code> 会被忽略，候选可能变成 <code>unknown</code>。因此：</p>
+<ul><li>原型阶段不要把导入候选合并进现有池；sidecar 独立存在。</li><li>未来合并需扩展 <code>SOURCE_ORDER</code>、<code>collectSources</code>、<code>classify</code>、<code>mergePools</code>和 C2-2 <code>assessCandidate</code>，并补测试。</li><li>这些修改属于 C2-4B 或更后阶段，本阶段不做。</li></ul>
+<h3>4.4 与 C3 的输入关系</h3>
+<p>C3 需要两类特征：</p>
+<ol><li><strong>观看特征</strong>：C2-3 的 <code>partitionFeatures</code>、<code>titleFeatures</code>、覆盖率、<code>featureStatus</code>；</li><li><strong>导入内容特征</strong>：sidecar 的 <code>partitionCounts</code>、<code>titleTokens</code>、<code>contentStatus</code>、<code>provenance</code>。</li></ol>
+<p>C3 必须显式合并，并在输出/排序中保留来源标签；不能拼成一个不区分来源的向量。</p>
+<hr>
+<h2 id="sec-6">5. 新候选身份资格设计</h2>
+<h3>5.1 两轴模型：身份证据 × 内容证据</h3>
+<div class="table-wrap"><table><thead><tr><th>轴</th><th>取值</th></tr></thead><tbody><tr><td>身份证据</td><td><code>watched</code> / <code>user-provided</code> / <code>platform-observed</code> / <code>official-authorized</code> / <code>conflicted</code> / <code>invalid</code></td></tr><tr><td>内容证据</td><td><code>complete</code> / <code>partial</code> / <code>missing</code> / <code>conflicted</code></td></tr></tbody></table></div>
+<blockquote><p>“可信内容”只指来源可追溯、内容完整、无冲突，不等于 B 站平台核验或官方授权。题目中的“已取得可信内容信息的新 UP 主”在本报告中按此定义使用。</p></blockquote>
+<h3>5.2 五类候选与 C3 准入</h3>
+<div class="table-wrap"><table><thead><tr><th>类别</th><th>身份证据</th><th>内容证据</th><th>现有 C2-2 资格</th><th>C3 建议</th></tr></thead><tbody><tr><td>历史观看 UP 主</td><td><code>watched</code></td><td>C2-3 <code>ready/partial</code></td><td><code>eligible</code>（无冲突且新鲜）</td><td>主排序（main lane）</td></tr><tr><td>用户提供但未观看的 UP 主</td><td><code>user-provided</code></td><td><code>missing</code></td><td><code>review</code>（manual-unverified）</td><td>不进入排序，等待内容</td></tr><tr><td>已取得内容信息的新 UP 主</td><td><code>user-provided</code> + sidecar</td><td><code>complete</code></td><td>仍 <code>review</code></td><td>探索通道（exploration lane），低置信度、明确标注</td></tr><tr><td>数据不足的待核验候选</td><td><code>user-provided</code></td><td><code>partial/missing</code></td><td><code>review</code></td><td>不进入排序；保留，等待更多证据</td></tr><tr><td>身份冲突候选</td><td><code>conflicted</code></td><td><code>conflicted</code></td><td><code>review</code> / <code>excluded</code></td><td>不进入排序；冲突解决后再评估</td></tr></tbody></table></div>
+<p><strong>为什么历史候选和新候选不能混排：</strong></p>
+<ul><li>历史候选有真实观看时长和回访证据；新候选只有用户自述内容；</li><li>两者置信度不同，混排会让“用户自己导入的 UP 主”压过真实兴趣；</li><li>C3 应使用两条通道或显式置信度权重，并标注来源。</li></ul>
+<p><strong>为什么不永久禁止未观看候选：</strong></p>
+<ul><li>用户主动导入说明存在探索意愿；</li><li>只要内容完整、来源明确、无冲突、时间新鲜，就应有机会进入探索通道；</li><li>数据不足只是“等待更多证据”，不是“永久排除”。</li></ul>
+<h3>5.3 探索候选晋升条件（设计，未实现）</h3>
+<div class="table-wrap"><table><thead><tr><th>条件</th><th>建议阈值</th><th>说明</th></tr></thead><tbody><tr><td>UID 格式合法</td><td>必须</td><td>复用 <code>stats.cleanRecord</code> 的 UID 规则</td></tr><tr><td>用户明确确认导入</td><td><code>userConfirmed: true</code></td><td>没有确认则拒绝</td></tr><tr><td>来源记录</td><td><code>provenance: &quot;user-provided&quot;</code></td><td>不能声称平台核验</td></tr><tr><td>不同视频数</td><td>≥ 3</td><td>少于 3 个无法形成稳定内容特征；可配置</td></tr><tr><td>分区覆盖率</td><td>≥ 0.6</td><td>按导入视频数计算</td></tr><tr><td>标题覆盖率</td><td>≥ 0.6</td><td>按导入视频数计算</td></tr><tr><td>至少一个分区</td><td>必须</td><td>全部缺失分区则内容不足</td></tr><tr><td>至少一个标题 bigram</td><td>必须</td><td>全部标题无法生成词元则内容不足</td></tr><tr><td>身份冲突</td><td>0</td><td>导入内部 + 与观看记录交叉检查</td></tr><tr><td>观察时间</td><td>合法、非未来、≤ 180 天</td><td>超过则 stale，进入待核验；不删除</td></tr><tr><td>BV 去重</td><td>必须</td><td>同一 BV 只算一个视频；冲突元数据排除</td></tr><tr><td>在线核验声明</td><td>不允许</td><td><code>onlineVerified</code> 恒 false</td></tr></tbody></table></div>
+<p>满足全部条件时，输出 <code>promotion.eligibleForExploration: true</code>；否则输出 <code>false</code> + 结构化原因。C3 决定是否真正进入排序，C2-4B 只提供证据。</p>
+<h3>5.4 C3 两条通道</h3>
+<pre class="code" data-lang="text"><code>main lane:
+  C2-2 eligible（历史观看 + 无冲突 + 新鲜）
+  + C2-3 ready/partial 观看特征
+  → 正常内容相似度 / 时间衰减 / MMR
+
+exploration lane:
+  C2-2 review（用户提供，未观看）
+  + C2-4B contentStatus complete
+  + promotion.eligibleForExploration
+  → 独立权重、独立配额、明确来源标签</code></pre>
+<p>建议：</p>
+<ul><li>探索通道单独配额（例如 10%–20%，由 C3 最终确定）；</li><li>不使用“观看时长”权重，改用内容完整度/新鲜度/来源置信度；</li><li>必须能一键关闭/清除；</li><li>不得伪装成“历史观看推荐”。</li></ul>
+<hr>
+<h2 id="sec-7">6. 最推荐的最小数据来源</h2>
+<p><strong>选择：C（用户主动导入视频链接与内容元数据）。</strong></p>
+<p>理由：</p>
+<ul><li>本地：无网络、无 Cookie、无账号；</li><li>权限最小：不需要新增 manifest 权限；</li><li>用户可控：用户明确选择导入哪些候选；</li><li>可验证：结构化 JSON/文本，可严格校验、可测试；</li><li>可降级：缺字段/坏文件安全返回空结果；</li><li>不污染观看历史：独立 sidecar；</li><li>不依赖付费 API / 大型依赖：纯 JS 解析与校验。</li></ul>
+<p><strong>输入形态：</strong></p>
+<ol><li>JSON 文件导入（首选）：<code>&lt;input type=&quot;file&quot; accept=&quot;application/json,.json&quot;&gt;</code>；</li><li>文本框粘贴 JSON（备用，便于调试）；</li><li>不接受任意网页 HTML、不接受自动抓取、不接受远程 URL 导入。</li></ol>
+<p><strong>输入必须包含：</strong></p>
+<ul><li><code>schemaVersion</code>、<code>kind</code>；</li><li><code>provenance: &quot;user-provided&quot;</code>；</li><li><code>userConfirmed: true</code>；</li><li>候选数组：<code>upUid</code>、<code>videos[]</code>；</li><li>每个视频：<code>bvid</code>（必需，用于去重）、<code>title</code> 或 <code>partition</code> 至少一个；</li><li>可选：<code>upName</code>、<code>tags</code>、<code>url</code>、<code>observedAt</code>、<code>sourceNote</code>。</li></ul>
+<p><strong>降级：</strong></p>
+<div class="table-wrap"><table><thead><tr><th>情况</th><th>行为</th></tr></thead><tbody><tr><td>文件为空 / 空候选</td><td><code>status: &quot;empty&quot;</code>，不抛异常</td></tr><tr><td>JSON 解析失败</td><td><code>status: &quot;invalid&quot;</code>，<code>reason: &quot;invalid-json&quot;</code>，不回显原文</td></tr><tr><td>版本不支持</td><td><code>status: &quot;invalid&quot;</code>，<code>reason: &quot;unsupported-schema&quot;</code></td></tr><tr><td>候选 UID 非法</td><td>跳过该候选，计入 <code>invalidCandidates</code></td></tr><tr><td>视频无 BV</td><td>跳过该视频，计入 <code>invalidVideos</code>；不猜测</td></tr><tr><td>标题/分区都缺失</td><td>保留视频但标记 <code>missing</code>，不虚构</td></tr><tr><td>观察时间非法/未来</td><td>标记 <code>unknown</code>/<code>invalid</code>，候选不晋升</td></tr><tr><td>超限</td><td>截断/拒绝并给出结构化原因，不崩溃</td></tr><tr><td>冲突</td><td>排除冲突视频，计数；候选 <code>contentStatus: &quot;conflicted&quot;</code></td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-8">7. C2-4B 数据接口草案</h2>
+<blockquote><p>设计草案，不是已实现代码。C2-4A 不创建任何运行时代码。</p></blockquote>
+<h3>7.1 导入 JSON 草案</h3>
+<pre class="code" data-lang="json"><code>{
+  &quot;schemaVersion&quot;: 1,
+  &quot;kind&quot;: &quot;bili-daily-candidate-content-import&quot;,
+  &quot;provenance&quot;: &quot;user-provided&quot;,
+  &quot;userConfirmed&quot;: true,
+  &quot;exportedAt&quot;: &quot;2026-11-11T12:00:00+08:00&quot;,
+  &quot;sourceNote&quot;: &quot;用户自述：从 B 站页面手动整理&quot;,
+  &quot;candidates&quot;: [
+    {
+      &quot;upUid&quot;: &quot;123456&quot;,
+      &quot;upName&quot;: &quot;示例 UP&quot;,
+      &quot;observedAt&quot;: &quot;2026-11-11T12:00:00+08:00&quot;,
+      &quot;videos&quot;: [
+        {
+          &quot;bvid&quot;: &quot;BV1xx411c7mD&quot;,
+          &quot;title&quot;: &quot;示例标题&quot;,
+          &quot;partition&quot;: &quot;科技&quot;,
+          &quot;tags&quot;: [&quot;编程&quot;, &quot;教程&quot;],
+          &quot;url&quot;: &quot;https://www.bilibili.com/video/BV1xx411c7mD&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre>
+<h3>7.2 校验规则</h3>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>规则</th></tr></thead><tbody><tr><td><code>schemaVersion</code></td><td>必须为 <code>1</code>；其他版本拒绝</td></tr><tr><td><code>kind</code></td><td>必须精确匹配</td></tr><tr><td><code>provenance</code></td><td>C2-4B 只接受 <code>&quot;user-provided&quot;</code>；其他值拒绝并说明未实现</td></tr><tr><td><code>userConfirmed</code></td><td>必须为 <code>true</code>；否则拒绝</td></tr><tr><td><code>candidates</code></td><td>数组，0..500；0 时返回 <code>empty</code></td></tr><tr><td><code>upUid</code></td><td>复用 <code>stats.cleanRecord</code> 的 UID 规则；非法跳过</td></tr><tr><td><code>upName</code></td><td>可选字符串，最长 100，仅展示</td></tr><tr><td><code>observedAt</code></td><td>ISO 8601 或 epoch ms；非法/未来标记问题</td></tr><tr><td><code>videos</code></td><td>数组，1..50；候选总视频数 ≤ 2000</td></tr><tr><td><code>bvid</code></td><td>必需；去空格后匹配 <code>^BV[0-9A-Za-z]{10}$</code>（前缀 <code>BV</code> 大小写不敏感，规范化为大写；其余字符保留）；重复 BV 去重</td></tr><tr><td><code>title</code> / <code>partition</code></td><td>每个视频至少提供其一；两者都缺失则该视频无内容价值，计入诊断</td></tr><tr><td><code>title</code></td><td>可选字符串，最长 1000 UTF-16；控制/零宽字符清理</td></tr><tr><td><code>partition</code></td><td>可选字符串，最长 64 码点；空白/控制字符视为缺失</td></tr><tr><td><code>tags</code></td><td>可选字符串数组，最多 20 个，每个最长 50</td></tr><tr><td><code>url</code></td><td>可选，最长 2048；只接受 <code>https://</code> 的 B 站视频/空间链接；<code>b23.tv</code> 短链不解析；去掉 query/hash；不访问</td></tr><tr><td><code>sourceNote</code></td><td>可选，最长 500；仅记录，不参与特征</td></tr><tr><td>未知字段</td><td>不参与特征；计入 <code>unknownFields</code> 诊断，不执行</td></tr></tbody></table></div>
+<p><strong>安全规则：</strong></p>
+<ul><li>只接受 JSON，不执行 JS；不使用 <code>eval</code> / <code>new Function</code>。</li><li>拒绝 <code>__proto__</code>、<code>constructor</code>、<code>prototype</code> 作为动态键，或使用 <code>Map</code> / <code>Object.create(null)</code>。</li><li>拒绝 <code>javascript:</code>、<code>data:</code>、<code>file:</code> 等 URL scheme。</li><li>所有长度/数量上限在解析前检查；避免超大字符串/正则回溯。</li><li>不修改输入对象；返回新对象；结果可 <code>JSON.stringify</code> 往返。</li></ul>
+<h3>7.3 输出 sidecar 草案</h3>
+<pre class="code" data-lang="js"><code>buildCandidateContentEvidence(importDoc, options)
+// → 只解析/校验导入文件本身，返回 sidecar（不读取观看记录）
+//   options.now 可注入固定时间，便于测试
+
+assessImportedContentCandidates(sidecar, records, options)
+// → 与 biliDailyRecords 交叉检查同一 BV 的 UID 冲突
+//   计算 promotion.eligibleForExploration
+//   不修改 records，不写存储</code></pre>
+<p>顶层：</p>
+<pre class="code" data-lang="js"><code>{
+  schemaVersion: 1,
+  status: &quot;ok&quot; | &quot;empty&quot; | &quot;invalid&quot;,
+  reason: &quot;&quot;,
+  provenance: &quot;user-provided&quot;,
+  candidates: [ ... ],
+  diagnostics: {
+    candidatesIn, candidatesAccepted, candidatesInvalid,
+    videosIn, videosAccepted, videosInvalid,
+    duplicateVideos, conflictVideos,
+    unknownFields, rejectedReasons
+  },
+  limits: { ... },
+  note: &quot;用户提供，未在线核验；不进入观看记录&quot;
+}</code></pre>
+<p>单候选：</p>
+<pre class="code" data-lang="js"><code>{
+  upUid, upName,
+  provenance: &quot;user-provided&quot;,
+  observedAt, observedAtState: &quot;available&quot; | &quot;unknown&quot; | &quot;invalid&quot;,
+  videos: [{ bvid, title, partition, tags, url, titleState, partitionState }],
+  partitionCounts: [{ name, videoCount, shareOfImportedVideos }],
+  titleTokens: [{ token, count, documentCount }],
+  importedVideoCount,
+  importedTitleCount,
+  importedPartitionCount,
+  importedTitleCoverage,
+  importedPartitionCoverage,
+  contentStatus: &quot;complete&quot; | &quot;partial&quot; | &quot;missing&quot; | &quot;conflicted&quot;,
+  promotion: {
+    eligibleForExploration: false,
+    reasons: [{ code, level, message }]
+  },
+  conflictVideoCount,
+  reasons: []
+}</code></pre>
+<blockquote><p><code>contentStatus</code> 在 sidecar 中只表示<strong>导入内部</strong>的内容完整度。与 <code>biliDailyRecords</code> 的跨来源冲突由 <code>assessImportedContentCandidates</code>单独返回 <code>crossSourceConflictVideoCount</code> 并影响 <code>promotion</code>，不修改 sidecar，也不修改观看记录。</p></blockquote>
+<h3>7.4 适配边界</h3>
+<pre class="code" data-lang="text"><code>C2-3 buildCandidateFeatures(records, pool)
+  → 观看特征（watch-ms 基础）
+
+C2-4B buildCandidateContentEvidence(importDoc)
+  → 导入内容特征（video-count 基础）
+
+C3 adapter
+  → 按 upUid 连接两者
+  → 保留 provenance / basis / confidence
+  → main lane 与 exploration lane 分开</code></pre>
+<p><strong>明确不做：</strong></p>
+<ul><li>不把导入视频传给 <code>buildCandidateFeatures</code> 的 <code>records</code>；</li><li>不把导入视频合并进 <code>biliDailyRecords.days</code>；</li><li>不把 <code>importedPartitionCoverage</code> 写进 <code>partitionCoverage</code>；</li><li>不把 <code>contentStatus</code> 写进 <code>featureStatus</code>；</li><li>不把 <code>user-provided</code> 写成 <code>watched</code>。</li></ul>
+<h3>7.5 存储策略</h3>
+<ul><li><strong>C2-4B 原型：不写 <code>chrome.storage.local</code></strong>；解析结果只在内存中返回。</li><li>如后续需要持久化，使用独立键（例如 <code>biliDailyCandidateImports</code>），与 <code>biliDailyRecords</code> 分离，并提供清除/导出。</li><li>原型阶段不新增 manifest 权限；文件导入使用标准 <code>&lt;input type=&quot;file&quot;&gt;</code>。</li><li>不在扩展中保存 OAuth token / client_secret；未来官方 API 需服务端方案。</li></ul>
+<hr>
+<h2 id="sec-9">8. 单元测试计划</h2>
+<p>C2-4B 建议至少 45 项，分为 8 组。以下为计划，<strong>未执行</strong>。</p>
+<div class="table-wrap"><table><thead><tr><th>组</th><th class="al-right">数量</th><th>覆盖</th></tr></thead><tbody><tr><td>结构与版本</td><td class="al-right">6</td><td>合法最小输入、空输入、坏 JSON、版本、kind、userConfirmed</td></tr><tr><td>身份与去重</td><td class="al-right">7</td><td>非法 UID、规范化、重复 UID、重复 BV、元数据冲突、同名不同 UID、改名</td></tr><tr><td>内容特征</td><td class="al-right">7</td><td>分区计数、bigram 规则、标点分段、缺失标题/分区、单字符、超长</td></tr><tr><td>来源与时间</td><td class="al-right">6</td><td>provenance 保留/拒绝、时间合法/缺失/未来/过期</td></tr><tr><td>冲突</td><td class="al-right">5</td><td>导入内冲突、与观看记录冲突、冲突视频排除、状态、唯一计数</td></tr><tr><td>晋升条件</td><td class="al-right">5</td><td>全满足、视频不足、分区不足、标题不足、冲突/过期</td></tr><tr><td>安全与不可变</td><td class="al-right">5</td><td>原型污染、深度冻结、超限、危险 URL、JSON 往返</td></tr><tr><td>适配与隔离</td><td class="al-right">4</td><td>不写观看记录、导入-only 仍 missing、C3 连接、空/坏输入</td></tr></tbody></table></div>
+<p>代表性用例：</p>
+<ol><li>合法最小输入 → <code>status: &quot;ok&quot;</code>。</li><li>空文件 → <code>status: &quot;empty&quot;</code>，不抛异常。</li><li>坏 JSON → <code>status: &quot;invalid&quot;</code>，<code>invalid-json</code>。</li><li><code>schemaVersion: 2</code> → 拒绝。</li><li><code>provenance: &quot;platform-observed&quot;</code> → 拒绝并说明未实现。</li><li>同一 BV 重复 → 只计一个视频。</li><li>同一 BV 不同标题/分区 → <code>metadata-conflict</code>，不静默选择。</li><li>同一 BV 两个 UID → 冲突，双方 <code>conflictVideoCount</code> 增加。</li><li>导入 UID 与观看记录同一 BV 冲突 → 不修改观看记录。</li><li>缺失标题 → 计入标题覆盖率分母。</li><li>缺失分区 → 计入分区覆盖率分母。</li><li>3 个视频、覆盖率 ≥ 0.6、无冲突、时间新鲜 → 可晋升探索。</li><li>视频数不足 → 不可晋升，原因明确。</li><li>超长标题/分区/tags → 有限上限，不崩溃。</li><li><code>__proto__</code> 分区名 → 不污染原型。</li><li>深度冻结输入 → 可处理且不被修改。</li><li>危险 URL scheme → 拒绝。</li><li>结果可 JSON 序列化往返。</li><li>导入内容不改变 <code>biliDailyRecords</code>。</li><li>导入-only 候选的 C2-3 <code>featureStatus</code> 仍为 <code>missing</code>。</li></ol>
+<blockquote><p>完整 45 项清单见设计文档第 9 节。</p></blockquote>
+<hr>
+<h2 id="sec-10">9. 已知限制和待核查问题</h2>
+<h3>9.1 已知限制</h3>
+<ol><li><strong>用户自述数据可能不准确</strong>：标题/分区/UID 可能过时、截断或误填；不做在线核验。</li><li><strong>没有平台侧身份验证</strong>：除官方 OAuth 外，无法确认 UID 是否真实存在或属于该 UP 主。</li><li><strong>没有标签特征</strong>：C2-3 不使用 tags；C2-4B 可保存但 C3 是否使用需另行设计。</li><li><strong>内容覆盖率是启发式</strong>：3 个视频、0.6 覆盖率只是保守起点，未用真实分布校准。</li><li><strong>导入内容会过期</strong>：180 天阈值是设计建议，需根据用户行为调整。</li><li><strong>无法发现用户不知道的 UP 主</strong>：C 依赖用户主动提供；真正的“平台发现”需要 D/E，但当前不可行/未核实。</li><li><strong>D 的 DOM 不稳定</strong>：B 站改版、广告卡、懒加载都会影响；本阶段不实现。</li><li><strong>E 的个人开发者路径不可用</strong>：官方文档摘要显示个人入驻未开放；企业方案成本高。</li><li><strong>C3 尚未实现</strong>：探索通道、权重、配额、MMR 都未设计完成；本阶段只提供输入边界。</li><li><strong>C1 没有用户级标题词向量</strong>：C3 若要做内容相似度，需要从观看记录构建用户 token 画像；这是 C3 的新增数据需求。</li></ol>
+<h3>9.2 待核查问题</h3>
+<div class="table-wrap"><table><thead><tr><th class="al-right">#</th><th>问题</th><th>当前证据</th><th>核查方式</th></tr></thead><tbody><tr><td class="al-right">1</td><td>官方开放平台个人开发者入驻是否仍关闭</td><td>官方文档搜索摘要称“暂未开通个人开发者申请入驻”</td><td>浏览器打开官方入驻文档人工复核</td></tr><tr><td class="al-right">2</td><td>是否存在可读取任意公开视频/UP 主目录的官方接口</td><td>搜索摘要显示 scope 围绕授权账号/稿件；未发现公开目录接口</td><td>逐页阅读开放平台“数据开放”文档</td></tr><tr><td class="al-right">3</td><td>当前页推荐区 DOM 读取是否属于用户协议 §5.6(3) 的“自动获取数据”</td><td>协议摘要禁止自动程序获取内容/数据</td><td>法务/平台书面确认</td></tr><tr><td class="al-right">4</td><td>用户导入 B 站页面公开元数据并本地保存的合规性</td><td>用户主动、非商业、本地、最小化</td><td>发布前隐私/法务评审</td></tr><tr><td class="al-right">5</td><td>用户协议/隐私政策最新版本与条款编号</td><td>搜索摘要显示不同更新日期</td><td>浏览器人工复核原文</td></tr><tr><td class="al-right">6</td><td><code>tname</code> 分区体系是否稳定、是否需要映射</td><td>现有 C2-3 只按字符串；未做映射</td><td>抽样真实数据；C3 前评估</td></tr><tr><td class="al-right">7</td><td>tags 是否值得作为 C3 特征</td><td>当前未采集；导入可选</td><td>C3 设计评审</td></tr><tr><td class="al-right">8</td><td>180 天过期阈值是否合理</td><td>设计建议，无真实数据</td><td>C2-4B/C3 真实数据观察</td></tr><tr><td class="al-right">9</td><td>Edge 商店对文件导入/本地数据的披露要求</td><td>未核查</td><td>发布前阅读 Edge 商店政策</td></tr><tr><td class="al-right">10</td><td>是否需要隐私政策更新</td><td>新增导入数据类别</td><td>发布前更新并请用户确认</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-11">10. 是否可以进入 C2-4B</h2>
+<h3>结论：<strong>可以有条件进入 C2-4B。</strong></h3>
+<p><strong>推荐范围（最小原型）：</strong></p>
+<ul><li>只做“用户主动导入视频元数据”的解析、校验、sidecar 输出；</li><li>不联网、不抓页面、不调 API、不新增权限、不写 <code>chrome.storage.local</code>；</li><li>不修改 <code>candidate-pool.js</code>、<code>candidate-features.js</code>、<code>interest-profile.js</code>、<code>stats.js</code>、<code>storage.js</code>、<code>content.js</code>、popup、<code>manifest.json</code>；</li><li>新增独立模块（例如 <code>candidate-content-import.js</code>）与测试；</li><li>用独立测试证明：导入内容不进入观看记录、不改变 C2-1/C2-2/C2-3 结果。</li></ul>
+<p><strong>进入 C2-4B 前必须确认：</strong></p>
+<ol><li>用户认可“用户自述、未在线核验”的产品语义；</li><li>用户认可“导入内容不进入观看记录、不自动参与主排序”；</li><li>用户认可“探索通道”是后续 C3 设计，不在 C2-4B 实现排序；</li><li>平台条款的待核查项至少完成人工复核（尤其是 D/E 的合规性）；</li><li>C2-4B 的测试计划覆盖第 8 节的 45 项。</li></ol>
+<p><strong>不建议现在做：</strong></p>
+<ul><li>官方 API 接入（个人开发者不可行、需要企业资质/后端）；</li><li>当前页推荐区采集（DOM 不稳定、平台规则待核实、属于新采集）；</li><li>批量抓取、非官方 API、Cookie/登录信息读取；</li><li>把导入内容写入观看记录或直接混入 C2-2 <code>eligible</code>；</li><li>进入 C3 排序或 UI。</li></ul>
+<hr>
+<h2 id="sec-12">11. 实际执行结果</h2>
+<h3>11.1 代码未修改验证</h3>
+<p>评审开始前与结束后，对现有文件做 SHA-256 比对：</p>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>结果</th></tr></thead><tbody><tr><td><code>candidate-pool.js</code></td><td>与 C2-3 回滚快照一致</td></tr><tr><td><code>stats.js</code></td><td>与 C2-3 回滚快照一致</td></tr><tr><td><code>interest-profile.js</code></td><td>与 C2-3 回滚快照一致</td></tr><tr><td><code>storage.js</code></td><td>与 C2-3 回滚快照一致</td></tr><tr><td><code>test-candidate-pool.js</code></td><td>与 C2-3 回滚快照一致</td></tr><tr><td><code>test-candidate-quality.js</code></td><td>与 C2-3 回滚快照一致</td></tr><tr><td><code>test-interest-profile.js</code></td><td>与 C2-3 回滚快照一致</td></tr><tr><td><code>test-stats.js</code></td><td>与 C2-3 回滚快照一致</td></tr><tr><td><code>test-uid.js</code></td><td>与 C2-3 回滚快照一致</td></tr><tr><td><code>test-up-stats.js</code></td><td>与 C2-3 回滚快照一致</td></tr></tbody></table></div>
+<ul><li><code>candidate-features.js</code> SHA-256 前缀：<code>52b0086f49d4d949</code>；</li><li><code>test-candidate-features.js</code> SHA-256 前缀：<code>97f4ec4e92f953ab</code>；</li><li>本阶段未修改上述运行时代码；只新增/修改设计、验收与 HTML 文档。</li></ul>
+<h3>11.2 测试执行情况</h3>
+<ul><li><strong>未运行 181 项测试。</strong> 原因：本阶段要求仅研究设计，正式代码未修改；用户已在此前复核全部通过。</li><li>本报告不把“未运行”写成“通过”。</li></ul>
+<h3>11.3 HTML 生成</h3>
+<ul><li>源文件：<code>docs/acceptance/C2-4A/C2-4A-research-report.md</code></li><li>输出：<code>docs/acceptance/C2-4A/C2-4A-research-report.html</code></li><li>生成命令：</li></ul>
+<pre class="code" data-lang="powershell"><code>node tools/build-report-html.js `
+  docs/acceptance/C2-4A/C2-4A-research-report.md `
+  docs/acceptance/C2-4A/C2-4A-research-report.html</code></pre>
+<ul><li>实际执行结果：<strong>文件已存在，但本会话无法复核生成过程。</strong>用户已确认 Markdown 与 HTML 均已归档；本机文件系统中<code>docs/acceptance/C2-4A/C2-4A-research-report.html</code> 确实存在（已读取文件头验证）。但本次会话中的生成命令仍被工具层拒绝执行（安全分类器持续不可用），因此没有退出码、字节数与“由当前 Markdown 重新生成”的验证结果。</li><li>已确认的可执行部分：<code>node -v</code> → <code>v24.19.0</code>（Node.js 本身可用）。</li><li>待办：工具恢复后，在 <code>D:\Bili-Daily</code> 下重新执行上述命令，把实际退出码、文件字节数回填到文末“生成记录”，以确认 HTML 与当前 Markdown 同步。</li><li>本报告不把“文件存在”写成“已由本会话成功生成”，也不伪造退出码。</li></ul>
+<hr>
+<h2 id="sec-13">12. 回滚与停止</h2>
+<ul><li>本阶段没有修改任何正式业务代码，因此不需要代码回滚。</li><li>如需移除本阶段文档：</li></ul>
+<pre class="code" data-lang="powershell"><code>Remove-Item docs\design\C2-4A-candidate-source-review.md -ErrorAction SilentlyContinue
+Remove-Item docs\acceptance\C2-4A -Recurse -ErrorAction SilentlyContinue</code></pre>
+<ul><li>不触碰 <code>chrome.storage.local</code>，不删除任何真实观看数据。</li><li>本阶段到此停止，等待审核，不进入 C2-4B 或 C3。</li><li>阶段 E 的赛博二次元、原创动漫人物立绘与丰富动态效果设计规范继续保留，本阶段不涉及、不实施。</li></ul>
+<hr>
+<h2 id="sec-14">附录：参考来源</h2>
+<blockquote><p>核查日期：2026-11-11。官方页面正文可能为 JS 渲染；标注“摘要”的条目来自搜索引擎返回的官方页面摘要，需人工复核。</p></blockquote>
+<div class="table-wrap"><table><thead><tr><th class="al-right">#</th><th>来源</th><th>用途</th><th>读取情况</th></tr></thead><tbody><tr><td class="al-right">1</td><td>https://www.bilibili.com/robots.txt</td><td>robots 规则</td><td><strong>已实际读取</strong>关键规则</td></tr><tr><td class="al-right">2</td><td>https://www.bilibili.com/protocal/licence.html</td><td>用户协议 §1.2/§1.3/§5.6(3)</td><td>页面正文未直接取得；使用搜索摘要，待复核</td></tr><tr><td class="al-right">3</td><td>https://www.bilibili.com/blackboard/privacy-pc.html</td><td>隐私政策</td><td>页面正文未直接取得；使用搜索摘要，待复核</td></tr><tr><td class="al-right">4</td><td>https://openhome.bilibili.com/doc</td><td>开放平台文档目录</td><td>页面仅返回标题；使用搜索摘要，待复核</td></tr><tr><td class="al-right">5</td><td>https://openhome.bilibili.com/doc/4/eaf0e2b5-bde9-b9a0-9be1-019bb455701c</td><td>OAuth 2.0 / 账号授权</td><td>页面仅返回标题；使用搜索摘要，待复核</td></tr><tr><td class="al-right">6</td><td>https://openhome.bilibili.com/doc/4/cbdcee3b-f57e-5c7b-cf27-83892fb811c4</td><td>开发者入驻（个人未开放）</td><td>使用官方页面搜索摘要，待复核</td></tr><tr><td class="al-right">7</td><td>https://openhome.bilibili.com/doc/4/d9554788-dcef-f139-6217-b487d41c3826</td><td>查询单一视频稿件详情</td><td>使用官方页面搜索摘要，待复核</td></tr><tr><td class="al-right">8</td><td>https://openhome.bilibili.com/doc/4/3f46ac2e-1318-3aa0-5548-0d9fd624d520</td><td>获取单个稿件数据</td><td>使用官方页面搜索摘要，待复核</td></tr><tr><td class="al-right">9</td><td>https://openhome.bilibili.com/doc/4/feb66f99-7d87-c206-00e7-d84164cd701c</td><td>获取已授权用户基础公开信息</td><td>使用官方页面搜索摘要，待复核</td></tr><tr><td class="al-right">10</td><td>https://open.bilibili.com/agreement/developer-service</td><td>开放平台开发者服务协议</td><td>页面仅返回标题；使用搜索摘要，待复核</td></tr><tr><td class="al-right">11</td><td>https://openhome.bilibili.com/agreement/privacy-policy</td><td>开放平台隐私政策</td><td>搜索结果列出；未逐条读取，待复核</td></tr></tbody></table></div>
+<p><strong>未作为授权依据的第三方资料：</strong></p>
+<ul><li>Apifox 镜像文档、GitHub <code>bilibili-API-collect</code>、第三方博客。</li><li>这些资料只能说明“存在非官方接口/社区整理”，不能证明官方授权；本项目不建议使用非官方接口。</li></ul>
+<hr>
+<h2 id="sec-15">生成记录</h2>
+<ul><li>日期：2026-11-11</li><li>目标命令：</li></ul>
+<pre class="code" data-lang="powershell"><code>node tools/build-report-html.js `
+  docs/acceptance/C2-4A/C2-4A-research-report.md `
+  docs/acceptance/C2-4A/C2-4A-research-report.html</code></pre>
+<ul><li>执行状态：<strong>本会话未能执行；文件由用户侧归档。</strong>本次会话中所有需要执行脚本的 Bash 调用均被工具层拦截，命令没有真正运行；多次重试返回同一错误，因此没有可记录的退出码与字节数。用户随后确认 HTML 已归档，且文件系统中该文件确实存在（已读取文件头验证）。</li><li>原始错误信息（多次重试一致，原文）：</li></ul>
+<blockquote><p>DeepSeek-flash is temporarily unavailable (connection failed), so auto mode cannot determine the safety of Bash right now. Wait a moment and then try this action again. If it keeps failing, continue with other tasks that don't require this action and come back to it later.</p></blockquote>
+<ul><li>旁证：<code>node -v</code> 可执行并返回 <code>v24.19.0</code>，说明 Node.js 环境正常，问题只出在命令执行通道，而非脚本本身。</li><li>后续处理：工具恢复后重新执行上面的命令，并在本节追加实际退出码、文件字节数，以确认归档 HTML 与当前 Markdown 同步。</li><li>事实声明：本报告与设计文档的全部研究内容均为已完成的阅读 / 设计工作；本会话未亲自执行 HTML 生成，已在第 0 节与 11.3 明确标注，未做任何伪造。</li></ul>
+  <div class="footer">
+    <span>Bili Daily · 开发报告</span>
+    <span>Bili Daily C2-4A 验收报告：新 UP 主候选来源技术评审</span>
+  </div>
+</main>
+</body>
+</html>

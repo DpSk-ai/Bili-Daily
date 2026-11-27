@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bili Daily C3-1 审计补强报告：特征空间校验与 IDF 模型结构校验</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --accent: #2f5f9e;
+    --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa;
+    --warn-bg: #fff8e6;
+    --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(24, 39, 75, 0.07);
+    padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .meta div + div { margin-top: 2px; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.4; color: #16202e; }
+  h1 {
+    font-size: 27px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 38px 0 14px;
+    padding-left: 12px;
+    border-left: 5px solid var(--accent);
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(47, 95, 158, .35); }
+  a:hover { border-bottom-color: var(--accent); }
+  strong { color: #101826; }
+  code {
+    font-family: Consolas, "Cascadia Code", "SFMono-Regular", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid #e3e8ef;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #9a3412;
+    word-break: break-word;
+  }
+  pre.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #24303f;
+    font-size: 13.5px;
+    white-space: pre;
+  }
+  pre.code[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 9px;
+    font-size: 11px;
+    color: #7b8594;
+    background: #eef1f5;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 7px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eef2f8; color: #1b2a41; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+  tbody tr:hover { background: #f2f6fc; }
+  .al-center { text-align: center; }
+  .al-right { text-align: right; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    border-radius: 4px;
+    color: #5c4a17;
+  }
+  blockquote p { margin: 6px 0; }
+  ul, ol { margin: 10px 0; padding-left: 26px; }
+  li { margin: 5px 0; }
+  li.li-nested { margin-left: 20px; }
+  .toc {
+    margin: 0 0 34px;
+    padding: 16px 22px;
+    background: #f8f9fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 8px; color: #16202e; letter-spacing: .5px; }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 4px 0; break-inside: avoid; }
+  .footer {
+    margin-top: 44px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #8a93a1;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    body { padding: 12px 8px 32px; font-size: 15px; }
+    .page { padding: 24px 18px 32px; border-radius: 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18.5px; }
+    .toc ol { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11.5pt; }
+    .page { max-width: none; border: 0; box-shadow: none; padding: 0; }
+    .toc { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    pre.code, table, blockquote, tr { break-inside: avoid; }
+    a { color: inherit; border: 0; }
+    .footer { color: #777; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Bili Daily C3-1 审计补强报告：特征空间校验与 IDF 模型结构校验</h1>
+  <div class="meta">
+    <div><strong>来源：</strong>C3-1-audit-report.md</div>
+    <div><strong>生成时间：</strong>2026/11/11 18:49:18</div>
+  </div>
+  <nav class="toc"><div class="toc-title">目录</div><ol><li><a href="#sec-1">0. 执行状态总表</a></li><li><a href="#sec-2">1. 审计范围</a></li><li><a href="#sec-3">2. 复现与修复验证</a></li><li><a href="#sec-4">3. 修改内容</a></li><li><a href="#sec-5">4. 新增测试（46–56）</a></li><li><a href="#sec-6">5. 测试结果（实际执行）</a></li><li><a href="#sec-7">6. 语法检查</a></li><li><a href="#sec-8">7. C3-1 正式验收报告确认</a></li><li><a href="#sec-9">8. 兼容性影响</a></li><li><a href="#sec-10">9. 回滚方法</a></li><li><a href="#sec-11">10. 未执行项与局限</a></li><li><a href="#sec-12">11. 声明</a></li></ol></nav>
+<ul><li>日期：2026-11-11</li><li>阶段：C3-1 审计补强（不进入 C3-2）</li><li>修改文件：<code>recommend-core.js</code>、<code>test-recommend-core.js</code></li><li>新增测试：11 项（45 → 56）</li><li>结论：<strong>两个问题均已复现并修复；56/56 + 241/241 = 297/297 全部通过</strong></li><li>未修改：C1 / C2 全部模块、popup、manifest、storage、content</li></ul>
+<hr>
+<h2 id="sec-1">0. 执行状态总表</h2>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>状态</th><th>证据</th></tr></thead><tbody><tr><td>问题 1（跨特征空间比较）复现</td><td><strong>已执行</strong></td><td>§2.1，修复前返回 <code>approximation</code></td></tr><tr><td>问题 2（IDF 模型结构未校验）复现</td><td><strong>已执行</strong></td><td>§2.2，修复前抛 TypeError</td></tr><tr><td>回滚快照</td><td>已执行</td><td><code>rollback/before-c3-1-audit/</code></td></tr><tr><td>修改 <code>recommend-core.js</code></td><td>已执行</td><td>§3</td></tr><tr><td>追加测试 46–56</td><td>已执行</td><td>§4</td></tr><tr><td>新增 56 项测试</td><td><strong>已执行</strong></td><td><code>56/56 通过</code>，退出码 0</td></tr><tr><td>既有 241 项回归</td><td><strong>已执行</strong></td><td>全绿，退出码全 0</td></tr><tr><td><code>node --check</code>（7 个文件）</td><td><strong>已执行</strong></td><td>退出码全 0</td></tr><tr><td>缺陷修复后复验</td><td><strong>已执行</strong></td><td>§2.3</td></tr><tr><td>C3-1 正式验收报告存在性确认</td><td><strong>已执行</strong></td><td>§7</td></tr><tr><td>修改业务模块 / 权限 / UI</td><td><strong>未执行（禁止）</strong></td><td>零改动</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-2">1. 审计范围</h2>
+<h3>1.1 问题 1：compareVectors 缺少 feature space 校验</h3>
+<p>审查意见：<code>compareVectors()</code> 已检查 <code>basis</code>，但 partition 与 title 属于不同特征空间，应禁止互相比较；<code>allowCrossBasis</code> 只允许不同统计口径，不允许不同特征空间。</p>
+<h3>1.2 问题 2：buildTfIdfVector 未校验外部 IDF 模型</h3>
+<p>审查意见：外部模型缺少结构校验；损坏模型可能抛未捕获异常或被静默修正。</p>
+<hr>
+<h2 id="sec-3">2. 复现与修复验证</h2>
+<h3>2.1 问题 1 修复前（实际输出）</h3>
+<p>构造用户分区向量（<code>space: &quot;partition&quot;</code>, <code>basis: &quot;watch-ms&quot;</code>）与TF-IDF 标题向量（<code>space: &quot;title&quot;</code>, <code>basis: &quot;token-count&quot;</code>）：</p>
+<pre class="code"><code>compareVectors(uv, tv, { allowCrossBasis: true })
+-&gt; approximation  similarity = 0.8610369959439764
+cosineSimilarity(uv, tv, { allowCrossBasis: true })
+-&gt; 0.8610369959439764</code></pre>
+<p><strong>缺陷确认</strong>：<code>allowCrossBasis</code> 把&quot;跨口径&quot;误当成了&quot;跨特征空间&quot;的通行证，算出了一个数学上存在、语义上无意义的相似度。</p>
+<h3>2.2 问题 2 修复前（实际输出）</h3>
+<div class="table-wrap"><table><thead><tr><th>输入模型</th><th>修复前行为</th></tr></thead><tbody><tr><td><code>{ enabled:true, documentCount:1, oovIdf:1, idf:null }</code></td><td><strong>抛 <code>TypeError: Cannot convert undefined or null to object</code></strong></td></tr><tr><td><code>&quot;abc&quot;</code></td><td>静默按统一权重计算，<code>status: &quot;ok&quot;</code>，<code>vector: {&quot;a&quot;:1}</code></td></tr><tr><td><code>{}</code></td><td>同上（静默）</td></tr><tr><td><code>idf: { a: NaN }</code></td><td>同上（NaN 被静默替换为 oov）</td></tr><tr><td><code>oovIdf: -1</code></td><td>同上</td></tr><tr><td><code>documentCount: NaN</code></td><td>同上</td></tr></tbody></table></div>
+<p><strong>缺陷确认</strong>：一类模型直接崩溃，其余损坏模型被静默降级为&quot;无 IDF&quot;，产出的结果与合法输入无法区分——正是&quot;静默修正损坏数据&quot;。</p>
+<h3>2.3 修复后复验（实际输出）</h3>
+<pre class="code"><code>compareVectors(uv, tv, { allowCrossBasis: true })
+-&gt; space-mismatch   similarity = null
+
+buildTfIdfVector({a:1}, { enabled:true, documentCount:1, oovIdf:1, idf:null })
+-&gt; status = invalid-idf-model   code = invalid-model-idf   vector = null
+（未抛异常）</code></pre>
+<hr>
+<h2 id="sec-4">3. 修改内容</h2>
+<p>只修改 <code>recommend-core.js</code>，约 250 行新增（1732 → 1952 行）。</p>
+<h3>3.1 特征空间校验</h3>
+<div class="table-wrap"><table><thead><tr><th>位置</th><th>改动</th></tr></thead><tbody><tr><td>新增 <code>spaceMismatch(leftSpace, rightSpace)</code></td><td>两侧都声明 space 且不同 → <code>true</code></td></tr><tr><td><code>cosineSimilarity()</code></td><td>在任何数学计算前检查空间；跨空间直接返回 <code>null</code>（<code>allowCrossBasis</code> 无效）</td></tr><tr><td><code>compareVectors()</code></td><td>新增 <code>status: &quot;space-mismatch&quot;</code>，<code>similarity: null</code>，附 <code>reasons</code> 与 <code>limitations</code>；返回新增 <code>spaces: {left, right}</code></td></tr><tr><td><code>summarizeSide()</code></td><td>证据块新增 <code>space</code> 字段</td></tr><tr><td>未声明 space 的原始稀疏向量</td><td>保持纯数学兼容；<code>compareVectors</code> 追加 <code>space-unspecified</code> 原因与限制说明</td></tr></tbody></table></div>
+<p><code>allowCrossBasis</code> 的语义被限定为：<strong>只放宽统计口径（watch-ms vs video-count），绝不放宽特征空间（partition vs title）</strong>。</p>
+<h3>3.2 IDF 模型结构校验</h3>
+<p>新增 <code>validateIdfModel(model)</code>，逐项检查：</p>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>规则</th></tr></thead><tbody><tr><td>整体</td><td>必须是普通对象（<code>&quot;abc&quot;</code> → 拒绝）</td></tr><tr><td><code>enabled</code></td><td>必须是布尔值</td></tr><tr><td><code>documentCount</code></td><td>必须是非负整数</td></tr><tr><td><code>oovIdf</code></td><td>必须是有限正数</td></tr><tr><td><code>idf</code></td><td>必须是普通对象，且每个值都是有限正数</td></tr><tr><td><code>minDocuments</code>（可选）</td><td>若存在，必须是非负有限数</td></tr><tr><td><code>df</code>（可选）</td><td>若是存在，必须是普通对象，值均为非负整数</td></tr></tbody></table></div>
+<p>损坏模型返回 <code>status: &quot;invalid-idf-model&quot;</code>、<code>vector: null</code>，附<code>reasons[0].code</code>（如 <code>invalid-model-idf</code>）与 <code>config.modelRejected: true</code>。</p>
+<p><strong>不做任何修补</strong>：不补默认值、不跳过坏字段、不退回统一权重。<code>model</code> 为 <code>null</code> / <code>undefined</code> 仍然合法（调用方明确要求&quot;无 IDF&quot;），与&quot;模型损坏&quot;在输出中可区分（前者 <code>status: &quot;ok&quot;</code>）。</p>
+<hr>
+<h2 id="sec-5">4. 新增测试（46–56）</h2>
+<div class="table-wrap"><table><thead><tr><th>编号</th><th>覆盖点</th></tr></thead><tbody><tr><td>46</td><td>不同特征空间默认拒绝，<code>spaces</code> 可审计</td></tr><tr><td>47</td><td><code>allowCrossBasis</code> 不能绕过空间校验</td></tr><tr><td>48</td><td><code>cosineSimilarity</code> 跨空间返回 <code>null</code>（含显式近似）</td></tr><tr><td>49</td><td>同空间不同口径仍可显式近似（原有能力未被误伤）</td></tr><tr><td>50</td><td>未声明 space 的原始向量保持数学兼容并标注限制</td></tr><tr><td>51</td><td>损坏模型：非对象、缺字段、非法 enabled/documentCount/oovIdf/idf</td></tr><tr><td>52</td><td>损坏模型：NaN / Infinity / 0 / 负数 / 字符串 idf、非法 df、非法 minDocuments，全部不抛异常</td></tr><tr><td>53</td><td>损坏模型不会被静默修正成统一权重（与 <code>null</code> 模型结果可区分）</td></tr><tr><td>54</td><td>拒绝输出可 JSON 往返、无 NaN / Infinity</td></tr><tr><td>55</td><td>合法边界模型（enabled / disabled / JSON 冻结）仍通过</td></tr><tr><td>56</td><td>比较结果的 <code>space</code> 字段可审计且 JSON 稳定</td></tr></tbody></table></div>
+<p>原有 45 项<strong>未删除、未跳过、未放宽任何断言</strong>，全部保持通过。</p>
+<hr>
+<h2 id="sec-6">5. 测试结果（实际执行）</h2>
+<div class="table-wrap"><table><thead><tr><th>测试文件</th><th>结果</th><th>退出码</th></tr></thead><tbody><tr><td><code>test-recommend-core.js</code></td><td><strong>56/56 通过</strong></td><td>0</td></tr><tr><td><code>test-candidate-content-import.js</code></td><td>60/60 通过</td><td>0</td></tr><tr><td><code>test-candidate-features.js</code></td><td>38/38 通过</td><td>0</td></tr><tr><td><code>test-candidate-quality.js</code></td><td>28/28 通过</td><td>0</td></tr><tr><td><code>test-candidate-pool.js</code></td><td>33/33 通过</td><td>0</td></tr><tr><td><code>test-interest-profile.js</code></td><td>24/24 通过</td><td>0</td></tr><tr><td><code>test-uid.js</code></td><td>21/21 通过</td><td>0</td></tr><tr><td><code>test-up-stats.js</code></td><td>17/17 通过</td><td>0</td></tr><tr><td><code>test-stats.js</code></td><td>20/20 通过</td><td>0</td></tr></tbody></table></div>
+<p>合计 <strong>297/297</strong>，<code>FAILED_FILES=0</code>。</p>
+<hr>
+<h2 id="sec-7">6. 语法检查</h2>
+<pre class="code"><code>node --check recommend-core.js            -&gt; 0
+node --check test-recommend-core.js       -&gt; 0
+node --check stats.js                     -&gt; 0
+node --check interest-profile.js          -&gt; 0
+node --check candidate-pool.js            -&gt; 0
+node --check candidate-features.js        -&gt; 0
+node --check candidate-content-import.js  -&gt; 0</code></pre>
+<hr>
+<h2 id="sec-8">7. C3-1 正式验收报告确认</h2>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>状态</th></tr></thead><tbody><tr><td><code>docs/acceptance/C3-1/C3-1-core-report.md</code></td><td><strong>已存在</strong>（13,991 字节，2026-11-11 18:26）</td></tr><tr><td><code>docs/acceptance/C3-1/C3-1-core-report.html</code></td><td><strong>已存在</strong>（25,822 字节，18:27，由 Markdown 生成）</td></tr></tbody></table></div>
+<p>两份文件均在本次审计前生成，本次<strong>未覆盖</strong>。上表中 C3-1 的测试数字为补强前的 <code>45/45</code>；补强后的最新数字以本报告 §5 为准（56/56）。</p>
+<hr>
+<h2 id="sec-9">8. 兼容性影响</h2>
+<div class="table-wrap"><table><thead><tr><th>场景</th><th>影响</th></tr></thead><tbody><tr><td>同空间、同口径比较</td><td>不变</td></tr><tr><td>同空间、不同口径 + <code>allowCrossBasis: true</code></td><td>不变（仍为 approximation）</td></tr><tr><td>不同空间 + <code>allowCrossBasis: true</code></td><td><strong>行为变化</strong>：由返回近似值改为 <code>space-mismatch</code> + <code>null</code>（本次修复目标）</td></tr><tr><td><code>cosineSimilarity</code> 传入声明了不同 space 的包装对象</td><td><strong>行为变化</strong>：返回 <code>null</code>（此前会计算）</td></tr><tr><td><code>buildTfIdfVector</code> 传入损坏模型</td><td><strong>行为变化</strong>：由静默降级/抛异常改为显式拒绝（本次修复目标）</td></tr><tr><td><code>buildTfIdfVector</code> 传入 <code>null</code> 模型</td><td>不变（统一权重 1）</td></tr><tr><td>合法模型（含 JSON 往返冻结模型）</td><td>不变</td></tr></tbody></table></div>
+<p>以上变化只影响<strong>非法或语义无效的输入</strong>，不影响任何既有合法调用路径；原有 45 项测试全部通过即为其证据。</p>
+<hr>
+<h2 id="sec-10">9. 回滚方法</h2>
+<p>快照：<code>rollback/before-c3-1-audit/</code>（两个文件 + README）。</p>
+<pre class="code" data-lang="powershell"><code>cd D:\Bili-Daily
+Copy-Item rollback\before-c3-1-audit\recommend-core.js . -Force
+Copy-Item rollback\before-c3-1-audit\test-recommend-core.js . -Force
+node test-recommend-core.js   # 应回到 45/45，且两个缺陷重新出现</code></pre>
+<p>本轮新增的验收报告文件可单独删除，不影响代码回滚。</p>
+<hr>
+<h2 id="sec-11">10. 未执行项与局限</h2>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>说明</th></tr></thead><tbody><tr><td>Edge popup 真机验证</td><td>尚无 UI 接入</td></tr><tr><td>真实数据评测</td><td>数据量不足</td></tr><tr><td>时间衰减 / MMR / 综合评分</td><td>本阶段禁止</td></tr><tr><td>对 <code>counts</code> 入参的原型污染防护测试</td><td>词元来自内部构建器，暂未覆盖 <code>__proto__</code> 等异常键的独立用例</td></tr><tr><td>对 <code>idf</code> 对象 getter 抛异常的防护</td><td>期望输入为 JSON 往返后的普通数据；带 getter 的对象不在支持范围</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-12">11. 声明</h2>
+<ul><li>§2 的&quot;修复前&quot;输出、§5 的通过数与退出码均为实际执行所得；</li><li>未编造任何测试结果或性能数据；</li><li>本次未修改任何 C1 / C2 / popup / manifest / storage / content 文件；</li><li>本阶段结束，等待审核，<strong>不进入 C3-2</strong>。</li></ul>
+  <div class="footer">
+    <span>Bili Daily · 开发报告</span>
+    <span>Bili Daily C3-1 审计补强报告：特征空间校验与 IDF 模型结构校验</span>
+  </div>
+</main>
+</body>
+</html>

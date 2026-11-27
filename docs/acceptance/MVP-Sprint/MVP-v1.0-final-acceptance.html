@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bili Daily 个人自用 MVP v1.0 最终验收归档</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --accent: #2f5f9e;
+    --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa;
+    --warn-bg: #fff8e6;
+    --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(24, 39, 75, 0.07);
+    padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .meta div + div { margin-top: 2px; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.4; color: #16202e; }
+  h1 {
+    font-size: 27px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 38px 0 14px;
+    padding-left: 12px;
+    border-left: 5px solid var(--accent);
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(47, 95, 158, .35); }
+  a:hover { border-bottom-color: var(--accent); }
+  strong { color: #101826; }
+  code {
+    font-family: Consolas, "Cascadia Code", "SFMono-Regular", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid #e3e8ef;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #9a3412;
+    word-break: break-word;
+  }
+  pre.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #24303f;
+    font-size: 13.5px;
+    white-space: pre;
+  }
+  pre.code[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 9px;
+    font-size: 11px;
+    color: #7b8594;
+    background: #eef1f5;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 7px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eef2f8; color: #1b2a41; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+  tbody tr:hover { background: #f2f6fc; }
+  .al-center { text-align: center; }
+  .al-right { text-align: right; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    border-radius: 4px;
+    color: #5c4a17;
+  }
+  blockquote p { margin: 6px 0; }
+  ul, ol { margin: 10px 0; padding-left: 26px; }
+  li { margin: 5px 0; }
+  li.li-nested { margin-left: 20px; }
+  .toc {
+    margin: 0 0 34px;
+    padding: 16px 22px;
+    background: #f8f9fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 8px; color: #16202e; letter-spacing: .5px; }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 4px 0; break-inside: avoid; }
+  .footer {
+    margin-top: 44px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #8a93a1;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    body { padding: 12px 8px 32px; font-size: 15px; }
+    .page { padding: 24px 18px 32px; border-radius: 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18.5px; }
+    .toc ol { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11.5pt; }
+    .page { max-width: none; border: 0; box-shadow: none; padding: 0; }
+    .toc { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    pre.code, table, blockquote, tr { break-inside: avoid; }
+    a { color: inherit; border: 0; }
+    .footer { color: #777; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Bili Daily 个人自用 MVP v1.0 最终验收归档</h1>
+  <div class="meta">
+    <div><strong>来源：</strong>MVP-v1.0-final-acceptance.md</div>
+    <div><strong>生成时间：</strong>2026/11/12 22:55:44</div>
+  </div>
+  <nav class="toc"><div class="toc-title">目录</div><ol><li><a href="#sec-1">0. 证据分级与执行状态</a></li><li><a href="#sec-2">1. 封存结论</a></li><li><a href="#sec-3">2. v1.0 功能清单</a></li><li><a href="#sec-4">3. 最终工程审计</a></li><li><a href="#sec-5">4. 自动化测试基线</a></li><li><a href="#sec-6">5. 真实验收证据（用户报告）</a></li><li><a href="#sec-7">6. 未验证项目与已知限制</a></li><li><a href="#sec-8">7. 本地数据键与备份注意事项</a></li><li><a href="#sec-9">8. 安装、启动与重新加载</a></li><li><a href="#sec-10">9. 版本快照位置与恢复方法</a></li><li><a href="#sec-11">10. 后续开发建议</a></li><li><a href="#sec-12">11. 封存检查清单</a></li><li><a href="#sec-13">12. 最终结论</a></li></ol></nav>
+<ul><li>日期：2026-11-12</li><li>版本标识：<code>personal-mvp-v1.0</code></li><li>阶段：MVP 最终验收与稳定版封存</li><li>结论：<strong>封存当前可工作的个人自用 MVP，不新增功能。</strong></li><li>适用对象：项目所有者本人；不计划公开发布、不面向多用户或生产环境。</li></ul>
+<blockquote><p>本报告严格区分“用户本机实际执行”“用户此前报告”“Claude 只读静态审计”和“未验证”。不把用户的结果写成 Claude 执行；不声称已完成长期稳定性、推荐准确率或全面安全审计。</p></blockquote>
+<hr>
+<h2 id="sec-1">0. 证据分级与执行状态</h2>
+<div class="table-wrap"><table><thead><tr><th>证据类别</th><th>内容</th><th>本报告的引用方式</th></tr></thead><tbody><tr><td><strong>A. 用户本机实际执行</strong></td><td>项目所有者在 Windows PowerShell 执行全部 17 个测试套件，495/495 项通过</td><td>记为“项目所有者本机执行”，不记为 Claude 执行</td></tr><tr><td><strong>A. 用户真实 Edge 验收</strong></td><td>项目所有者在 Edge 加载插件并实际使用；自动发现从 B 站页面获得陌生 UP 主候选，候选成功进入推荐列表</td><td>记为“用户报告通过”，不声称 Claude 现场观察</td></tr><tr><td><strong>B. 用户此前报告</strong></td><td>自动发现相关 JavaScript 语法检查通过</td><td>记为“用户此前报告”，本次未独立重跑</td></tr><tr><td><strong>C. Claude 本次只读审计</strong></td><td>阅读 <code>manifest.json</code>、运行代码、测试文件与文档，核对权限、存储键、来源标识、去重/冲突、推荐理由、网络路径、观察器与 HTML 渲染</td><td>记为“静态审计”，不代表运行时验证</td></tr><tr><td><strong>D. 未验证</strong></td><td>长期稳定性、内存/性能长跑、真实推荐准确率、全面安全审计、B 站页面改版兼容性</td><td>明确列为未验证，不作结论</td></tr></tbody></table></div>
+<p>本轮 Claude Code 环境中：</p>
+<ul><li><code>node --version</code> 可用（<code>v24.19.0</code>）。</li><li><code>node --check</code> 与 <code>node test-*.js</code> 多次尝试均被命令分类通道阻断，<strong>未获得任何本轮独立 PASS/FAIL 输出</strong>。</li><li><code>node tools/build-report-html.js ...</code> 同样被阻断，<strong>最终 HTML 本轮未生成</strong>；Markdown 已落盘，生成命令见第 11.1 节。未使用手工 HTML 替代。</li><li>因此第 4 节的 495/495 是<strong>项目所有者本机执行结果</strong>，不是 Claude 本次执行结果。</li><li>本轮未修改任何扩展运行代码、测试代码或测试断言。</li></ul>
+<p>命令通道阻断的典型原文：</p>
+<blockquote><p>claude-opus-5-5 is temporarily unavailable (connection failed), so auto mode cannot determine the safety of Bash right now.</p></blockquote>
+<p>最新修改的三个文件时间为 2026-11-12 17:45：</p>
+<ul><li><code>recommend-service.js</code></li><li><code>test-auto-discovery-performance.js</code></li><li><code>test-discovered-candidate-store.js</code></li></ul>
+<p>项目所有者报告的 495/495 是这三个文件修复后的最终运行结果。<strong>本轮没有单独重跑这三个文件的 <code>node --check</code></strong>；测试套件运行会加载这些文件，但“套件运行通过”不等同于“本轮单独执行过语法检查”，故按实际情况标记。</p>
+<hr>
+<h2 id="sec-2">1. 封存结论</h2>
+<ol><li>项目<strong>未配置 Git</strong>：<code>D:\Bili-Daily</code> 及其父目录均无 <code>.git</code>，<code>git status</code> 返回<code>fatal: not a git repository</code>。因此没有创建 Git 提交，也没有 <code>personal-mvp-v1.0</code> 标签。</li><li>已建立<strong>完整、独立的稳定版快照</strong>：<code>D:\Bili-Daily\snapshots\personal-mvp-v1.0-2026-11-12</code></li><li>快照包含 94 个运行/测试/文档文件，并生成 <code>SHA256SUMS.txt</code>；封存时在快照目录内执行<code>sha256sum -c SHA256SUMS.txt</code>，全部文件返回 <code>OK</code>（Claude 实际执行）。</li><li><strong>未覆盖、未移动、未删除</strong>任何既有 <code>rollback/</code> 快照。</li><li><strong>未读取、未写入、未清空</strong>真实 <code>chrome.storage.local</code> 用户数据。</li><li>未为封版做无关重构；17 个测试套件与 495 项测试基线保持原样。</li><li>发现一处发布卫生问题但<strong>按“不新增改动”原则未修改</strong>：<code>dev-config.js</code> 当前<code>enabled: true</code>，弹窗会显示开发用日期切换入口。个人自用可接受；若以后要“干净正式版”，应在下一版本改为 <code>false</code> 后再验收，而不是直接改当前冻结快照。</li></ol>
+<hr>
+<h2 id="sec-3">2. v1.0 功能清单</h2>
+<div class="table-wrap"><table><thead><tr><th class="al-right">#</th><th>功能</th><th>状态</th><th>证据</th></tr></thead><tbody><tr><td class="al-right">1</td><td>B 站视频页观看时长采集（仅 <code>www.bilibili.com/video/*</code>）</td><td>已实现</td><td><code>manifest.json</code> 的 content script；<code>content.js</code></td></tr><tr><td class="al-right">2</td><td>昨日观看总结：有效视频数、观看时长、分区、UP 主排行</td><td>已实现</td><td><code>stats.js</code>、<code>popup.js</code>；用户此前实际运行检查</td></tr><tr><td class="al-right">3</td><td>最近 7 天兴趣画像：分区与 UP 主占比、数据充分度</td><td>已实现</td><td><code>interest-profile.js</code>；用户此前实际运行检查</td></tr><tr><td class="al-right">4</td><td>回访推荐（main 通道）：基于本地观看记录的 UP 主推荐</td><td>已实现</td><td><code>recommend-service.js</code>、<code>recommend-rank.js</code>；用户此前实际运行检查</td></tr><tr><td class="al-right">5</td><td>探索推荐（exploration 通道）：手动导入的新 UP 主候选</td><td>已实现</td><td><code>candidate-store.js</code>、<code>candidate-content-import.js</code>；用户此前实际运行检查</td></tr><tr><td class="al-right">6</td><td>自动发现新 UP 主（opt-in，页面相关推荐卡片）</td><td>已实现</td><td><code>candidate-discovery.js</code>、<code>discovered-candidate-store.js</code>；用户 Edge 实机报告通过</td></tr><tr><td class="al-right">7</td><td>导入候选管理：预览、校验、批次列表、删除批次</td><td>已实现</td><td><code>popup.js</code>、<code>candidate-store.js</code>；用户此前实际运行检查</td></tr><tr><td class="al-right">8</td><td>推荐冷启动提示与置信度展示</td><td>已实现</td><td><code>recommend-quality.js</code>、<code>recommend-service.js</code></td></tr><tr><td class="al-right">9</td><td>全部数据只存本地，不上传</td><td>已实现（静态核对）</td><td>仅有 <code>storage</code> 权限；无 <code>fetch</code>/XHR/WebSocket；无 host permissions</td></tr><tr><td class="al-right">10</td><td>自动发现开关，默认关闭</td><td>已实现</td><td><code>DEFAULT_SETTINGS.enabled = false</code>；弹窗可切换</td></tr></tbody></table></div>
+<h3>2.1 默认值与开关</h3>
+<ul><li>自动发现默认值：<code>enabled: false</code>（<code>discovered-candidate-store.js</code> 的 <code>DEFAULT_SETTINGS</code>）。</li><li>设置存储键：<code>biliDailyDiscoverySettings</code>。</li><li>关闭时：内容脚本不启动观察器；<code>addObservations()</code> 即使收到排队观察也直接返回、不写入。</li><li>开启方式：弹窗「自动发现新 UP 主」区域的开关；切换后通过 <code>chrome.storage.onChanged</code> 同步到内容脚本。</li><li>观看记录采集（<code>content.js</code>）与自动发现开关<strong>相互独立</strong>：即使自动发现关闭，观看记录仍按原有逻辑运行。</li></ul>
+<hr>
+<h2 id="sec-4">3. 最终工程审计</h2>
+<h3>3.1 manifest 权限与匹配范围</h3>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>实际值</th><th>评价</th></tr></thead><tbody><tr><td>Manifest 版本</td><td>MV3</td><td>符合当前 Edge 扩展模型</td></tr><tr><td><code>permissions</code></td><td><code>[&quot;storage&quot;]</code></td><td>仅本地存储，无 <code>tabs</code>、<code>history</code>、<code>cookies</code>、<code>downloads</code></td></tr><tr><td><code>host_permissions</code></td><td>未声明</td><td>无跨站访问权限</td></tr><tr><td>content script 匹配</td><td><code>https://www.bilibili.com/video/*</code></td><td>只进入视频页，不进首页、动态、直播、个人空间</td></tr><tr><td>content script 文件</td><td><code>storage.js</code>、<code>discovered-candidate-store.js</code>、<code>candidate-discovery.js</code>、<code>content.js</code></td><td>依赖顺序固定</td></tr><tr><td>background / service worker</td><td>无</td><td>无常驻后台</td></tr><tr><td><code>web_accessible_resources</code></td><td>无</td><td>不向页面暴露扩展资源</td></tr><tr><td><code>version</code></td><td><code>0.0.1</code></td><td>未在封版时修改；见第 10 节建议</td></tr></tbody></table></div>
+<p>结论：权限面很小，符合“个人自用、本地记录”的定位。<code>storage</code> 权限本身可读整个扩展的<code>chrome.storage.local</code>，但代码只访问第 7 节列出的四个键。</p>
+<h3>3.2 自动发现开关与默认值</h3>
+<ul><li>默认关闭，用户必须主动开启；没有“首次安装自动开启”的逻辑。</li><li>开关状态写入独立键，不混入观看记录或导入批次。</li><li>关闭后，内容脚本的 <code>syncSettings()</code> 调用 <code>stop()</code>，断开 MutationObserver、清理定时器与监听器。</li><li><code>addObservations()</code> 在 <code>settings.enabled !== true</code> 时返回 <code>disabled: true</code> 且不写存储。</li><li>弹窗在设置读取失败或存储读取失败时禁用开关，避免误写。</li></ul>
+<h3>3.3 <code>page-observed</code> 来源标识</h3>
+<ul><li><code>candidate-discovery.js</code> 与 <code>discovered-candidate-store.js</code> 均固定：<code>PROVENANCE = &quot;page-observed&quot;</code>、<code>SCOPE = &quot;related-recommendation-card&quot;</code>。</li><li>存储层注释明确：<strong>绝不复用 <code>user-provided</code></strong>，固定 <code>onlineVerified: false</code>。</li><li>推荐卡会显示「页面相关推荐发现」徽标；推荐理由使用 <code>page-observed</code> 理由码，文案明确“本地观察、未在线核验、不代表平台认证”。</li><li>证据适配输出 <code>identityEvidence.sources = [&quot;page-observed&quot;]</code>。</li></ul>
+<h3>3.4 已观看候选与陌生候选的区分</h3>
+<ul><li>自动发现适配层从 <code>biliDailyRecords</code> 收集已观看 UP UID，并将这些 UID 从观察候选中排除（<code>collectWatchedUids</code> → 冲突/排除逻辑）；统计中单独记录 <code>watchedUpExcluded</code>。</li><li>推荐分两条通道：</li><li class="li-nested"><code>main</code>：本地观看记录中的回访 UP 主，理由是 <code>watched-before</code>，可带真实观看视频数与时长。</li><li class="li-nested"><code>exploration</code>：未在本地观看过的候选，来源只能是 <code>user-provided</code> 或 <code>page-observed</code>。</li><li>跨通道同 UID 去重时 <code>main</code> 优先，避免同一个 UP 主同时以“看过”和“陌生”出现。</li></ul>
+<h3>3.5 UID / BV 去重与冲突阻断</h3>
+<ul><li>观察记录以 <code>UID|BV</code> 合并；同一 UID + 同一 BV 重复观察只保留一条并更新时间。</li><li>同一 BV 出现不同 UID：标记 <code>uid-conflict</code>，记录 <code>conflictUids</code>；冲突候选不进入探索通道，界面提示“待人工复核，不会进入推荐”。</li><li>同一 UID 跨来源（手动导入 + 页面观察）：排序层用导入 UID 集合排除自动发现同 UID，手动导入优先，最终推荐中只出现一次。</li><li>同一 BV 同 UID 但标题/分区矛盾：不采用矛盾标题，按元数据冲突处理。</li><li>导入批次内部也做 UID/BV 校验；无效观察整条拒绝，不因一条坏数据写入空存储。</li></ul>
+<h3>3.6 导入数据与自动观察数据隔离</h3>
+<p>四个存储键彼此独立：</p>
+<div class="table-wrap"><table><thead><tr><th>键</th><th>写入方</th><th>内容</th></tr></thead><tbody><tr><td><code>biliDailyRecords</code></td><td><code>storage.js</code> / <code>content.js</code></td><td>观看记录</td></tr><tr><td><code>biliDailyCandidateImports</code></td><td><code>candidate-store.js</code></td><td>用户主动确认导入的批次</td></tr><tr><td><code>biliDailyDiscoveredCandidates</code></td><td><code>discovered-candidate-store.js</code></td><td>页面观察候选</td></tr><tr><td><code>biliDailyDiscoverySettings</code></td><td><code>discovered-candidate-store.js</code></td><td>自动发现设置</td></tr></tbody></table></div>
+<ul><li><code>discovered-candidate-store.js</code> 只写后两个键；观看记录仅作为只读输入传入，用于排除已观看 UP。</li><li>自动发现不写 <code>biliDailyCandidateImports</code>，导入也不写 <code>biliDailyDiscoveredCandidates</code>。</li><li>删除/重建自动发现候选不会删除导入批次；清除操作只清空观察候选，设置保持开启（测试 25）。</li></ul>
+<h3>3.7 推荐理由真实性</h3>
+<ul><li><code>watched-before</code>：使用真实 <code>watchedVideoCount</code> 与 <code>watchedWatchMs</code>，文案给出视频数与约分钟数。</li><li><code>page-observed</code>：使用真实 <code>importedVideoCount</code>（观察到的不同视频数），明确说明“本地未观看过”与“不代表账号经过平台验证”。</li><li><code>user-imported</code>：使用真实导入视频数，明确“未经平台在线核验”。</li><li>分区/标题匹配理由只在确实存在对应向量与相似度时生成；覆盖不足时使用 <code>low-coverage</code>。</li><li>代码中多处明确写明“证据等级是工程启发式，不是概率，也不是预测准确率”；未发现“官方认证”“已验证准确率”等虚假表述。</li><li>限制：理由描述的是<strong>证据来源与匹配依据</strong>，不是对推荐质量的保证。</li></ul>
+<h3>3.8 是否存在意外的远程发送路径</h3>
+<p>静态核对结果：</p>
+<ul><li>运行代码中未发现 <code>fetch(</code>、<code>XMLHttpRequest</code>、<code>WebSocket</code>、<code>sendBeacon</code>、<code>chrome.runtime.sendMessage</code>、<code>chrome.cookies</code>、<code>document.cookie</code>。</li><li><code>manifest.json</code> 无 <code>host_permissions</code>，无远程脚本、无外部样式、无 CDN 依赖。</li><li>代码中出现的 <code>https://www.bilibili.com/...</code> 与 <code>https://space.bilibili.com/...</code> 仅用于：</li><li class="li-nested">解析页面链接中的 BV / UID；</li><li class="li-nested">生成推荐卡跳转链接（经 UID 正则校验后使用）。</li><li>报告生成脚本 <code>tools/build-report-html.js</code> 只读本地 Markdown、写本地 HTML，不联网。</li><li>测试 <code>test-auto-discovery-integration.js</code> 第 20 项会对五个关键文件做同样的静态字符串检查。</li></ul>
+<p>结论：<strong>未发现扩展主动向远程发送用户数据的路径。</strong> 这是静态审计结论，不是网络抓包或全面安全审计。</p>
+<h3>3.9 内容脚本的观察器与性能</h3>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>实际实现</th><th>评价</th></tr></thead><tbody><tr><td>MutationObserver 数量</td><td>每个控制器最多 1 个；<code>started</code> 防重入，重复 <code>start()</code> 直接返回</td><td>未发现重复观察器</td></tr><tr><td>观察回调</td><td>只调用节流 <code>schedule()</code>，不在回调内遍历 DOM</td><td>避免同步回调抖动</td></tr><tr><td>节流</td><td>变更延迟 700 ms；两次扫描最小间隔 1500 ms</td><td>有明确上限</td></tr><tr><td>扫描范围</td><td>每次最多 400 个锚点、40 张卡片；每页最多 100 条观察</td><td>有硬上限</td></tr><tr><td>页面检查</td><td>2 s 检查一次 URL 变化（仅开启自动发现时）</td><td>轻量</td></tr><tr><td>暂停</td><td>页面隐藏时跳过扫描；<code>pagehide</code> 停止</td><td>降低后台开销</td></tr><tr><td>观看记录</td><td><code>content.js</code> 每 1 s 执行一次 <code>sync()</code>；每次会查询主 <code>&lt;video&gt;</code> 并读取页面元数据</td><td>既有设计，不是 DOM 观察器；属于可优化点，未在本轮实测 CPU</td></tr><tr><td>性能测试</td><td>400 卡片扫描、300/500 条证据适配，单次阈值 5 s</td><td><strong>合成数据、宽阈值</strong>，只能发现明显退化，不能证明真实页面流畅</td></tr></tbody></table></div>
+<p>结论：未发现“重复观察器”这一明显缺陷；存在一个既有的 1 秒轮询（每次读取视频元素与页面元数据），长期 CPU/内存影响未测量，建议下一版本改为事件驱动或降低空闲时的读取频率。封版未改动。真实 B 站页面的长跑性能、SPA 切换、多标签页并发均未验证。</p>
+<h3>3.10 HTML 是否安全渲染不可信文本</h3>
+<ul><li><code>popup.js</code> 明确不使用 <code>innerHTML</code>；所有外部文本（UP 名称、分区、导入文件名、推荐理由）通过 <code>textContent</code> 写入。</li><li>推荐卡链接只接受 <code>safeSpaceUrl()</code> 校验后的 <code>https://space.bilibili.com/&lt;uid&gt;</code>，且 UID 必须与候选 UID 一致；链接带 <code>rel=&quot;noopener noreferrer&quot;</code>。</li><li>存储层对文本做控制字符清理、长度截断和字段白名单；恶意额外字段不会进入存储（测试 8）。</li><li>报告生成脚本在插入 Markdown 文本前统一 <code>escapeHtml</code>，转义 <code>&amp; &lt; &gt; &quot;</code>。</li><li>未发现 <code>eval</code>、<code>new Function</code>、<code>document.write</code>、<code>insertAdjacentHTML</code>。</li></ul>
+<p>结论：当前渲染路径使用安全 DOM API，未发现明显的 HTML 注入面。</p>
+<h3>3.11 审计总体结论</h3>
+<div class="table-wrap"><table><thead><tr><th>审计项</th><th>结论</th></tr></thead><tbody><tr><td>权限与匹配范围</td><td>通过（仅 <code>storage</code>，仅视频页）</td></tr><tr><td>自动发现默认关闭</td><td>通过</td></tr><tr><td><code>page-observed</code> 来源标识</td><td>通过</td></tr><tr><td>已观看 / 陌生候选区分</td><td>通过</td></tr><tr><td>UID / BV 去重与冲突阻断</td><td>通过</td></tr><tr><td>导入与观察数据隔离</td><td>通过</td></tr><tr><td>推荐理由真实性</td><td>通过（有“证据≠质量保证”的限制）</td></tr><tr><td>意外远程发送</td><td>未发现（静态）</td></tr><tr><td>重复观察器 / 明显性能缺陷</td><td>未发现重复观察器；长跑性能未验证</td></tr><tr><td>HTML 安全渲染</td><td>通过（静态）</td></tr></tbody></table></div>
+<p>以上“通过”仅指代码审查层面的核对，不等同于渗透测试、长期运行或推荐效果验收。</p>
+<hr>
+<h2 id="sec-5">4. 自动化测试基线</h2>
+<h3>4.1 17 个测试套件与声明测试数</h3>
+<p>测试数由测试文件中的顶层 <code>test(...)</code> 静态计数得出，用于核对总数；<strong>通过数来自项目所有者本机运行</strong>。</p>
+<div class="table-wrap"><table><thead><tr><th class="al-right">#</th><th>套件</th><th class="al-right">声明测试数</th><th>项目所有者本机结果</th></tr></thead><tbody><tr><td class="al-right">1</td><td><code>test-stats.js</code></td><td class="al-right">20</td><td>通过</td></tr><tr><td class="al-right">2</td><td><code>test-up-stats.js</code></td><td class="al-right">17</td><td>通过</td></tr><tr><td class="al-right">3</td><td><code>test-uid.js</code></td><td class="al-right">21</td><td>通过</td></tr><tr><td class="al-right">4</td><td><code>test-interest-profile.js</code></td><td class="al-right">24</td><td>通过</td></tr><tr><td class="al-right">5</td><td><code>test-candidate-pool.js</code></td><td class="al-right">33</td><td>通过</td></tr><tr><td class="al-right">6</td><td><code>test-candidate-quality.js</code></td><td class="al-right">28</td><td>通过</td></tr><tr><td class="al-right">7</td><td><code>test-candidate-features.js</code></td><td class="al-right">38</td><td>通过</td></tr><tr><td class="al-right">8</td><td><code>test-candidate-content-import.js</code></td><td class="al-right">60</td><td>通过</td></tr><tr><td class="al-right">9</td><td><code>test-candidate-store.js</code></td><td class="al-right">28</td><td>通过</td></tr><tr><td class="al-right">10</td><td><code>test-recommend-core.js</code></td><td class="al-right">56</td><td>通过</td></tr><tr><td class="al-right">11</td><td><code>test-recommend-quality.js</code></td><td class="al-right">47</td><td>通过</td></tr><tr><td class="al-right">12</td><td><code>test-recommend-rank.js</code></td><td class="al-right">28</td><td>通过</td></tr><tr><td class="al-right">13</td><td><code>test-recommend-service.js</code></td><td class="al-right">22</td><td>通过</td></tr><tr><td class="al-right">14</td><td><code>test-candidate-discovery.js</code></td><td class="al-right">22</td><td>通过</td></tr><tr><td class="al-right">15</td><td><code>test-discovered-candidate-store.js</code></td><td class="al-right">26</td><td>通过</td></tr><tr><td class="al-right">16</td><td><code>test-auto-discovery-integration.js</code></td><td class="al-right">22</td><td>通过</td></tr><tr><td class="al-right">17</td><td><code>test-auto-discovery-performance.js</code></td><td class="al-right">3</td><td>通过</td></tr><tr><td class="al-right"></td><td><strong>合计</strong></td><td class="al-right"><strong>495</strong></td><td><strong>495/495 通过（用户本机执行）</strong></td></tr></tbody></table></div>
+<p>分组核对：</p>
+<ul><li>既有 13 个套件：422 项。</li><li>自动发现相关 4 个套件：73 项（22 + 26 + 22 + 3）。</li><li>合计：495 项。</li></ul>
+<h3>4.2 结果归属</h3>
+<blockquote><p><strong>495/495 由项目所有者在 Windows PowerShell 中实际执行并通过。</strong> Claude 本轮未能运行测试；不得把该结果表述为 Claude 本轮独立验证。</p></blockquote>
+<h3>4.3 复现命令（PowerShell）</h3>
+<pre class="code" data-lang="powershell"><code>cd D:\Bili-Daily
+$files = @(
+  &quot;test-stats.js&quot;,
+  &quot;test-up-stats.js&quot;,
+  &quot;test-uid.js&quot;,
+  &quot;test-interest-profile.js&quot;,
+  &quot;test-candidate-pool.js&quot;,
+  &quot;test-candidate-quality.js&quot;,
+  &quot;test-candidate-features.js&quot;,
+  &quot;test-candidate-content-import.js&quot;,
+  &quot;test-candidate-store.js&quot;,
+  &quot;test-recommend-core.js&quot;,
+  &quot;test-recommend-quality.js&quot;,
+  &quot;test-recommend-rank.js&quot;,
+  &quot;test-recommend-service.js&quot;,
+  &quot;test-candidate-discovery.js&quot;,
+  &quot;test-discovered-candidate-store.js&quot;,
+  &quot;test-auto-discovery-integration.js&quot;,
+  &quot;test-auto-discovery-performance.js&quot;
+)
+foreach ($file in $files) {
+  node $file
+  &quot;EXIT=$LASTEXITCODE FILE=$file&quot;
+}</code></pre>
+<p>每个套件应以 <code>N/N 通过</code> 结束且退出码为 <code>0</code>；17 个套件合计 495 项。</p>
+<h3>4.4 语法检查</h3>
+<ul><li>项目所有者此前报告：自动发现相关 10 个 JavaScript 文件的 <code>node --check</code> 全部通过。</li><li>本轮未独立重跑 <code>node --check</code>。</li><li>最新修改文件（17:45）未单独补做语法检查；项目所有者报告的 495/495 是修复后的最终运行结果。</li><li><strong>不把“此前语法检查通过”扩大为“本轮所有文件都已检查”。</strong></li></ul>
+<hr>
+<h2 id="sec-6">5. 真实验收证据（用户报告）</h2>
+<p>以下均为<strong>项目所有者报告的实际使用结果</strong>，不是 Claude 现场观察：</p>
+<div class="table-wrap"><table><thead><tr><th>验收项</th><th>结果</th><th>说明</th></tr></thead><tbody><tr><td>Edge 加载未打包扩展</td><td>用户报告通过</td><td>扩展可加载、弹窗可打开</td></tr><tr><td>自动发现从 B 站页面获得陌生 UP 主候选</td><td>用户报告通过</td><td>在真实视频页「相关推荐」中观察到候选</td></tr><tr><td>陌生 UP 主进入推荐列表</td><td>用户报告通过</td><td>候选最终出现在推荐卡中</td></tr><tr><td>观看统计</td><td>用户报告此前已实际运行检查</td><td>记录、汇总、展示可用</td></tr><tr><td>兴趣画像</td><td>用户报告此前已实际运行检查</td><td>7 天画像可用</td></tr><tr><td>推荐功能</td><td>用户报告此前已实际运行检查</td><td>推荐列表可生成</td></tr><tr><td>导入功能</td><td>用户报告此前已实际运行检查</td><td>导入与批次管理可用</td></tr></tbody></table></div>
+<p><strong>证据缺口（如实记录）：</strong></p>
+<ul><li>本轮未附最终 Edge 验收的截图、录屏、时间戳或控制台日志。</li><li>未记录候选数量、推荐排名、观察耗时等可量化现场数据。</li><li>因此本报告只能写“用户报告通过”，不能写“Claude 已验证通过”。</li></ul>
+<hr>
+<h2 id="sec-7">6. 未验证项目与已知限制</h2>
+<h3>6.1 未验证</h3>
+<ol><li>长期稳定性：连续多天、多标签页、长时间挂机下的内存、CPU、存储增长未测量。</li><li>推荐准确率 / 点击率 / 满意度：没有离线指标、A/B 或真实反馈数据；“可信度高/中/低”是工程启发式，不是准确率。</li><li>全面安全审计：未做渗透测试、依赖审计、威胁建模或网络抓包；只做了静态字符串与代码路径核对。</li><li>B 站页面改版兼容性：观察器依赖页面 DOM 结构与链接形态；B 站改版后可能需要维护。</li><li>真实页面性能：性能测试使用合成 DOM 与宽阈值（5 s），不能代表真实页面的流畅度。</li><li><code>chrome.storage.local</code> 容量边界：有 1.5 MB 上限与 300/500 条容量限制，但未在真实大数据下压测。</li><li>多浏览器：只在 Edge 实机使用；Chrome/Firefox 未验证。</li><li>数据导出/恢复流程：本报告给出方案，但<strong>本轮未实际执行导出或恢复演练</strong>。</li><li>最新三个文件（17:45）的单独 <code>node --check</code>：本轮未重跑。</li><li><code>dev-config.js</code> 当前 <code>enabled: true</code>，弹窗会显示开发日期切换入口；未在封版时修改。</li></ol>
+<h3>6.2 已知限制</h3>
+<ul><li>自动发现只读取“页面已经渲染出来”的相关推荐卡片，不自动滚动、不自动点击、不批量打开视频；懒加载或未渲染的卡片不会被发现。</li><li>观察数据有保留期（默认 180 天）和容量上限（默认 300，硬上限 500）；旧数据会被裁剪。</li><li>探索通道的分区相似度存在跨口径近似，统一按低可信度处理。</li><li>标题匹配是无语义的 token/bigram 相似度，不理解内容含义。</li><li>冷启动门槛（50 个有效视频、14 个活跃日等）来自调研与实验值，不是实测最优参数。</li><li>推荐理由只解释“为什么出现”，不保证“推荐一定合适”。</li><li><code>content.js</code> 每秒执行一次元数据同步，长时间停留视频页时的 CPU 影响未测量；这是既有实现，封版未改动。</li><li>未打包扩展的存储与扩展 ID / 加载路径相关；更换加载路径可能导致看不到原数据。</li></ul>
+<hr>
+<h2 id="sec-8">7. 本地数据键与备份注意事项</h2>
+<h3>7.1 数据键</h3>
+<div class="table-wrap"><table><thead><tr><th>键</th><th>内容</th><th>是否包含在扩展目录快照中</th></tr></thead><tbody><tr><td><code>biliDailyRecords</code></td><td>观看记录（按日期、BV 组织）</td><td><strong>否</strong></td></tr><tr><td><code>biliDailyCandidateImports</code></td><td>手动导入的候选批次</td><td><strong>否</strong></td></tr><tr><td><code>biliDailyDiscoveredCandidates</code></td><td>页面观察候选</td><td><strong>否</strong></td></tr><tr><td><code>biliDailyDiscoverySettings</code></td><td>自动发现开关与容量配置</td><td><strong>否</strong></td></tr></tbody></table></div>
+<p><strong>扩展目录备份不等于用户数据备份。</strong> 快照只包含代码、测试和文档；真实数据在 Edge 的 <code>chrome.storage.local</code>（LevelDB）中，不在 <code>D:\Bili-Daily</code> 的任何目录里。</p>
+<h3>7.2 数据导出方案（需用户本人操作）</h3>
+<p>Claude 本轮<strong>没有读取或覆盖</strong>真实存储。建议用户在需要时手动导出：</p>
+<ol><li>打开 Bili Daily 弹窗。</li><li>在弹窗内右键 →「检查」打开 DevTools。</li><li>在 Console 中执行（只读，不修改数据）：</li></ol>
+<pre class="code" data-lang="js"><code>chrome.storage.local.get(null, (all) =&gt; {
+  const text = JSON.stringify(all, null, 2);
+  console.log(text);
+  copy(text); // 复制到剪贴板
+});</code></pre>
+<ol><li>粘贴到本地文本文件，例如 <code>D:\Bili-Daily-data-backup\bili-daily-storage-2026-11-12.json</code>，不要放进扩展目录快照。</li></ol>
+<h3>7.3 数据恢复方案（需用户确认后执行）</h3>
+<p>恢复会覆盖同名键，执行前必须先完成 7.2 的导出并确认文件内容。</p>
+<ol><li>打开弹窗 DevTools Console。</li><li>把备份 JSON 赋给变量：</li></ol>
+<pre class="code" data-lang="js"><code>const backup = { /* 粘贴 7.2 导出的完整 JSON */ };
+chrome.storage.local.set(backup, () =&gt; console.log(&quot;restored&quot;));</code></pre>
+<ol><li>关闭并重新打开弹窗，确认观看记录、导入批次、自动发现候选数量与备份一致。</li><li>若只想恢复部分键，先 <code>delete backup.biliDailyDiscoveredCandidates</code> 等，再执行 <code>set</code>。</li></ol>
+<h3>7.4 Edge 配置目录级备份（可选，风险更高）</h3>
+<p>真实数据通常位于 Edge 用户配置下的扩展 Local Extension Settings 目录，例如 <code>%LOCALAPPDATA%\Microsoft\Edge\User Data\Default\Local Extension Settings\&lt;扩展ID&gt;</code>。这是 LevelDB 目录，<strong>必须在 Edge 完全退出后整目录复制</strong>；不要在运行中复制，也不要用它覆盖正在使用的数据。该方式依赖扩展 ID，恢复后 ID 不一致则无效。普通用户优先使用 7.2/7.3 的显式 JSON 导出。</p>
+<h3>7.5 注意事项</h3>
+<ul><li>卸载扩展、删除 Edge 用户配置、切换 Edge 配置文件都可能使数据不可见。</li><li>不要把 <code>biliDailyRecords</code> 等键写进扩展目录快照，也不要在快照恢复命令中触碰它们。</li><li>恢复代码（第 9 节）与恢复数据（7.3）是两件独立的事，先后顺序建议：先备份数据 → 再恢复代码 → 重载扩展 → 确认数据仍在。</li></ul>
+<hr>
+<h2 id="sec-9">8. 安装、启动与重新加载</h2>
+<h3>8.1 首次安装（Edge）</h3>
+<ol><li>打开 <code>edge://extensions/</code>。</li><li>打开左下角「开发人员模式」。</li><li>点击「加载解压缩的扩展」。</li><li>选择 <code>D:\Bili-Daily</code>（不要选择 <code>snapshots</code> 子目录）。</li><li>固定 Bili Daily 图标，打开弹窗确认四个区域能加载。</li></ol>
+<h3>8.2 日常启动</h3>
+<ul><li>正常打开 B 站视频页即可采集观看记录。</li><li>打开弹窗查看昨日总结、7 天画像和推荐。</li><li>需要自动发现时，在弹窗中点击「开启自动发现」，然后正常浏览视频页；不需要时关闭。</li></ul>
+<h3>8.3 修改代码后重新加载</h3>
+<ol><li>打开 <code>edge://extensions/</code>。</li><li>找到 Bili Daily，点击「重新加载」。</li><li>已打开的 B 站页面需要刷新一次，内容脚本才会用新代码重新注入。</li><li>重新打开弹窗。</li></ol>
+<h3>8.4 开发日期切换</h3>
+<p><code>dev-config.js</code> 当前 <code>enabled: true</code>，弹窗标题栏会显示「昨日 / 今天」开发切换。该选择只影响本次弹窗的展示日期，不写存储，也不影响采集。若不需要，改为 <code>false</code> 后重载；本次封存<strong>未修改</strong>该文件。</p>
+<hr>
+<h2 id="sec-10">9. 版本快照位置与恢复方法</h2>
+<h3>9.1 快照位置</h3>
+<pre class="code" data-lang="text"><code>D:\Bili-Daily\snapshots\personal-mvp-v1.0-2026-11-12\</code></pre>
+<ul><li><code>SNAPSHOT-README.md</code>：快照说明。</li><li><code>SHA256SUMS.txt</code>：94 个文件的 SHA-256 清单（另含说明文件自身，共 95 行）。</li><li>94 个文件 = 41 个根目录文件 + 51 个 <code>docs/</code> 文件 + <code>tools/build-report-html.js</code> + <code>reports/</code> 文件。</li><li>未包含 <code>rollback/</code>（历史过程快照，原目录保持原样）与 <code>chrome.storage.local</code> 数据。</li><li>无 Git 提交、无 Git 标签；快照目录名 <code>personal-mvp-v1.0-2026-11-12</code> 即版本标识。</li></ul>
+<h3>9.2 完整性校验</h3>
+<pre class="code" data-lang="bash"><code>cd /d/Bili-Daily/snapshots/personal-mvp-v1.0-2026-11-12
+sha256sum -c SHA256SUMS.txt</code></pre>
+<p>封存时 Claude 已实际执行，全部返回 <code>OK</code>。</p>
+<h3>9.3 恢复代码到原目录</h3>
+<pre class="code" data-lang="powershell"><code># 建议先关闭所有 Bili Daily 弹窗
+Copy-Item -Path &quot;D:\Bili-Daily\snapshots\personal-mvp-v1.0-2026-11-12\*&quot; `
+          -Destination &quot;D:\Bili-Daily&quot; -Recurse -Force</code></pre>
+<p>然后在 <code>edge://extensions/</code> 点击「重新加载」，刷新 B 站页面。</p>
+<p>说明：</p>
+<ul><li>该命令只覆盖同名代码/文档文件，不删除工作目录中后来新增的文件。</li><li>不触碰 <code>chrome.storage.local</code>。</li><li>不要把扩展改为从快照目录加载；那可能产生新的扩展 ID，导致看不到原有数据。</li></ul>
+<h3>9.4 只回滚运行代码</h3>
+<p>如果只想恢复扩展运行文件，不恢复文档：</p>
+<pre class="code" data-lang="powershell"><code>$snapshot = &quot;D:\Bili-Daily\snapshots\personal-mvp-v1.0-2026-11-12&quot;
+Copy-Item &quot;$snapshot\manifest.json&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\popup.html&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\popup.css&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\popup.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\dev-config.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\storage.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\stats.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\content.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\interest-profile.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\candidate-pool.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\candidate-features.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\candidate-content-import.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\candidate-store.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\candidate-discovery.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\discovered-candidate-store.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\recommend-core.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\recommend-quality.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\recommend-rank.js&quot; &quot;D:\Bili-Daily\&quot; -Force
+Copy-Item &quot;$snapshot\recommend-service.js&quot; &quot;D:\Bili-Daily\&quot; -Force</code></pre>
+<h3>9.5 回滚到更早阶段</h3>
+<p>既有 <code>rollback/</code> 目录未修改，仍可用于阶段回滚。各子目录的 <code>README.md</code> 说明了复制哪些文件。回滚代码同样不会触碰 <code>chrome.storage.local</code>。</p>
+<hr>
+<h2 id="sec-11">10. 后续开发建议</h2>
+<p>按优先级排列，均为<strong>下一版本</strong>的工作，不在本次封存中执行：</p>
+<ol><li><strong>配置 Git 并提交当前冻结版本</strong>：以本快照为基线建立首个提交与标签，之后所有改动可追踪。</li><li><strong>发布卫生</strong>：把 <code>dev-config.js</code> 的 <code>enabled</code> 改为 <code>false</code>，移除开发日期入口；同时把 <code>manifest.json</code> 的 <code>version</code> 从 <code>0.0.1</code> 提升到明确的个人版本号（如 <code>1.0.0</code>）。</li><li><strong>数据导出/恢复 UI</strong>：在弹窗内提供显式导出/导入按钮，避免依赖 DevTools 控制台；导出内容应带 schema 版本与时间戳，导入前预览差异。</li><li><strong>长期稳定性观察</strong>：连续使用 1–2 周，记录候选数量、存储增长、弹窗打开耗时、多标签页下的内存占用；发现异常再优化，不预先重构。</li><li><strong>真实推荐评估</strong>：记录推荐曝光与是否点击/观看，做简单的离线命中率统计；不要把“可信度”当作准确率。</li><li><strong>B 站 DOM 兼容维护</strong>：定期在真实视频页检查相关推荐卡片结构；观察器已尽量避免依赖固定类名，但页面结构变化仍可能降低发现率。</li><li><strong>性能测量</strong>：在真实页面上记录 MutationObserver 回调频率、扫描耗时、写入频率；合成测试的 5 秒阈值只用于发现明显退化。</li><li><strong>数据恢复演练</strong>：在非关键数据上实际走一遍 7.2/7.3，确认 JSON 备份可恢复后再依赖它。</li><li><strong>保持冻结</strong>：任何新功能都应在新的快照/分支上进行；不要直接修改<code>snapshots/personal-mvp-v1.0-2026-11-12</code>。</li></ol>
+<hr>
+<h2 id="sec-12">11. 封存检查清单</h2>
+<h3>11.1 生成最终 HTML</h3>
+<p>本轮命令通道阻断，HTML 未生成。请在 <code>D:\Bili-Daily</code> 下执行现有生成脚本（不要手工复制 HTML）：</p>
+<pre class="code" data-lang="powershell"><code>node tools/build-report-html.js `
+  docs/acceptance/MVP-Sprint/MVP-v1.0-final-acceptance.md `
+  docs/acceptance/MVP-Sprint/MVP-v1.0-final-acceptance.html</code></pre>
+<p>生成后检查：标题、目录、表格、代码块完整；浏览器可离线打开；打印预览无明显溢出。</p>
+<h3>11.2 检查清单</h3>
+<div class="table-wrap"><table><thead><tr><th>检查项</th><th>状态</th></tr></thead><tbody><tr><td>检查 Git 状态并确认未配置 Git</td><td>已完成（<code>fatal: not a git repository</code>）</td></tr><tr><td>未创建错误的 Git 提交/标签</td><td>已完成（无 Git，不伪造标签）</td></tr><tr><td>建立独立完整快照</td><td>已完成</td></tr><tr><td>生成并验证 SHA-256 清单</td><td>已完成（94 个文件全部 <code>OK</code>）</td></tr><tr><td>未覆盖既有 <code>rollback/</code></td><td>已完成</td></tr><tr><td>未删除/清空真实用户数据</td><td>已完成（未访问真实存储）</td></tr><tr><td>未修改运行代码与测试断言</td><td>已完成</td></tr><tr><td>17 个套件 / 495 项基线记录</td><td>已完成（用户本机结果）</td></tr><tr><td>工程审计 10 项</td><td>已完成（静态）</td></tr><tr><td>真实 Edge 验收记录</td><td>已完成（标记“用户报告通过”）</td></tr><tr><td>明确未验证项</td><td>已完成</td></tr><tr><td>最终 Markdown 报告</td><td>已创建</td></tr><tr><td>最终 HTML 报告</td><td><strong>未生成</strong>（本轮命令通道阻断）；命令见 11.1，需本机执行</td></tr><tr><td>更新 <code>docs/acceptance/README.md</code> 索引</td><td>已完成</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-13">12. 最终结论</h2>
+<p>当前版本满足个人自用 MVP 的封存条件：</p>
+<ul><li>核心功能已实现，并由项目所有者在 Edge 中实际使用过；</li><li>17 个测试套件、495 项测试在项目所有者本机全部通过；</li><li>权限范围小，数据只存本地，未发现远程发送路径；</li><li>自动发现默认关闭，来源标识、去重、冲突阻断和导入/观察隔离均有代码与测试覆盖；</li><li>已建立独立、可校验、可恢复的稳定版快照。</li></ul>
+<p>同时必须保留以下限定：</p>
+<ul><li>本报告不代表长期稳定性、推荐准确率或全面安全审计已完成；</li><li>本轮 Claude 未独立运行测试，495/495 是项目所有者本机结果；</li><li>真实 Edge 验收是“用户报告通过”，没有本轮现场日志或截图；</li><li><code>dev-config.js</code> 的开发入口仍为开启状态，建议下一版本关闭。</li></ul>
+<p><strong>封存完成。不新增功能，不进入视觉重构。</strong></p>
+  <div class="footer">
+    <span>Bili Daily · 开发报告</span>
+    <span>Bili Daily 个人自用 MVP v1.0 最终验收归档</span>
+  </div>
+</main>
+</body>
+</html>

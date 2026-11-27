@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bili Daily C2-4B 第 46 项测试失败修复报告</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --accent: #2f5f9e;
+    --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa;
+    --warn-bg: #fff8e6;
+    --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(24, 39, 75, 0.07);
+    padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .meta div + div { margin-top: 2px; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.4; color: #16202e; }
+  h1 {
+    font-size: 27px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 38px 0 14px;
+    padding-left: 12px;
+    border-left: 5px solid var(--accent);
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(47, 95, 158, .35); }
+  a:hover { border-bottom-color: var(--accent); }
+  strong { color: #101826; }
+  code {
+    font-family: Consolas, "Cascadia Code", "SFMono-Regular", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid #e3e8ef;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #9a3412;
+    word-break: break-word;
+  }
+  pre.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #24303f;
+    font-size: 13.5px;
+    white-space: pre;
+  }
+  pre.code[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 9px;
+    font-size: 11px;
+    color: #7b8594;
+    background: #eef1f5;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 7px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eef2f8; color: #1b2a41; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+  tbody tr:hover { background: #f2f6fc; }
+  .al-center { text-align: center; }
+  .al-right { text-align: right; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    border-radius: 4px;
+    color: #5c4a17;
+  }
+  blockquote p { margin: 6px 0; }
+  ul, ol { margin: 10px 0; padding-left: 26px; }
+  li { margin: 5px 0; }
+  li.li-nested { margin-left: 20px; }
+  .toc {
+    margin: 0 0 34px;
+    padding: 16px 22px;
+    background: #f8f9fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 8px; color: #16202e; letter-spacing: .5px; }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 4px 0; break-inside: avoid; }
+  .footer {
+    margin-top: 44px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #8a93a1;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    body { padding: 12px 8px 32px; font-size: 15px; }
+    .page { padding: 24px 18px 32px; border-radius: 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18.5px; }
+    .toc ol { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11.5pt; }
+    .page { max-width: none; border: 0; box-shadow: none; padding: 0; }
+    .toc { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    pre.code, table, blockquote, tr { break-inside: avoid; }
+    a { color: inherit; border: 0; }
+    .footer { color: #777; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Bili Daily C2-4B 第 46 项测试失败修复报告</h1>
+  <div class="meta">
+    <div><strong>来源：</strong>C2-4B-test46-fix-report.md</div>
+    <div><strong>生成时间：</strong>2026/11/11 18:45:56</div>
+  </div>
+  <nav class="toc"><div class="toc-title">目录</div><ol><li><a href="#sec-1">0. 执行状态总表</a></li><li><a href="#sec-2">1. 第 46 项测试</a></li><li><a href="#sec-3">2. 根本原因</a></li><li><a href="#sec-4">3. 修改内容</a></li><li><a href="#sec-5">4. 为什么修复不会破坏既有功能</a></li><li><a href="#sec-6">5. 测试结果</a></li><li><a href="#sec-7">6. 回滚方法</a></li><li><a href="#sec-8">7. 当前结论</a></li></ol></nav>
+<ul><li>日期：2026-11-11</li><li>项目路径：<code>D:\Bili-Daily</code></li><li>阶段：C2-4B 修复轮（不进入 C3）</li><li>失败项：<code>test-candidate-content-import.js</code> 第 46 项</li><li>判定：<strong>业务实现缺陷</strong>（不是排序不稳定，也不是测试预期错误）</li><li>结论：<strong>修复完成，<code>241/241</code> 全部通过</strong>（60 项新增 + 181 项回归），<code>node --check</code> 退出码 0</li></ul>
+<hr>
+<h2 id="sec-1">0. 执行状态总表</h2>
+<blockquote><p>本报告严格区分“已执行 / 未执行 / 静态审查”。<strong>未执行的命令不会写成通过。</strong></p></blockquote>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>状态</th><th>说明</th></tr></thead><tbody><tr><td>阅读第 46 项测试</td><td>已执行</td><td>源码定位到第 825–830 行</td></tr><tr><td>阅读失败上下文</td><td>已执行</td><td><code>C2-4B-test-debug.txt</code>（UTF-16LE，已解码）</td></tr><tr><td>定位根因</td><td>已执行</td><td>静态追踪 <code>parseVideo</code> → <code>resolveVideo</code> → <code>buildCandidateEvidence</code></td></tr><tr><td>代码修复</td><td>已执行</td><td>仅改 <code>candidate-content-import.js</code></td></tr><tr><td>回滚快照</td><td>已执行</td><td><code>rollback/before-c2-4b-test46-fix/</code>（2 个源文件 + README）</td></tr><tr><td><code>node --check</code>（修改文件）</td><td>已执行</td><td>退出码 <code>0</code></td></tr><tr><td><code>node test-candidate-content-import.js</code></td><td>已执行</td><td><code>60/60 通过</code>，退出码 <code>0</code></td></tr><tr><td>原有 181 项回归（7 个测试文件）</td><td>已执行</td><td><code>181/181 通过</code>，逐个退出码 <code>0</code></td></tr><tr><td>单文件 HTML 报告</td><td>已执行</td><td><code>C2-4B-test46-fix-report.html</code></td></tr></tbody></table></div>
+<p>执行说明：本会话早段 Bash 安全分类通道持续不可用（原文见下），导致首轮无法执行任何<code>node</code> 命令；该通道在后续恢复，上述结果均为<strong>通道恢复后真实执行</strong>所得，非推断。</p>
+<blockquote><p>claude-opus-5-5 is temporarily unavailable (connection failed), so auto mode cannot determine the safety of Bash right now.</p></blockquote>
+<p>旁证：故障期间只读命令（<code>ls</code>、<code>grep</code>、<code>cat</code>）与 <code>node -v</code>（<code>v24.19.0</code>）仍可执行，说明 Node 环境与项目本身没有问题。</p>
+<hr>
+<h2 id="sec-2">1. 第 46 项测试</h2>
+<h3>1.1 测试名称与源码</h3>
+<p><strong>名称</strong>：<code>46. 结果可 JSON 序列化往返</code></p>
+<pre class="code" data-lang="js"><code>test(&quot;46. 结果可 JSON 序列化往返&quot;, () =&gt; {
+  const sidecar = freshSidecar();
+  const assessment = CI.assessImportedContentCandidates(sidecar, {}, { now: NOW });
+  assert.deepEqual(JSON.parse(JSON.stringify(sidecar)), sidecar);
+  assert.deepEqual(JSON.parse(JSON.stringify(assessment)), assessment);
+});</code></pre>
+<p>该测试验证的是 C2-4B 的一个硬性设计约束：产出的证据结构必须能被浏览器存储（<code>chrome.storage.local</code>）原样序列化并读回，读回结果与内存对象<strong>完全深等</strong>。</p>
+<h3>1.2 expected 与 actual 的差异</h3>
+<p>失败发生在第 828 行（<code>node:assert</code> 报告位置 <code>test-candidate-content-import.js:828:10</code>）。按 Node 的 <code>+ actual / - expected</code> 标记，差异为：</p>
+<pre class="code"><code>   url: '',
+-  urlState: undefined      ← expected（原始 sidecar）中存在该键
+   }                          ← actual（JSON 往返后）中该键消失</code></pre>
+<ul><li><strong>expected</strong>：<code>sidecar.candidates[*].videos[*]</code> 含键 <code>urlState</code>，值为 <code>undefined</code>。</li><li><strong>actual</strong>：<code>JSON.parse(JSON.stringify(sidecar))</code> 中该键<strong>不存在</strong>。</li></ul>
+<p>原因在于 <code>JSON.stringify</code> 的规范行为：对象自有属性若值为 <code>undefined</code>，会被直接省略。于是“往返”丢掉了这个键，<code>deepEqual</code> 判为不等。</p>
+<p><code>C2-4B-test-debug.txt</code> 中三个视频（<code>BV1xx411c7mD</code> / <code>BV1yy411c7mD</code> / <code>BV1zz411c7mD</code>）逐个重复了同一行差异，与上述判断一致。</p>
+<hr>
+<h2 id="sec-3">2. 根本原因</h2>
+<p>调用链：</p>
+<pre class="code"><code>parseVideo(raw, ...)        → 返回 { bvid, title, partition, tags, url, urlState }   ✅ 有 urlState
+   ↓ variants.push(video)
+resolveVideo(bvid, variants) → 返回 { bvid, title, partition, tags, url,
+                                      titleState, partitionState, titleTruncated,
+                                      status, conflictFields }                      ❌ 漏了 urlState
+   ↓
+buildCandidateEvidence(...)  → videos.map(v =&gt; ({ ..., urlState: v.urlState, ... }))  → undefined</code></pre>
+<p><code>candidate-content-import.js</code> 中 <code>urlState</code> 只出现两处：</p>
+<div class="table-wrap"><table><thead><tr><th>行</th><th>位置</th><th>作用</th></tr></thead><tbody><tr><td>512</td><td><code>parseVideo</code> 返回对象</td><td>写入 <code>urlResult.state</code></td></tr><tr><td>1081</td><td><code>buildCandidateEvidence</code> 映射</td><td>读取 <code>video.urlState</code></td></tr></tbody></table></div>
+<p>中间的<strong>合并层 <code>resolveVideo()</code> 既没有透传也没有重算 <code>urlState</code></strong>。因此只要走“解析 → 去重合并 → 构建证据”这条主链路（即所有正常调用），sidecar 里的每个视频都会得到 <code>urlState: undefined</code>。</p>
+<h3>2.1 为什么判定为业务实现缺陷</h3>
+<p><code>docs/acceptance/C2-4B/C2-4B-import-report.md</code> 第 2.4 节明确规定 sidecar 视频结构为：</p>
+<pre class="code" data-lang="js"><code>bvid, title, partition, tags, url, urlState,
+titleState, partitionState, titleTruncated,
+status: &quot;usable&quot; | &quot;metadata-conflict&quot; | &quot;uid-conflict&quot;,
+conflictFields</code></pre>
+<p>其中 <code>urlState</code> 的取值域为 <code>&quot;missing&quot; | &quot;accepted&quot; | &quot;rejected&quot; | &quot;short-link&quot; | &quot;not-video-url&quot;</code>。</p>
+<p>也就是说：<strong>sidecar 缺少 <code>urlState</code> 本身就是违反已确认设计规范的</strong>，第 46 项只是把这个问题暴露出来的那个断言。按“优先只改业务实现”的要求，正确修法是补上实现，而不是放宽测试。</p>
+<p>同时排除的另外三种可能：</p>
+<div class="table-wrap"><table><thead><tr><th>可能性</th><th>结论</th><th>依据</th></tr></thead><tbody><tr><td>排序不稳定</td><td>排除</td><td>差异是“键存在 vs 键不存在”，与顺序无关；第 47 项（顺序无关）此前通过</td></tr><tr><td>数据结构差异</td><td>排除</td><td>表现为 <code>undefined</code> 键被序列化丢弃，不是值的类型问题</td></tr><tr><td>测试预期错误</td><td>排除</td><td>预期与设计文档 2.4 节一致；往返稳定是存储层的前提</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-4">3. 修改内容</h2>
+<p>只修改了一个文件：<code>candidate-content-import.js</code>。<strong>测试文件未改动</strong>（不删测试、不跳断言、不改预期）。</p>
+<h3>3.1 新增：确定性的 URL 状态合并规则</h3>
+<pre class="code" data-lang="js"><code>const URL_STATE_PRECEDENCE = [
+  &quot;accepted&quot;,
+  &quot;short-link&quot;,
+  &quot;not-video-url&quot;,
+  &quot;rejected&quot;,
+  &quot;missing&quot;
+];
+
+function resolveUrlState(url, states) {
+  if (url) return &quot;accepted&quot;;
+  for (let i = 0; i &lt; URL_STATE_PRECEDENCE.length; i += 1) {
+    if (states.has(URL_STATE_PRECEDENCE[i])) return URL_STATE_PRECEDENCE[i];
+  }
+  return &quot;missing&quot;;
+}</code></pre>
+<p>规则语义：</p>
+<ol><li>只要任一变体提供了合法 URL（此时 <code>url</code> 已是去参数的规范地址），合并结果为 <code>accepted</code>；</li><li>否则按固定优先级取第一个实际出现过的状态，保证<strong>与输入顺序无关</strong>（复用第 47 项的约束）；</li><li>全部未提供才是 <code>missing</code>。</li></ol>
+<h3>3.2 修改：<code>resolveVideo()</code> 收集并输出 <code>urlState</code></h3>
+<pre class="code" data-lang="diff"><code>   const tags = new Set();
++  const urlStates = new Set();
+   let url = &quot;&quot;;
+@@
+     if (variant.url &amp;&amp; (!url || variant.url &lt; url)) url = variant.url;
++    if (variant.urlState) urlStates.add(variant.urlState);
+@@
+     tags: Array.from(tags).sort(compareText).slice(0, limits.maxTags),
+     url,
++    urlState: resolveUrlState(url, urlStates),
+     titleState: title ? &quot;available&quot; : &quot;missing&quot;,</code></pre>
+<p><code>buildCandidateEvidence()</code>（第 1081 行）无需改动，它现在拿到的是确定值而不是 <code>undefined</code>。</p>
+<h3>3.3 未改动的文件</h3>
+<p><code>interest-profile.js</code>、<code>candidate-pool.js</code>、<code>candidate-features.js</code>、<code>stats.js</code>、<code>storage.js</code>、<code>content.js</code>、<code>manifest.json</code>、<code>popup.*</code> 全部未改。未新增权限、未接入网络、未触碰任何观看记录。</p>
+<hr>
+<h2 id="sec-5">4. 为什么修复不会破坏既有功能</h2>
+<ol><li><strong>只补字段，不改判定</strong>：<code>urlState</code> 是描述性字段，不参与 <code>usableVideoCount</code>、<code>partitionCoverage</code>、<code>titleCoverage</code>、<code>contentStatus</code> 或 <code>eligibleForExploration</code> 的任何计算。内容的取舍仍完全由 <code>computeContentFeatures()</code> 依据 <code>status</code> / <code>title</code> / <code>partition</code> 决定。</li><li><strong>不改变去重与冲突语义</strong>：<code>title</code> / <code>partition</code> / <code>tags</code> / <code>url</code> 的合并逻辑一行未动，<code>metadata-conflict</code>、<code>uid-conflict</code> 的判定条件未变。</li><li><strong>确定性</strong>：新增规则只用固定优先级表与集合，不含时间、随机数或输入顺序依赖，与第 47 项“输入顺序变化不改变输出”一致。</li><li><strong>不修改入参</strong>：仍在合并阶段新建对象，不写回调用方传入的导入文档（第 45 项要求深度冻结仍可处理）。</li><li><strong>跨模块隔离</strong>：全项目只有 <code>test-candidate-content-import.js</code> 引用本模块，其余 7 个测试文件不依赖它，因此既有 181 项的行为不受影响。</li><li><strong>值域不扩大</strong>：新增输出值只可能落在设计文档规定的 5 个枚举内，不会引入新状态。</li></ol>
+<hr>
+<h2 id="sec-6">5. 测试结果</h2>
+<p>以下全部为真实执行所得，命令均在 <code>D:\Bili-Daily</code> 下运行。</p>
+<h3>5.1 修复后关键项</h3>
+<pre class="code"><code>PASS  46. 结果可 JSON 序列化往返
+PASS  47. 结果确定：输入顺序变化不改变输出
+60/60 通过</code></pre>
+<p>第 46 项由 <strong>FAIL → PASS</strong>，第 47 项（顺序无关）保持 PASS，说明新增的<code>urlState</code> 合并规则确实是确定性的。</p>
+<h3>5.2 C2-4B 新增 60 项</h3>
+<p><code>60/60 通过</code>，退出码 <code>0</code>。</p>
+<h3>5.3 原有 181 项回归</h3>
+<div class="table-wrap"><table><thead><tr><th>测试文件</th><th>通过数</th><th>退出码</th></tr></thead><tbody><tr><td><code>test-candidate-features.js</code></td><td>38/38</td><td>0</td></tr><tr><td><code>test-candidate-quality.js</code></td><td>28/28</td><td>0</td></tr><tr><td><code>test-candidate-pool.js</code></td><td>33/33</td><td>0</td></tr><tr><td><code>test-interest-profile.js</code></td><td>24/24</td><td>0</td></tr><tr><td><code>test-uid.js</code></td><td>21/21</td><td>0</td></tr><tr><td><code>test-up-stats.js</code></td><td>17/17</td><td>0</td></tr><tr><td><code>test-stats.js</code></td><td>20/20</td><td>0</td></tr><tr><td><strong>合计</strong></td><td><strong>181/181</strong></td><td>全部 0</td></tr></tbody></table></div>
+<p>合计：<code>60 + 181 = 241/241</code>。</p>
+<h3>5.4 语法检查</h3>
+<pre class="code"><code>node --check candidate-content-import.js
+CHECK_EXIT=0</code></pre>
+<h3>5.5 禁止修改的文件</h3>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>最后修改时间</th><th>结论</th></tr></thead><tbody><tr><td><code>interest-profile.js</code></td><td>2026-11-10 23:17</td><td>本轮未改</td></tr><tr><td><code>candidate-pool.js</code></td><td>2026-11-11 09:42</td><td>本轮未改</td></tr><tr><td><code>candidate-features.js</code></td><td>2026-11-11 13:55</td><td>本轮未改</td></tr><tr><td><code>stats.js</code></td><td>2026-11-10 23:14</td><td>本轮未改</td></tr><tr><td><code>storage.js</code></td><td>2026-11-10 21:51</td><td>本轮未改</td></tr><tr><td><code>content.js</code></td><td>2026-11-10 21:58</td><td>本轮未改</td></tr><tr><td><code>manifest.json</code></td><td>2026-11-10 16:58</td><td>本轮未改</td></tr><tr><td><code>popup.js</code> / <code>popup.html</code> / <code>popup.css</code></td><td>2026-11-10 21:35 – 21:55</td><td>本轮未改</td></tr></tbody></table></div>
+<p>所有条目时间均早于本轮修改（2026-11-11 15:55:39），未被触碰。</p>
+<p>字节级校验：<code>interest-profile.js</code>、<code>candidate-pool.js</code>、<code>candidate-features.js</code>、<code>stats.js</code>、<code>storage.js</code>、<code>content.js</code>、<code>manifest.json</code> 与 <code>rollback/before-c2-4b-import/</code> 中的 C2-4B 前快照逐文件 <code>diff -q</code> 结果均为相同。<code>popup.js</code> / <code>popup.html</code> / <code>popup.css</code> 的最后修改时间仍为2026-11-10，早于本轮，未参与本次修改。</p>
+<p><code>test-candidate-content-import.js</code> 亦未修改（最后修改时间仍为 2026-11-11 14:53，即 C2-4B 原始状态）。</p>
+<hr>
+<h2 id="sec-7">6. 回滚方法</h2>
+<p>快照目录：<code>rollback/before-c2-4b-test46-fix/</code></p>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>大小</th><th>说明</th></tr></thead><tbody><tr><td><code>candidate-content-import.js</code></td><td>63580 字节</td><td>修复前原样副本</td></tr><tr><td><code>test-candidate-content-import.js</code></td><td>41487 字节</td><td>本次未修改，一并留档</td></tr><tr><td><code>README.md</code></td><td>—</td><td>快照说明与恢复命令</td></tr></tbody></table></div>
+<p>恢复（PowerShell，在 <code>D:\Bili-Daily</code> 下）：</p>
+<pre class="code" data-lang="powershell"><code>Copy-Item rollback\before-c2-4b-test46-fix\candidate-content-import.js . -Force
+Copy-Item rollback\before-c2-4b-test46-fix\test-candidate-content-import.js . -Force</code></pre>
+<p>恢复后 <code>node test-candidate-content-import.js</code> 应回到修复前的 <code>59/60</code>（第 46 项失败）状态。</p>
+<hr>
+<h2 id="sec-8">7. 当前结论</h2>
+<ul><li>第 46 项失败的原因已定位并修复，修改范围仅 <code>candidate-content-import.js</code> 一个文件。</li><li>修复后：C2-4B <code>60/60</code>、既有回归 <code>181/181</code>、合计 <code>241/241</code>，<code>node --check</code> 退出码 <code>0</code>。</li><li>修复前该断言暴露的是 sidecar 缺 <code>urlState</code> 的规范违反，现在该字段按设计文档 2.4 节输出。</li><li>第 46 项之外未发现新的失败项，允许的 59 项测试语义未变。</li><li>附注：C2-4B 的验收完成判定属于用户决定，本报告只陈述测试事实，不自行宣布阶段验收。</li><li>停在本阶段，不进入 C3。</li></ul>
+  <div class="footer">
+    <span>Bili Daily · 开发报告</span>
+    <span>Bili Daily C2-4B 第 46 项测试失败修复报告</span>
+  </div>
+</main>
+</body>
+</html>

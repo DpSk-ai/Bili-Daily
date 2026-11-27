@@ -1,0 +1,161 @@
+                # Python 脚本使用
+
+from rembg import remove, new_session
+from PIL import Image
+
+# 加载动漫模型（一次加载，多次使用）
+session = new_session('isnet-anime')
+
+# 处理图像
+input_image = Image.open('neo-images/NEO.png')
+output_image = remove(input_image, session=session)
+output_image.save('output/NEO_transparent.png')
+
+print('✓ 背景移除完成！')</code></pre>
+                </div>
+            </div>
+
+            <!-- 目录结构 -->
+            <div class="section">
+                <h2>📁 项目目录结构</h2>
+
+                <p>安装完成后的推荐目录结构：</p>
+                <div class="code-block">D:\Bili-Daily\
+├── rembg_env\                    # 虚拟环境（自动创建）
+│   ├── Scripts\
+│   │   ├── Activate.ps1
+│   │   └── rembg.exe
+│   ├── Lib\
+│   └── pyvenv.cfg
+│
+├── neo-images\                   # 原始 NEO 角色图像
+│   ├── NEO_01.png
+│   ├── NEO_02.png
+│   └── ...
+│
+├── output\                       # 生成的透明背景 PNG
+│   ├── NEO_01_transparent.png
+│   ├── NEO_02_transparent.png
+│   └── ...
+│
+├── verify_rembg.py               # 验收测试脚本
+├── process_neo.py                # 批量处理脚本（示例）
+│
+└── docs\
+    ├── rembg-installation-plan.md
+    ├── rembg-manual-installation.md
+    ├── rembg-installation-guide.html  ← 你在这里
+    └── rembg-acceptance-report.md</div>
+
+                <h3>创建目录</h3>
+                <div class="code-block">mkdir neo-images, output</div>
+            </div>
+
+            <!-- 常见问题 -->
+            <div class="section">
+                <h2>❓ 常见问题排查</h2>
+
+                <table class="table">
+                    <tr>
+                        <th>问题</th>
+                        <th>原因</th>
+                        <th>解决方案</th>
+                    </tr>
+                    <tr>
+                        <td><code>py</code> 命令无法找到</td>
+                        <td>Python 未添加到 PATH</td>
+                        <td>使用完整路径：<code>C:\Users\39496\AppData\Local\Python\pythoncore-3.15-64\python.exe</code></td>
+                    </tr>
+                    <tr>
+                        <td>激活脚本拒绝执行</td>
+                        <td>PowerShell 执行策略限制</td>
+                        <td><code>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>rembg: command not found</code></td>
+                        <td>虚拟环境未激活</td>
+                        <td>运行：<code>.\rembg_env\Scripts\Activate.ps1</code></td>
+                    </tr>
+                    <tr>
+                        <td>网络下载失败</td>
+                        <td>网络连接问题</td>
+                        <td>检查网络或使用国内镜像源</td>
+                    </tr>
+                    <tr>
+                        <td>模型加载超时</td>
+                        <td>首次下载需要时间</td>
+                        <td>正常现象，请耐心等待 1-5 分钟</td>
+                    </tr>
+                    <tr>
+                        <td>内存不足错误</td>
+                        <td>系统可用内存 &lt; 512 MB</td>
+                        <td>关闭其他应用，逐个处理图像</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 性能参数 -->
+            <div class="section">
+                <h2>⚡ 性能和优化</h2>
+
+                <h3>isnet-anime 模型特性</h3>
+                <table class="table">
+                    <tr>
+                        <th>特性</th>
+                        <th>值</th>
+                    </tr>
+                    <tr>
+                        <td>模型类型</td>
+                        <td>ONNX 神经网络</td>
+                    </tr>
+                    <tr>
+                        <td>输入分辨率</td>
+                        <td>1024×1024（推荐）</td>
+                    </tr>
+                    <tr>
+                        <td>输出精度</td>
+                        <td>高精度动漫人物分割</td>
+                    </tr>
+                    <tr>
+                        <td>推理时间（CPU）</td>
+                        <td>5-10 秒/张</td>
+                    </tr>
+                    <tr>
+                        <td>推理时间（GPU）</td>
+                        <td>1-2 秒/张 <span class="warning">（可选）</span></td>
+                    </tr>
+                    <tr>
+                        <td>内存占用</td>
+                        <td>~300-500 MB</td>
+                    </tr>
+                </table>
+
+                <h3>优化建议</h3>
+                <ul style="margin: 15px 0; margin-left: 20px;">
+                    <li><strong>批量处理</strong>：一次加载模型，处理多个图像提高效率</li>
+                    <li><strong>输入大小</strong>：1024×1024 最优，更大的图像会消耗更多内存和时间</li>
+                    <li><strong>输出格式</strong>：PNG 格式保留透明度信息</li>
+                    <li><strong>后处理</strong>：可使用 Pillow 进行调整和压缩</li>
+                </ul>
+            </div>
+
+            <!-- GPU 加速 -->
+            <div class="section">
+                <h2>🔧 可选：GPU 加速（CUDA）</h2>
+
+                <div class="warning-box" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 5px;">
+                    <strong>⚠️ 当前使用 CPU 模式</strong><br>
+                    如果 CPU 处理速度不满足需求，可后续配置 GPU 加速。需要：
+                    <ul style="margin: 10px 0; margin-left: 20px;">
+                        <li>NVIDIA CUDA 11.8 或更高版本</li>
+                        <li>cuDNN 8.x</li>
+                        <li>onnxruntime-gpu 依赖</li>
+                    </ul>
+                </div>
+
+                <h3>启用 GPU 支持</h3>
+                <div class="code-block"># 卸载 CPU 版本
+python -m pip uninstall onnxruntime -y
+
+# 安装 GPU 版本
+python -m pip install "rembg[gpu,cli]"

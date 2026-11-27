@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bili Daily C3-0 验收报告：推荐算法架构与离线评测设计</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --accent: #2f5f9e;
+    --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa;
+    --warn-bg: #fff8e6;
+    --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(24, 39, 75, 0.07);
+    padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .meta div + div { margin-top: 2px; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.4; color: #16202e; }
+  h1 {
+    font-size: 27px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 38px 0 14px;
+    padding-left: 12px;
+    border-left: 5px solid var(--accent);
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(47, 95, 158, .35); }
+  a:hover { border-bottom-color: var(--accent); }
+  strong { color: #101826; }
+  code {
+    font-family: Consolas, "Cascadia Code", "SFMono-Regular", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid #e3e8ef;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #9a3412;
+    word-break: break-word;
+  }
+  pre.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #24303f;
+    font-size: 13.5px;
+    white-space: pre;
+  }
+  pre.code[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 9px;
+    font-size: 11px;
+    color: #7b8594;
+    background: #eef1f5;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 7px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eef2f8; color: #1b2a41; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+  tbody tr:hover { background: #f2f6fc; }
+  .al-center { text-align: center; }
+  .al-right { text-align: right; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    border-radius: 4px;
+    color: #5c4a17;
+  }
+  blockquote p { margin: 6px 0; }
+  ul, ol { margin: 10px 0; padding-left: 26px; }
+  li { margin: 5px 0; }
+  li.li-nested { margin-left: 20px; }
+  .toc {
+    margin: 0 0 34px;
+    padding: 16px 22px;
+    background: #f8f9fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 8px; color: #16202e; letter-spacing: .5px; }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 4px 0; break-inside: avoid; }
+  .footer {
+    margin-top: 44px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #8a93a1;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    body { padding: 12px 8px 32px; font-size: 15px; }
+    .page { padding: 24px 18px 32px; border-radius: 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18.5px; }
+    .toc ol { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11.5pt; }
+    .page { max-width: none; border: 0; box-shadow: none; padding: 0; }
+    .toc { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    pre.code, table, blockquote, tr { break-inside: avoid; }
+    a { color: inherit; border: 0; }
+    .footer { color: #777; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Bili Daily C3-0 验收报告：推荐算法架构与离线评测设计</h1>
+  <div class="meta">
+    <div><strong>来源：</strong>C3-0-research-report.md</div>
+    <div><strong>生成时间：</strong>2026/11/11 18:06:14</div>
+  </div>
+  <nav class="toc"><div class="toc-title">目录</div><ol><li><a href="#sec-1">0. 执行状态总表</a></li><li><a href="#sec-2">1. 实际读取的代码与文档</a></li><li><a href="#sec-3">2. 接口核对结论（与草案不一致之处已标出）</a></li><li><a href="#sec-4">3. 本阶段产出</a></li><li><a href="#sec-5">4. 设计要点摘要（详见架构文档）</a></li><li><a href="#sec-6">5. 实际执行的命令与结果</a></li><li><a href="#sec-7">6. 未执行项及原因</a></li><li><a href="#sec-8">7. 已知限制与风险</a></li><li><a href="#sec-9">8. 回滚方式</a></li><li><a href="#sec-10">9. 文件归档与 HTML 生成情况</a></li><li><a href="#sec-11">10. 下一步（C3-1）的输入需求</a></li><li><a href="#sec-12">11. 声明</a></li></ol></nav>
+<ul><li>日期：2026-11-11</li><li>阶段：C3-0（纯设计，<strong>未写任何推荐排序代码</strong>）</li><li>架构文档：<code>docs/design/C3-0-recommendation-architecture.md</code></li><li>结论：设计完成；推荐效果、性能、离线指标<strong>全部未测</strong>，不构成任何效果结论</li></ul>
+<hr>
+<h2 id="sec-1">0. 执行状态总表</h2>
+<blockquote><p>本报告严格区分“已执行 / 未执行 / 设计推导”。</p></blockquote>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>状态</th><th>证据</th></tr></thead><tbody><tr><td>阅读五个运行时模块源码</td><td>已执行</td><td>§1.1 逐文件列出</td></tr><tr><td>阅读既有设计与验收文档</td><td>已执行</td><td>§1.2</td></tr><tr><td>核对模块真实输入/输出/字段/单位</td><td>已执行</td><td>§2</td></tr><tr><td>现有 241 项测试基线复跑</td><td><strong>已执行</strong></td><td>§5：8 个文件全绿，退出码全 0</td></tr><tr><td>生成架构文档</td><td>已执行</td><td><code>docs/design/C3-0-recommendation-architecture.md</code></td></tr><tr><td>生成本报告与单文件 HTML</td><td>已执行</td><td>§9</td></tr><tr><td>修改任何 JavaScript 业务模块</td><td><strong>未执行（禁止）</strong></td><td>本阶段零代码改动</td></tr><tr><td>新增推荐排序代码</td><td><strong>未执行（禁止）</strong></td><td>C3-1 才开始</td></tr><tr><td>性能实测</td><td><strong>未执行</strong></td><td>无实现可测；不声称任何毫秒数</td></tr><tr><td>离线评测</td><td><strong>未执行</strong></td><td>无实现、且真实数据不足（L3 不可执行）</td></tr><tr><td>读取 <code>chrome.storage.local</code> 真实记录</td><td><strong>未执行</strong></td><td>本阶段不接触浏览器存储</td></tr><tr><td>修改 manifest / popup / content / storage</td><td><strong>未执行（禁止）</strong></td><td>零改动</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-2">1. 实际读取的代码与文档</h2>
+<h3>1.1 代码（逐个读取，非凭记忆）</h3>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>读取重点</th></tr></thead><tbody><tr><td><code>stats.js</code></td><td>记录结构、<code>EFFECTIVE_WATCH_MS</code>、<code>aggregateUps</code> 输出字段、日期键规则</td></tr><tr><td><code>interest-profile.js</code></td><td><code>buildInterestProfile</code> 输出、窗口键 <code>&quot;7d&quot;/&quot;30d&quot;</code>、<code>partitions[].share</code> 分母、<code>partitionCoverage</code> 结构</td></tr><tr><td><code>candidate-pool.js</code></td><td>候选对象、<code>evidence</code> 全部字段、<code>assessCandidate</code> 的资格规则、<code>filterEligibleCandidates</code> 分组</td></tr><tr><td><code>candidate-features.js</code></td><td><code>partitionFeatures</code>（<code>shareOfIdentified</code>）、<code>titleFeatures.tokens[]</code>、覆盖率口径、<code>featureStatus</code> 阈值、<code>extractTitleBigrams</code></td></tr><tr><td><code>candidate-content-import.js</code></td><td>sidecar 结构、<code>partitionCounts[].shareOfImportedVideos</code>、<code>titleTokens[]</code>、<code>promotion.eligibleForExploration</code>、<code>onlineVerified</code> 恒 false</td></tr><tr><td><code>manifest.json</code></td><td>权限仅 <code>storage</code>；content script 匹配范围</td></tr></tbody></table></div>
+<h3>1.2 文档</h3>
+<ul><li><code>docs/research/recommendation-algorithm-research.md</code>（C2-0 调研）</li><li><code>docs/design/C2-4A-candidate-source-review.md</code>（重点：§5.5、§6.2–6.5 两轴模型与双通道）</li><li><code>docs/design/C2-1-candidate-pool.md</code></li><li><code>docs/acceptance/C2-3/C2-3-feature-report.md</code>（目录级阅读 + 字段章节）</li><li><code>docs/acceptance/C2-4B/C2-4B-import-report.md</code>（schema 章节）</li><li><code>docs/acceptance/README.md</code>（报告规范）</li></ul>
+<h3>1.3 测试文件</h3>
+<ul><li><code>test-candidate-content-import.js</code>（60 项，逐条标题）</li><li>其余 7 个测试文件按执行结果核对（见 §5）</li></ul>
+<hr>
+<h2 id="sec-3">2. 接口核对结论（与草案不一致之处已标出）</h2>
+<h3>2.1 已确认的真实接口</h3>
+<div class="table-wrap"><table><thead><tr><th>模块</th><th>入口</th><th>关键输出</th></tr></thead><tbody><tr><td>C1</td><td><code>buildInterestProfile</code></td><td><code>windows[&quot;7d&quot;/&quot;30d&quot;]</code>：<code>partitions[]</code>、<code>ups[]</code>、<code>partitionCoverage</code>、<code>status</code></td></tr><tr><td>C2-1</td><td><code>buildFromRecords</code> / <code>buildFromManual</code> / <code>mergePools</code></td><td><code>{upUid, upName, sources, watchedBefore, candidateType, uidVerified, evidence}</code></td></tr><tr><td>C2-2</td><td><code>assessCandidate</code> / <code>filterEligibleCandidates</code></td><td><code>{eligibility, reasons[], identityEvidence, freshness}</code></td></tr><tr><td>C2-3</td><td><code>buildCandidateFeatures</code> / <code>extractTitleBigrams</code></td><td><code>partitionFeatures</code>、<code>titleFeatures</code>、覆盖率、<code>featureStatus</code></td></tr><tr><td>C2-4B</td><td><code>parse…</code> / <code>build…Evidence</code> / <code>assess…</code></td><td>sidecar + 评估（<code>eligibleForExploration</code>、<code>contentStatus</code>）</td></tr></tbody></table></div>
+<h3>2.2 三处必须修正的设计假设</h3>
+<h4>（1）C1 不提供标题特征</h4>
+<p><code>interest-profile.js</code> 只统计分区、UP 主、时段、覆盖率，<strong>没有任何标题/词元输出</strong>。因此 C3 的用户文本向量<strong>不能</strong>从 C1 直接取，必须由 C3 从观看记录现算，并复用 C2-3 的 <code>extractTitleBigrams</code> 保证同一归一化口径。<code>C2-0</code> 调研第 7.2 节“全部来自 C1 画像，不新建统计口径”在文本维度上不成立，本设计已改为“分区来自 C1、文本由 C3 现算”。</p>
+<h4>（2）覆盖率单位不一致</h4>
+<ul><li>C2-3：<code>partitionCoverage</code> 是 <strong>watch-ms</strong> 口径，<code>titleCoverage</code> 是 <strong>video-count</strong> 口径；</li><li>C2-4B：两者都是 <strong>video-count</strong> 口径；</li><li>阈值也不同（C2-3 0.5 / C2-4B 0.6）。</li></ul>
+<p>设计约束：阈值与覆盖率<strong>不跨模块比较</strong>，每个 lane 用自己模块的覆盖率。</p>
+<h4>（3）分区占比分母不一致</h4>
+<ul><li>C1 <code>partitions[].share</code> 分母含“未知”桶；</li><li>C2-3 <code>shareOfIdentified</code> 分母只含已识别分区（watch-ms）；</li><li>C2-4B <code>shareOfImportedVideos</code> 分母是可用视频数（video-count）。</li></ul>
+<p>设计约束：用户向量不用 C1 的原始 <code>share</code>，而是按 C1 的视频选择口径自行按<code>decay × duration</code> 累加；exploration lane 的分区余弦属于<strong>跨口径近似</strong>，结果 <code>confidence</code> 降为 <code>low</code>，且不得与 main lane 的分数直接比较。</p>
+<h3>2.3 身份与可信度语义（复核结果）</h3>
+<p>以下字段在代码中写死，C3 不得改写或覆盖：</p>
+<ul><li><code>onlineVerified: false</code>（C2-1、C2-2、C2-4B 三处均如此）；</li><li><code>uidVerified</code> 只代表“格式合法 + 本地观看记录中出现过”；</li><li><code>promotion.eligibleForExploration</code> 只代表技术准入；</li><li><code>featureStatus: ready</code> 只代表技术数据条件达标。</li></ul>
+<hr>
+<h2 id="sec-4">3. 本阶段产出</h2>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>类型</th><th>说明</th></tr></thead><tbody><tr><td><code>docs/design/C3-0-recommendation-architecture.md</code></td><td>新建</td><td>架构主文档（12 章 + 2 附录）</td></tr><tr><td><code>docs/acceptance/C3-0/C3-0-research-report.md</code></td><td>新建</td><td>本报告</td></tr><tr><td><code>docs/acceptance/C3-0/C3-0-research-report.html</code></td><td>新建</td><td>由 Markdown 生成</td></tr><tr><td><code>docs/acceptance/README.md</code></td><td>修改</td><td>第 5 节索引新增两行</td></tr></tbody></table></div>
+<p><strong>未修改任何 <code>.js</code> 文件</strong>，未新建 <code>.js</code> 文件。</p>
+<hr>
+<h2 id="sec-5">4. 设计要点摘要（详见架构文档）</h2>
+<ol><li><strong>两个特征空间</strong>：分区余弦与标题 TF-IDF 余弦分别计算后再加权，<strong>不拼成一条向量</strong>；</li><li><strong>TF</strong>：次线性 <code>1 + ln(tf)</code>；<strong>IDF</strong>：<code>ln((N+1)/(df+1)) + 1</code>，<code>df</code> 为候选级；</li><li><strong>IDF 语料</strong>：两条 lane 各自独立，且只取候选文档；离线评测时用切分点之前冻结；</li><li><strong>零分母</strong>：返回 <code>null</code> 而非 0，权重在可用组件上重新归一化；</li><li><strong>未知分区</strong>：不入维度，只进覆盖率分母；</li><li><strong>时间衰减</strong>：<code>0.5^(ageDays/14)</code>，<code>now</code> 必须注入，未来时间按 0 处理；</li><li><strong>MMR</strong>：<code>λ·rel − (1−λ)·maxSim</code>，λ=0.7 仅实验值，只在 Top2K 上运行；</li><li><strong>双通道</strong>：独立打分、独立配额、固定位置合并、同 UID 以 main 优先且不合并原始分；</li><li><strong>解释</strong>：每条理由必须携带字段路径与取值，禁止认证/准确率类措辞；</li><li><strong>评测</strong>：B0/B1/M1–M4 六方案 + 七类指标 + 时间切分 + 四层分离。</li></ol>
+<hr>
+<h2 id="sec-6">5. 实际执行的命令与结果</h2>
+<h3>5.1 既有测试基线复跑（本阶段未改代码，用于证明零回归）</h3>
+<pre class="code"><code>test-candidate-content-import.js -&gt; 60/60 通过  exit=0
+test-candidate-features.js       -&gt; 38/38 通过  exit=0
+test-candidate-quality.js        -&gt; 28/28 通过  exit=0
+test-candidate-pool.js           -&gt; 33/33 通过  exit=0
+test-interest-profile.js         -&gt; 24/24 通过  exit=0
+test-uid.js                      -&gt; 21/21 通过  exit=0
+test-up-stats.js                 -&gt; 17/17 通过  exit=0
+test-stats.js                    -&gt; 20/20 通过  exit=0</code></pre>
+<p>合计 <strong>241/241</strong>，<code>ANY_FAIL=0</code>。</p>
+<h3>5.2 新增测试</h3>
+<p><strong>0 项</strong>。本阶段没有新增可执行代码，因此没有新增测试。不为文档编写“假装通过”的测试。</p>
+<h3>5.3 语法检查</h3>
+<p><strong>未单独执行 <code>node --check</code></strong>：本阶段未修改任何 <code>.js</code> 文件。上述 8 个测试文件在 Node 中成功加载并执行了全部模块（<code>candidate-content-import.js</code>加载时还会校验 <code>stats.js</code> / <code>candidate-features.js</code> 依赖），因此现有文件的语法与依赖完整性已被间接验证。</p>
+<h3>5.4 其他命令</h3>
+<ul><li><code>diff -q</code>：确认本阶段未改动模块（上一轮修复的 <code>candidate-content-import.js</code>仍为修复后版本，未被本轮触碰）。</li></ul>
+<hr>
+<h2 id="sec-7">6. 未执行项及原因</h2>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>原因</th></tr></thead><tbody><tr><td>推荐代码 / 测试</td><td>C3-0 明确禁止编写正式排序代码</td></tr><tr><td>性能基准</td><td>无实现可测；且设计文档明确“测出前不声称毫秒数”</td></tr><tr><td>L3 真实历史离线评测</td><td>无实现 + 真实数据只有 4 个有效视频（C1 验收记录），无统计意义</td></tr><tr><td>L4 用户反馈评测</td><td>无 UI、无反馈机制</td></tr><tr><td>读取真实 <code>biliDailyRecords</code></td><td>C3-0 不接触浏览器存储</td></tr><tr><td>TF-IDF 在真实数据上的行为</td><td>无实现</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-8">7. 已知限制与风险</h2>
+<ol><li><strong>数据量</strong>：4 个有效视频、1 个有效观看日，当前只能验证“流程与降级”，不能验证效果；</li><li><strong>无负反馈</strong>：离线指标只能衡量“与未来观看一致程度”，不是准确率；</li><li><strong>跨口径近似</strong>：exploration lane 的用户侧是 watch-ms、候选侧是 video-count，数学可算但语义近似，已设计 <code>confidence: low</code> 降级；</li><li><strong>参数无依据</strong>：权重、半衰期 14 天、λ=0.7、IDF 阈值 20、可靠性阈值 0.8/0.25全部是先验值，需 C3-4 实验后再定；</li><li><strong>标题特征稀疏</strong>：中文 bigram 在短标题上几乎没有信号，且无同义/语义能力；</li><li><strong>分区粒度</strong>：<code>tname</code> / <code>tname_v2</code> 层级混用会污染向量；</li><li><strong>性能未知</strong>：分片方案与 50 ms 预算都未实测；</li><li><strong>产品文案风险</strong>：exploration lane 最容易被误读为“插件发现的陌生 UP 主”。</li></ol>
+<hr>
+<h2 id="sec-9">8. 回滚方式</h2>
+<p>本阶段<strong>只新增/修改文档与索引</strong>，且未覆盖任何历史报告：</p>
+<ul><li>新增文件：<code>docs/design/C3-0-recommendation-architecture.md</code>、<code>docs/acceptance/C3-0/</code>（本报告与 HTML）；</li><li>修改文件：<code>docs/acceptance/README.md</code>（仅新增两行索引）。</li></ul>
+<p>如需回滚（PowerShell，在 <code>D:\Bili-Daily</code> 下）：</p>
+<pre class="code" data-lang="powershell"><code>Remove-Item docs\design\C3-0-recommendation-architecture.md
+Remove-Item docs\acceptance\C3-0 -Recurse
+# README.md 第 5 节中 C3-0 的两行索引手动删除即可</code></pre>
+<p>无需恢复任何 <code>.js</code> 文件，因为本阶段没有改动代码。</p>
+<hr>
+<h2 id="sec-10">9. 文件归档与 HTML 生成情况</h2>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>状态</th></tr></thead><tbody><tr><td><code>docs/design/C3-0-recommendation-architecture.md</code></td><td>已生成</td></tr><tr><td><code>docs/acceptance/C3-0/C3-0-research-report.md</code></td><td>已生成</td></tr><tr><td><code>docs/acceptance/C3-0/C3-0-research-report.html</code></td><td>由 <code>tools/build-report-html.js</code> 从 Markdown 生成，单文件、内联 CSS、无 CDN</td></tr></tbody></table></div>
+<p>生成命令（如 HTML 缺失需本机补跑）：</p>
+<pre class="code" data-lang="powershell"><code>cd D:\Bili-Daily
+node tools/build-report-html.js `
+  docs/acceptance/C3-0/C3-0-research-report.md `
+  docs/acceptance/C3-0/C3-0-research-report.html</code></pre>
+<hr>
+<h2 id="sec-11">10. 下一步（C3-1）的输入需求</h2>
+<p>进入 C3-1 前需要确认：</p>
+<ol><li>默认推荐条数 <code>K = 5</code>；</li><li>exploration lane 默认配额（K=5 时为 1 条，占 20%）；</li><li>是否接受 <code>insufficient</code> 阶段完全不出现“猜你喜欢”字样；</li><li>半衰期初值 14 天、λ 初值 0.7 是否作为实验起点（不视为最优）；</li><li>是否允许 C3-1 新增 <code>recommend-core.js</code> 与对应测试文件（不改现有模块）。</li></ol>
+<p>C3-1 交付物（设计已定，尚未实现）：</p>
+<ul><li><code>recommend-core.js</code>：向量构建、TF-IDF、余弦、零分母处理；</li><li><code>test-recommend-core.js</code>：手算 fixture、缺数据降级、口径断言；</li><li>验收门槛：C3-1 单测全绿 + 既有 241 项仍全绿 + 无 <code>NaN</code>/<code>Infinity</code> 输出。</li></ul>
+<hr>
+<h2 id="sec-12">11. 声明</h2>
+<ul><li>本报告没有编造任何测试数值、性能数值或推荐效果；</li><li>§5 的 241/241 是本阶段真实执行结果；</li><li>其余未执行项均已在 §0、§6 明确标注；</li><li>本阶段结束，等待审核，<strong>不进入 C3-1</strong>。</li></ul>
+  <div class="footer">
+    <span>Bili Daily · 开发报告</span>
+    <span>Bili Daily C3-0 验收报告：推荐算法架构与离线评测设计</span>
+  </div>
+</main>
+</body>
+</html>

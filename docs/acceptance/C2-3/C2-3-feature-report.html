@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bili Daily C2-3 验收报告：候选 UP 主内容特征建模</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --accent: #2f5f9e;
+    --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa;
+    --warn-bg: #fff8e6;
+    --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(24, 39, 75, 0.07);
+    padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .meta div + div { margin-top: 2px; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.4; color: #16202e; }
+  h1 {
+    font-size: 27px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 38px 0 14px;
+    padding-left: 12px;
+    border-left: 5px solid var(--accent);
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(47, 95, 158, .35); }
+  a:hover { border-bottom-color: var(--accent); }
+  strong { color: #101826; }
+  code {
+    font-family: Consolas, "Cascadia Code", "SFMono-Regular", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid #e3e8ef;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #9a3412;
+    word-break: break-word;
+  }
+  pre.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #24303f;
+    font-size: 13.5px;
+    white-space: pre;
+  }
+  pre.code[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 9px;
+    font-size: 11px;
+    color: #7b8594;
+    background: #eef1f5;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 7px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eef2f8; color: #1b2a41; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+  tbody tr:hover { background: #f2f6fc; }
+  .al-center { text-align: center; }
+  .al-right { text-align: right; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    border-radius: 4px;
+    color: #5c4a17;
+  }
+  blockquote p { margin: 6px 0; }
+  ul, ol { margin: 10px 0; padding-left: 26px; }
+  li { margin: 5px 0; }
+  li.li-nested { margin-left: 20px; }
+  .toc {
+    margin: 0 0 34px;
+    padding: 16px 22px;
+    background: #f8f9fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 8px; color: #16202e; letter-spacing: .5px; }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 4px 0; break-inside: avoid; }
+  .footer {
+    margin-top: 44px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #8a93a1;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    body { padding: 12px 8px 32px; font-size: 15px; }
+    .page { padding: 24px 18px 32px; border-radius: 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18.5px; }
+    .toc ol { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11.5pt; }
+    .page { max-width: none; border: 0; box-shadow: none; padding: 0; }
+    .toc { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    pre.code, table, blockquote, tr { break-inside: avoid; }
+    a { color: inherit; border: 0; }
+    .footer { color: #777; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Bili Daily C2-3 验收报告：候选 UP 主内容特征建模</h1>
+  <div class="meta">
+    <div><strong>来源：</strong>C2-3-feature-report.md</div>
+    <div><strong>生成时间：</strong>2026/11/11 14:01:01</div>
+  </div>
+  <nav class="toc"><div class="toc-title">目录</div><ol><li><a href="#sec-1">0. 验收状态总览</a></li><li><a href="#sec-2">1. 实际修改及新建文件</a></li><li><a href="#sec-3">2. 对外 API 与数据结构</a></li><li><a href="#sec-4">3. 分区特征的计算方式</a></li><li><a href="#sec-5">4. 标题 bigram 规则</a></li><li><a href="#sec-6">5. UID 与 BV 的身份 / 去重规则</a></li><li><a href="#sec-7">6. 同 BV 多 UID 冲突处理</a></li><li><a href="#sec-8">7. 新增手动候选的处理</a></li><li><a href="#sec-9">8. 覆盖率、质量字段与 featureStatus 定义</a></li><li><a href="#sec-10">9. 新增测试数量及结果</a></li><li><a href="#sec-11">10. 原有 143 项回归结果</a></li><li><a href="#sec-12">11. 语法检查结果</a></li><li><a href="#sec-13">12. PowerShell 验收命令</a></li><li><a href="#sec-14">13. 性能与稳定性观察</a></li><li><a href="#sec-15">14. 回滚方式</a></li><li><a href="#sec-16">15. 已知限制与 C3 的数据需求</a></li><li><a href="#sec-17">结语</a></li></ol></nav>
+<ul><li><strong>阶段</strong>：C2-3（纯函数特征提取 + 测试，不含排序、UI、存储与新增采集）</li><li><strong>日期</strong>：2026-11-11</li><li><strong>模块</strong>：<code>candidate-features.js</code>（新增）、<code>test-candidate-features.js</code>（新增）</li><li><strong>依赖</strong>：必须先加载 <code>stats.js</code></li><li><strong>运行环境</strong>：Windows 11，Node.js <code>v24.19.0</code></li></ul>
+<hr>
+<h2 id="sec-1">0. 验收状态总览</h2>
+<div class="table-wrap"><table><thead><tr><th>项目</th><th>状态</th><th>说明</th></tr></thead><tbody><tr><td>新增特征模块</td><td>已执行</td><td><code>candidate-features.js</code> 已创建，纯函数、无外部依赖</td></tr><tr><td>新增测试 38 项</td><td>已执行</td><td><code>node test-candidate-features.js</code>，38/38 通过，退出码 0</td></tr><tr><td>原有 143 项回归</td><td>已执行</td><td>六个既有套件全部通过，退出码均为 0</td></tr><tr><td>语法检查</td><td>已执行</td><td>15 个 JS 文件 <code>node --check</code> 通过；<code>manifest.json</code> 可解析</td></tr><tr><td>既有文件未被改动</td><td>已执行</td><td>与回滚快照 SHA-256 对比，10/10 一致</td></tr><tr><td>合成数据性能观察</td><td>已执行</td><td>27,000 条记录 / 600 候选，5 次运行；<strong>非真实数据压测</strong></td></tr><tr><td>真实 <code>chrome.storage.local</code> 数据</td><td>未执行（本阶段禁止）</td><td>未读取、未写入任何真实数据</td></tr><tr><td>正式排序 / UI / C3</td><td>未执行（范围外）</td><td>本阶段在报告后停止，等待审核</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-2">1. 实际修改及新建文件</h2>
+<h3>1.1 新建</h3>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th class="al-right">行数</th><th>说明</th></tr></thead><tbody><tr><td><code>candidate-features.js</code></td><td class="al-right">843</td><td>候选 UP 主分区 / 标题特征提取，纯函数模块</td></tr><tr><td><code>test-candidate-features.js</code></td><td class="al-right">809</td><td>38 个用例，覆盖身份、去重、冲突、覆盖率、边界与稳定性</td></tr><tr><td><code>docs/acceptance/C2-3/C2-3-feature-report.md</code></td><td class="al-right">—</td><td>本报告（Markdown 源文件）</td></tr><tr><td><code>docs/acceptance/C2-3/C2-3-feature-report.html</code></td><td class="al-right">—</td><td>本报告的单文件 HTML 版本（CSS 内联，可直接打开 / 打印）</td></tr><tr><td><code>rollback/before-c2-3-features/</code></td><td class="al-right">—</td><td>C2-3 开始前的 10 个既有文件快照 + <code>README.md</code></td></tr></tbody></table></div>
+<h3>1.2 修改</h3>
+<p><strong>无。</strong> 本阶段没有修改任何既有运行时模块或既有测试文件。</p>
+<p>与 <code>rollback/before-c2-3-features/</code> 逐文件比对 SHA-256，以下 10 个文件全部一致：</p>
+<p><code>candidate-pool.js</code>、<code>stats.js</code>、<code>interest-profile.js</code>、<code>storage.js</code>、<code>test-candidate-pool.js</code>、<code>test-candidate-quality.js</code>、<code>test-interest-profile.js</code>、<code>test-stats.js</code>、<code>test-uid.js</code>、<code>test-up-stats.js</code>。</p>
+<p><strong>明确未修改</strong>：<code>manifest.json</code> 权限、<code>popup.html</code>、<code>popup.css</code>、<code>popup.js</code>、<code>content.js</code> 采集逻辑、<code>storage.js</code> 持久化结构；未写入 <code>chrome.storage.local</code>；未新增页面 DOM 采集；未连接 B 站 API；未读取 Cookie 或登录信息；未引入任何依赖。</p>
+<blockquote><p>说明：<code>candidate-features.js</code> 源码中只在注释里出现 <code>chrome.*</code> 字样，运行代码不含 <code>chrome.*</code>、DOM、<code>fetch</code>、<code>XMLHttpRequest</code>、<code>Cookie</code>、<code>eval</code>、<code>new Function</code>、<code>require</code> 或动态 <code>import</code>。</p></blockquote>
+<hr>
+<h2 id="sec-3">2. 对外 API 与数据结构</h2>
+<h3>2.1 导出</h3>
+<p>模块挂载在 <code>globalThis.BiliDailyCandidateFeatures</code>，整体冻结：</p>
+<pre class="code" data-lang="js"><code>globalThis.BiliDailyCandidateFeatures = Object.freeze({
+  UNKNOWN_PARTITION,        // &quot;未知&quot;
+  DEFAULT_THRESHOLDS,       // 默认阈值（冻结对象）
+  buildCandidateFeatures,   // 主入口
+  extractTitleBigrams       // 按默认上限提取标题 bigram 的纯辅助函数
+});</code></pre>
+<h3>2.2 主入口</h3>
+<pre class="code" data-lang="js"><code>buildCandidateFeatures(records, pool, options)</code></pre>
+<ul><li><code>records</code>：<code>biliDailyRecords</code> 根结构 <code>{ version, days }</code>，或直接的“日期 → 记录表”映射。</li><li><code>pool</code>：支持三种形态：</li><li class="li-nested">候选数组；</li><li class="li-nested">C2-1 / C2-2 的 <code>{ candidates: [...] }</code>；</li><li class="li-nested">C2-2 <code>filterEligibleCandidates</code> 的 <code>{ eligible, review, excluded }</code>，元素可以是 <code>{ candidate, assessment }</code> 或裸候选对象。</li><li><code>options.thresholds</code>：覆盖 <code>DEFAULT_THRESHOLDS</code>。只接受有限、非负数值；覆盖率阈值钳制在 <code>0..1</code>，数量 / 长度上限取整且不小于 1。</li><li><code>options</code> 中无法识别的键被忽略，不产生副作用。</li></ul>
+<h3>2.3 顶层返回</h3>
+<pre class="code" data-lang="js"><code>{
+  status: &quot;ok&quot; | &quot;empty&quot;,
+  reason: &quot;&quot; | &quot;no-candidates&quot;,
+  candidates: [ /* 每个候选一条，按 UID 稳定排序 */ ],
+  summary: {
+    total, ready, partial, missing,
+    withPartitionFeatures, withTitleFeatures,
+    observedVideoCount, observedWatchMs,
+    conflictVideoCount,          // 跨候选的唯一冲突视频数
+    conflictedCandidates
+  },
+  diagnostics: { /* 见 2.5 */ },
+  thresholds: { /* 实际生效的阈值 */ },
+  unknownPartition: &quot;未知&quot;,
+  note: &quot;featureStatus 只描述技术数据条件……&quot;
+}</code></pre>
+<p>空候选池返回 <code>status: &quot;empty&quot;</code>、<code>reason: &quot;no-candidates&quot;</code>，其余结构完整，不抛异常。</p>
+<h3>2.4 单候选字段</h3>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>类型</th><th>含义</th></tr></thead><tbody><tr><td><code>upUid</code></td><td>string</td><td>规范化后的 UID，唯一身份键</td></tr><tr><td><code>upName</code></td><td>string</td><td>候选昵称，仅展示，不参与身份判定</td></tr><tr><td><code>candidateType</code></td><td>string</td><td>原样继承候选池的 <code>candidateType</code>（如 <code>new</code> / <code>returning</code>）</td></tr><tr><td><code>sources</code></td><td>string[]</td><td>来源并集，顺序为 <code>watched</code>、<code>manual</code>、其余按码点排序</td></tr><tr><td><code>hasUidConflict</code></td><td>boolean</td><td>该 UID 是否涉及同 BV 多 UID 冲突</td></tr><tr><td><code>partitionFeatures</code></td><td>object</td><td>分区明细、占比向量、未知桶与时长</td></tr><tr><td><code>titleFeatures</code></td><td>object</td><td>词元、词频、文档数、截断与溢出标记</td></tr><tr><td><code>partitionCoverage</code></td><td>number \</td><td>null</td></tr><tr><td><code>partitionCoverageState</code></td><td>string</td><td><code>&quot;available&quot;</code> \</td></tr><tr><td><code>partitionCoverageBasis</code></td><td>string</td><td>固定 <code>&quot;watch-ms&quot;</code></td></tr><tr><td><code>titleCoverage</code></td><td>number \</td><td>null</td></tr><tr><td><code>titleCoverageState</code></td><td>string</td><td><code>&quot;available&quot;</code> \</td></tr><tr><td><code>titleCoverageBasis</code></td><td>string</td><td>固定 <code>&quot;video-count&quot;</code></td></tr><tr><td><code>observedVideoCount</code></td><td>number</td><td>去重、无冲突、<code>watchMs &gt; 0</code> 的视频数</td></tr><tr><td><code>featureVideoCount</code></td><td>number</td><td>至少有分区或标题特征之一的视频数</td></tr><tr><td><code>observedWatchMs</code></td><td>number</td><td>参与统计的真实观看时长（毫秒）</td></tr><tr><td><code>missingPartitionCount</code></td><td>number</td><td>分区缺失 / 非法而进入未知桶的视频数</td></tr><tr><td><code>missingTitleCount</code></td><td>number</td><td>标题缺失或归一化后为空的视频数</td></tr><tr><td><code>tokenlessTitleCount</code></td><td>number</td><td>有标题但无法生成任何 bigram 的视频数</td></tr><tr><td><code>conflictVideoCount</code></td><td>number</td><td>该 UID 涉及的冲突视频数（不计入特征）</td></tr><tr><td><code>featureStatus</code></td><td>string</td><td><code>ready</code> \</td></tr><tr><td><code>featureReasons</code></td><td>object[]</td><td>结构化原因 <code>{ code, level, message }</code></td></tr></tbody></table></div>
+<p><code>partitionFeatures</code>：</p>
+<pre class="code" data-lang="js"><code>{
+  partitions: [
+    { name, watchMs, videoCount, shareOfIdentified, shareOfAll }
+  ],
+  vector: { [分区名]: shareOfIdentified },   // 已识别分区内部归一化
+  unknown: null | {
+    name: &quot;未知&quot;, watchMs, videoCount,
+    shareOfIdentified: 0, shareOfAll
+  },
+  identifiedWatchMs,
+  unknownWatchMs,
+  identifiedVideoCount,
+  unknownVideoCount
+}</code></pre>
+<p><code>titleFeatures</code>：</p>
+<pre class="code" data-lang="js"><code>{
+  tokens: [{ token, count, documentCount }],
+  uniqueTokenCount, totalTokenCount, documentCount,
+  truncatedTitleCount, tokenlessTitleCount,
+  tokenMapOverflow, outputTruncated
+}</code></pre>
+<h3>2.5 诊断字段</h3>
+<pre class="code" data-lang="js"><code>{
+  inputKind,                 // &quot;root&quot; | &quot;days&quot; | &quot;empty&quot;
+  daysScanned, daysInvalid,
+  recordsScanned, recordsInvalid, recordsWithoutBvid,
+  videosScanned,             // 同 BV 合并后的视频数
+  uidConflictVideos,         // 唯一冲突 BV 数
+  candidatesInPool, candidatesInvalid, duplicateCandidates,
+  candidatesWithoutObservedVideos,
+  conflictVideosSeen,        // 扫描时遇到的冲突视频数
+  uidlessVideos, zeroWatchVideos
+}</code></pre>
+<p>所有输出均为普通对象 / 数组 / 数字 / 字符串 / 布尔 / <code>null</code>，可 <code>JSON.stringify</code> 往返；分区名即使为 <code>&quot;__proto__&quot;</code> 也不会污染原型（使用 <code>Object.defineProperty</code> 写入向量）。</p>
+<hr>
+<h2 id="sec-4">3. 分区特征的计算方式</h2>
+<h3>3.1 数据来源与去重</h3>
+<ol><li>通过 <code>stats.cleanRecord</code> 清洗每条记录，复用既有的字段规则、UID 规范化与<code>watchMs</code> 安全转换。</li><li>通过 <code>stats.mergeByBvid</code> 合并同一 BV 的同日重复、跨天记录与多分 P：<strong>一个 BV 只算一个视频，<code>watchMs</code> 累加</strong>。</li><li>记录没有 BV 时无法可靠去重，跳过并计入 <code>diagnostics.recordsWithoutBvid</code>，不把多条无 BV 记录合并成一个虚构视频。</li></ol>
+<h3>3.2 时长加权</h3>
+<ul><li>每个已识别分区累加真实 <code>watchMs</code>，不使用 <code>videoDuration</code>。</li><li><code>shareOfIdentified = 分区 watchMs / identifiedWatchMs</code>，即“已识别分区内部”的占比，已识别分区之和为 1。</li><li><code>shareOfAll = 分区 watchMs / observedWatchMs</code>，分母包含未知分区，用于观察该分区在全部真实观看中的份额。</li><li>分区列表按 <code>watchMs</code> 降序、再按分区名字符串升序排序，结果确定。</li></ul>
+<h3>3.3 未知分区</h3>
+<p>以下情况统一归入 <code>&quot;未知&quot;</code> 桶，<strong>真实时长仍保留在分母中</strong>：</p>
+<ul><li>非字符串；</li><li>空字符串或仅空白；</li><li>字面值 <code>&quot;未知&quot;</code>；</li><li>含控制字符、零宽字符或双向格式字符；</li><li>按 Unicode 码点超过 <code>maxPartitionLength</code>（默认 64）；</li><li>为防御异常大输入，UTF-16 长度超过 <code>maxPartitionLength * 2</code> 时提前拒绝。</li></ul>
+<p>未知桶的 <code>shareOfIdentified</code> 固定为 0（它不属于已识别分区），<code>shareOfAll = unknownWatchMs / observedWatchMs</code>。</p>
+<h3>3.4 覆盖率</h3>
+<pre class="code" data-lang="text"><code>partitionCoverage = identifiedWatchMs / observedWatchMs</code></pre>
+<ul><li>分母是<strong>全部真实观看时长</strong>，包含未知分区，不会把缺失数据悄悄排除。</li><li>无任何有效观看时长时为 <code>null</code>，同时 <code>partitionCoverageState = &quot;no-data&quot;</code>；<strong>不会伪装成 0% 或 100%</strong>。</li><li><code>missingPartitionCount</code> 记录进入未知桶的视频数。</li></ul>
+<hr>
+<h2 id="sec-5">4. 标题 bigram 规则</h2>
+<h3>4.1 确定性归一化</h3>
+<p><code>normalizeTitle</code> 的顺序固定：</p>
+<ol><li>非字符串 → 视为空标题，不猜测；</li><li>原始字符串超过 <code>maxTitleRawLength</code>（1000 个 UTF-16 单元）时截断，并避免截断在 UTF-16 代理对中间；</li><li>尝试 <code>NFKC</code>（如全角 <code>ＡＩ</code> → <code>AI</code>）；环境不支持时保留原文，不丢标题；</li><li>控制字符、零宽字符、双向控制符替换为<strong>空格</strong>（不是删除），避免两侧字符粘连；</li><li>去除首尾空白，Latin 字母统一小写；</li><li>按 Unicode 码点截断到 <code>maxTitleLength</code>（默认 200）。</li></ol>
+<h3>4.2 分词与 bigram</h3>
+<ul><li>词内字符定义为 Unicode <code>\p{L}</code>（字母）、<code>\p{N}</code>（数字）、<code>\p{M}</code>（组合附加符）。</li><li>其余字符（标点、空白、emoji、符号）一律作为分隔符。</li><li>对每个连续段，取相邻两字符组成 bigram；<strong>不跨标点或空白拼接</strong>。</li><li>单字符段不产生 bigram（例如标题只有“猫”时词元为空）。</li><li>中文、英文、数字、混合标题使用同一规则，不做额外分词或词典匹配。</li></ul>
+<p>示例：</p>
+<div class="table-wrap"><table><thead><tr><th>标题</th><th>生成的 bigram（节选）</th></tr></thead><tbody><tr><td><code>科技前沿</code></td><td><code>科技</code>、<code>技前</code>、<code>前沿</code></td></tr><tr><td><code>AI 2026</code></td><td><code>ai</code>、<code>20</code>、<code>02</code>、<code>26</code></td></tr><tr><td><code>Hello,世界!</code></td><td><code>he</code>、<code>el</code>、<code>ll</code>、<code>lo</code>、<code>世界</code></td></tr></tbody></table></div>
+<p>英文按字符 bigram 处理，不切分为完整单词；这是本阶段的明确口径。</p>
+<h3>4.3 词频与文档数</h3>
+<ul><li>同一视频内重复出现的词元：<code>count</code> 累计，<code>documentCount</code> 只加 1。</li><li>同一 BV 的重复观看、跨天观看、多分 P 已在 3.1 合并为一个视频，因此不会因重复观看而重复累计词元或文档数。</li><li>每个候选最多保留 <code>maxUniqueTokens</code>（默认 4000）个不同词元；达到上限后不再接收新词元，已有词元继续累计，并置 <code>tokenMapOverflow = true</code>。</li><li>输出最多 <code>maxOutputTokens</code>（默认 2000）个词元，按 <code>count</code> 降序、再按词元字符串升序排序；被截断时 <code>outputTruncated = true</code>。</li><li><code>uniqueTokenCount</code> 是词表实际大小；<code>totalTokenCount</code> 是所有词元出现次数之和；<code>documentCount</code> 是至少生成一个 bigram 的视频数。</li></ul>
+<h3>4.4 标题覆盖率</h3>
+<pre class="code" data-lang="text"><code>titleCoverage = titledVideoCount / observedVideoCount</code></pre>
+<ul><li>分母是参与统计的视频数（去重、无冲突、<code>watchMs &gt; 0</code>）。</li><li>分子只统计<strong>至少能生成一个 bigram</strong> 的视频；缺失标题、归一化后为空、只有单字符而无 bigram 的视频都不计入分子。</li><li>无任何参与统计的视频时，覆盖率为 <code>null</code>，状态为 <code>&quot;no-data&quot;</code>。</li></ul>
+<hr>
+<h2 id="sec-6">5. UID 与 BV 的身份 / 去重规则</h2>
+<h3>5.1 只认 UID</h3>
+<ul><li>所有归属只使用规范化后的 <code>upUid</code>，复用 <code>stats.cleanRecord</code> 的规则：正整数、安全整数、统一为字符串。</li><li><strong>昵称不参与身份判定</strong>：同一 UID 改名仍合并；不同 UID 同名严格分开。</li><li>缺失 UID 的旧记录<strong>不会</strong>凭昵称并入任何候选；它们只计入<code>diagnostics.uidlessVideos</code>。这是有意的保守策略，避免把旧记录错误归属。</li></ul>
+<h3>5.2 BV 去重</h3>
+<ul><li>同一 BV 无论出现在同一天多次、跨天、不同分 P，均通过 <code>mergeByBvid</code>合并为一个视频，<code>watchMs</code> 累加。</li><li>重复观看不会让 <code>observedVideoCount</code>、<code>documentCount</code> 或词频虚假膨胀。</li><li><code>observedVideoCount</code> 只统计 <code>watchMs &gt; 0</code> 的视频；<code>watchMs &lt;= 0</code> 的记录进入 <code>diagnostics.zeroWatchVideos</code>，不参与特征统计。</li></ul>
+<h3>5.3 与 C2-1 / C2-2 的关系</h3>
+<ul><li>本模块<strong>不修改</strong> C2-1 的 <code>watchedVideoCount</code>、<code>watchedWatchMs</code> 等观看计数。</li><li>本模块<strong>不修改</strong> C2-2 的 <code>eligible</code> / <code>review</code> / <code>excluded</code> 结论。</li><li><code>featureStatus</code> 与 C2-2 资格是正交维度：特征不完整不会自动降级 C2-2 资格，C2-2 的冲突结论也不会被本模块改写。</li><li>测试 32 明确验证：冲突候选的 C2-2 资格结论在特征计算前后保持一致。</li></ul>
+<hr>
+<h2 id="sec-7">6. 同 BV 多 UID 冲突处理</h2>
+<h3>6.1 独立检测</h3>
+<p>本模块不信任 C2-1 的“先出现者”归属。扫描记录时单独建立<code>BV → Set(UID)</code>，只要同一 BV 出现 ≥2 个不同有效 UID，就把该 BV 标记为冲突视频。</p>
+<h3>6.2 保守策略</h3>
+<p>对冲突 BV：</p>
+<ul><li><strong>不计入任何一方的分区特征</strong>；</li><li><strong>不计入任何一方的标题特征</strong>；</li><li><strong>不计入任何一方的 <code>observedVideoCount</code> / <code>observedWatchMs</code></strong>；</li><li>每个涉及该 BV 的池内候选，<code>conflictVideoCount</code> 加 1，<code>hasUidConflict = true</code>；</li><li>只保留在诊断中：<code>diagnostics.uidConflictVideos</code>（唯一 BV 数）、<code>diagnostics.conflictVideosSeen</code>（扫描到的冲突视频数）；</li><li>跨候选汇总的 <code>summary.conflictVideoCount</code> 使用<strong>唯一冲突 BV 数</strong>，避免同一 BV 涉及两个 UID 时被重复计算。</li></ul>
+<h3>6.3 为什么整体排除</h3>
+<p>同一 BV 被记录成两个 UID 时，无法从本地数据判断谁是真实 UP 主。把该视频分配给任意一方都会制造虚假内容特征；整体排除只会损失少量数据，但能保证“所有进入特征的分区 / 标题都来自可信归属”。冲突本身仍可诊断，不会静默消失。</p>
+<p>身份冲突只产生 <code>level: &quot;info&quot;</code> 的原因 <code>uid-conflicts-excluded</code>，<strong>不会</strong>单独把 <code>featureStatus</code> 降级，也不会改变 C2-2 资格。</p>
+<hr>
+<h2 id="sec-8">7. 新增手动候选的处理</h2>
+<p>只有 UID、没有本地观看历史的手动候选（典型为 <code>candidateType: &quot;new&quot;</code>）：</p>
+<div class="table-wrap"><table><thead><tr><th>行为</th><th>结果</th></tr></thead><tbody><tr><td>保留候选</td><td>是，只要 UID 规范化后有效</td></tr><tr><td>分区特征</td><td>不虚构；<code>partitions = []</code>、<code>vector = {}</code>、<code>unknown = null</code></td></tr><tr><td>标题特征</td><td>不虚构；<code>tokens = []</code>、各计数为 0</td></tr><tr><td><code>observedVideoCount</code> / <code>observedWatchMs</code></td><td>0</td></tr><tr><td><code>partitionCoverage</code> / <code>titleCoverage</code></td><td><code>null</code>，状态 <code>&quot;no-data&quot;</code></td></tr><tr><td><code>featureStatus</code></td><td><code>&quot;missing&quot;</code></td></tr><tr><td>原因</td><td><code>no-observed-videos</code>（warning），明确说明本地没有可提取内容</td></tr><tr><td>删除 / 标记不存在</td><td>否</td></tr><tr><td>默认 eligible</td><td>否；本模块不改变 C2-2 资格</td></tr><tr><td><code>candidateType</code></td><td>原样保留，不强行改成 <code>returning</code></td></tr></tbody></table></div>
+<p>无效 UID 或非对象候选计入 <code>diagnostics.candidatesInvalid</code>，不生成候选；重复 UID 只输出一次，<code>sources</code> 取并集，并计入 <code>duplicateCandidates</code>。</p>
+<hr>
+<h2 id="sec-9">8. 覆盖率、质量字段与 <code>featureStatus</code> 定义</h2>
+<h3>8.1 默认阈值</h3>
+<div class="table-wrap"><table><thead><tr><th>阈值</th><th class="al-right">默认值</th><th>用途</th></tr></thead><tbody><tr><td><code>minObservedVideos</code></td><td class="al-right">2</td><td><code>ready</code> 的最低视频数</td></tr><tr><td><code>minObservedWatchMs</code></td><td class="al-right">300,000 ms（5 分钟）</td><td><code>ready</code> 的最低真实观看时长</td></tr><tr><td><code>minPartitionCoverage</code></td><td class="al-right">0.5</td><td><code>ready</code> 的最低分区覆盖率</td></tr><tr><td><code>minTitleCoverage</code></td><td class="al-right">0.5</td><td><code>ready</code> 的最低标题覆盖率</td></tr><tr><td><code>maxTitleRawLength</code></td><td class="al-right">1000</td><td>原始标题 UTF-16 截断</td></tr><tr><td><code>maxTitleLength</code></td><td class="al-right">200</td><td>归一化后码点截断</td></tr><tr><td><code>maxUniqueTokens</code></td><td class="al-right">4000</td><td>每候选词表上限</td></tr><tr><td><code>maxOutputTokens</code></td><td class="al-right">2000</td><td>输出词元上限</td></tr><tr><td><code>maxPartitionLength</code></td><td class="al-right">64</td><td>分区名码点上限</td></tr></tbody></table></div>
+<p>实际生效阈值随结果输出到 <code>thresholds</code>，便于后续调参和审计。</p>
+<h3>8.2 <code>featureStatus</code></h3>
+<div class="table-wrap"><table><thead><tr><th>状态</th><th>判定</th></tr></thead><tbody><tr><td><code>ready</code></td><td>有可用特征（<code>featureVideoCount &gt; 0</code>），且视频数、观看时长、分区覆盖率、标题覆盖率<strong>全部</strong>达标</td></tr><tr><td><code>partial</code></td><td>有真实可用特征，但至少一项未达标，或覆盖率为 <code>null</code></td></tr><tr><td><code>missing</code></td><td><code>observedVideoCount === 0</code> 或 <code>featureVideoCount === 0</code>，没有可用内容特征</td></tr></tbody></table></div>
+<p><code>featureStatus</code> <strong>只描述技术数据条件</strong>，不表示推荐质量，也不代表用户喜好强度。</p>
+<h3>8.3 原因代码</h3>
+<div class="table-wrap"><table><thead><tr><th>code</th><th>level</th><th>触发条件</th></tr></thead><tbody><tr><td><code>no-observed-videos</code></td><td>warning</td><td>没有非冲突、<code>watchMs &gt; 0</code> 的本地观看记录</td></tr><tr><td><code>uid-conflicts-excluded</code></td><td>info</td><td>有视频因同 BV 多 UID 被排除</td></tr><tr><td><code>partition-coverage-no-data</code></td><td>warning</td><td>分区覆盖率为 <code>null</code></td></tr><tr><td><code>partition-coverage-low</code></td><td>warning</td><td>分区覆盖率为 0 且低于阈值</td></tr><tr><td><code>title-coverage-no-data</code></td><td>warning</td><td>标题覆盖率为 <code>null</code></td></tr><tr><td><code>title-coverage-low</code></td><td>warning</td><td>标题覆盖率低于阈值</td></tr><tr><td><code>insufficient-videos</code></td><td>warning</td><td>视频数少于 <code>minObservedVideos</code></td></tr><tr><td><code>insufficient-watch-time</code></td><td>warning</td><td>观看时长少于 <code>minObservedWatchMs</code></td></tr><tr><td><code>no-usable-features</code></td><td>warning</td><td>没有任何可用分区或标题特征</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-10">9. 新增测试数量及结果</h2>
+<h3>9.1 执行结果</h3>
+<pre class="code" data-lang="text"><code>node test-candidate-features.js
+→ 38/38 通过
+→ 退出码 0</code></pre>
+<p><strong>已实际执行</strong>，不是只统计 <code>test()</code> 数量。</p>
+<h3>9.2 用例覆盖</h3>
+<div class="table-wrap"><table><thead><tr><th class="al-right">#</th><th>用例</th><th class="al-right">#</th><th>用例</th></tr></thead><tbody><tr><td class="al-right">1</td><td>单 UID 单视频：分区、标题与基础计数</td><td class="al-right">20</td><td>同 BV 不同 UID 冲突：冲突视频不参与任何一方</td></tr><tr><td class="al-right">2</td><td>单 UID 多视频：满足最低样本后为 ready</td><td class="al-right">21</td><td>冲突视频不污染分区与标题特征</td></tr><tr><td class="al-right">3</td><td>分区时长加权：以真实 watchMs 为基础</td><td class="al-right">22</td><td>只有手动 UID 的新候选：保留候选，返回 missing</td></tr><tr><td class="al-right">4</td><td>分区占比归一化：已识别分区内部占比之和为 1</td><td class="al-right">23</td><td>新候选不虚构内容：分区 / 标题 / 覆盖率均为无数据</td></tr><tr><td class="al-right">5</td><td>缺失分区：归入未知桶，观看时长不丢弃</td><td class="al-right">24</td><td>ready / partial / missing 三种状态同时出现</td></tr><tr><td class="al-right">6</td><td>字面「未知」分区：与缺失分区同样按未识别处理</td><td class="al-right">25</td><td>空输入：结构完整、不抛异常</td></tr><tr><td class="al-right">7</td><td>分区覆盖率：按观看时长计算，分母包含未知分区</td><td class="al-right">26</td><td>异常记录：安全降级，不产生虚构特征</td></tr><tr><td class="al-right">8</td><td>中文标题 bigram：相邻双字符</td><td class="al-right">27</td><td>输入对象不可变</td></tr><tr><td class="al-right">9</td><td>中英文数字混合标题：NFKC + 小写 + 连续段 bigram</td><td class="al-right">28</td><td>结果可 JSON 序列化往返，且分区名为 <code>__proto__</code> 时安全</td></tr><tr><td class="al-right">10</td><td>标点和空白不跨段拼接词元</td><td class="al-right">29</td><td>结果顺序稳定：与输入顺序无关，按 UID 升序</td></tr><tr><td class="al-right">11</td><td>重复词元：词频累计，文档数只算一次</td><td class="al-right">30</td><td>大量重复记录不会错误膨胀统计</td></tr><tr><td class="al-right">12</td><td>缺失标题：不虚构文本特征，覆盖率为 0</td><td class="al-right">31</td><td>支持 C2-2 <code>filterEligibleCandidates</code> 结果作为候选池</td></tr><tr><td class="al-right">13</td><td>标题覆盖率：有效标题文档数 / 参与统计视频数</td><td class="al-right">32</td><td>冲突候选的 C2-2 资格结论不被特征模块改变</td></tr><tr><td class="al-right">14</td><td>同 BV 同日重复：只算一个视频，时长累加，词元不重复计数</td><td class="al-right">33</td><td>超长标题被截断，词元数量有上限</td></tr><tr><td class="al-right">15</td><td>同 BV 跨天：合并为一个视频，观看时长累加</td><td class="al-right">34</td><td>空白 / 非字符串 / 控制字符 / 超长分区统一归入未知</td></tr><tr><td class="al-right">16</td><td>同 BV 不同分 P：按同一视频合并，不重复计数</td><td class="al-right">35</td><td>超大 / 非法 watchMs 安全处理</td></tr><tr><td class="al-right">17</td><td>同 UID 改名：按 UID 聚合，昵称不参与身份判定</td><td class="al-right">36</td><td>重复候选 UID 只输出一次，来源取并集</td></tr><tr><td class="al-right">18</td><td>不同 UID 同名：特征严格分开，不按昵称混合</td><td class="al-right">37</td><td>零观看时长视频不参与特征统计</td></tr><tr><td class="al-right">19</td><td>UID 缺失的旧记录：不凭昵称并入候选</td><td class="al-right">38</td><td>阈值可覆盖，并随结果输出</td></tr></tbody></table></div>
+<hr>
+<h2 id="sec-11">10. 原有 143 项回归结果</h2>
+<p><strong>全部实际执行，退出码均为 0：</strong></p>
+<div class="table-wrap"><table><thead><tr><th>套件</th><th>结果</th><th class="al-right">退出码</th></tr></thead><tbody><tr><td><code>node test-candidate-quality.js</code></td><td>28/28 通过</td><td class="al-right">0</td></tr><tr><td><code>node test-candidate-pool.js</code></td><td>33/33 通过</td><td class="al-right">0</td></tr><tr><td><code>node test-interest-profile.js</code></td><td>24/24 通过</td><td class="al-right">0</td></tr><tr><td><code>node test-uid.js</code></td><td>21/21 通过</td><td class="al-right">0</td></tr><tr><td><code>node test-up-stats.js</code></td><td>17/17 通过</td><td class="al-right">0</td></tr><tr><td><code>node test-stats.js</code></td><td>20/20 通过</td><td class="al-right">0</td></tr><tr><td><strong>合计</strong></td><td><strong>143/143 通过</strong></td><td class="al-right">—</td></tr></tbody></table></div>
+<p>加上新增 38 项，当前总计 <strong>181/181 通过</strong>。</p>
+<hr>
+<h2 id="sec-12">11. 语法检查结果</h2>
+<p>以下检查均<strong>已实际执行</strong>，全部通过：</p>
+<pre class="code" data-lang="text"><code>node --check candidate-features.js
+node --check test-candidate-features.js
+node --check candidate-pool.js
+node --check stats.js
+node --check interest-profile.js
+node --check storage.js
+node --check test-candidate-quality.js
+node --check test-candidate-pool.js
+node --check test-interest-profile.js
+node --check test-uid.js
+node --check test-up-stats.js
+node --check test-stats.js
+node --check content.js
+node --check popup.js
+node --check dev-config.js
+node -e &quot;JSON.parse(require('fs').readFileSync('manifest.json','utf8'))&quot;</code></pre>
+<p>共 15 个 JavaScript 文件语法通过，<code>manifest.json</code> JSON 解析通过。</p>
+<blockquote><p><code>node --check</code> 只验证语法，不代表运行通过；运行结果以上面的测试套件为准。</p></blockquote>
+<hr>
+<h2 id="sec-13">12. PowerShell 验收命令</h2>
+<p>在 <code>D:\Bili-Daily</code> 下执行：</p>
+<pre class="code" data-lang="powershell"><code>Set-Location D:\Bili-Daily
+
+# 1) C2-3 新测试
+node test-candidate-features.js
+if ($LASTEXITCODE -ne 0) { throw &quot;C2-3 tests failed&quot; }
+
+# 2) 原有六套回归
+node test-candidate-quality.js
+if ($LASTEXITCODE -ne 0) { throw &quot;C2-2 tests failed&quot; }
+node test-candidate-pool.js
+if ($LASTEXITCODE -ne 0) { throw &quot;C2-1 tests failed&quot; }
+node test-interest-profile.js
+if ($LASTEXITCODE -ne 0) { throw &quot;interest-profile tests failed&quot; }
+node test-uid.js
+if ($LASTEXITCODE -ne 0) { throw &quot;uid tests failed&quot; }
+node test-up-stats.js
+if ($LASTEXITCODE -ne 0) { throw &quot;up-stats tests failed&quot; }
+node test-stats.js
+if ($LASTEXITCODE -ne 0) { throw &quot;stats tests failed&quot; }
+
+# 3) 语法检查
+$files = @(
+  &quot;candidate-features.js&quot;, &quot;test-candidate-features.js&quot;,
+  &quot;candidate-pool.js&quot;, &quot;stats.js&quot;, &quot;interest-profile.js&quot;, &quot;storage.js&quot;,
+  &quot;test-candidate-quality.js&quot;, &quot;test-candidate-pool.js&quot;,
+  &quot;test-interest-profile.js&quot;, &quot;test-uid.js&quot;, &quot;test-up-stats.js&quot;, &quot;test-stats.js&quot;,
+  &quot;content.js&quot;, &quot;popup.js&quot;, &quot;dev-config.js&quot;
+)
+foreach ($f in $files) {
+  node --check $f
+  if ($LASTEXITCODE -ne 0) { throw &quot;syntax check failed: $f&quot; }
+}
+node -e &quot;JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('manifest ok')&quot;
+if ($LASTEXITCODE -ne 0) { throw &quot;manifest.json invalid&quot; }
+
+Write-Host &quot;ALL C2-3 CHECKS PASSED&quot;</code></pre>
+<p>预期输出：C2-3 为 <code>38/38 通过</code>；六个既有套件分别为 28、33、24、21、17、20 项全通过；最后打印 <code>ALL C2-3 CHECKS PASSED</code>。</p>
+<hr>
+<h2 id="sec-14">13. 性能与稳定性观察</h2>
+<h3>13.1 已执行的合成数据观察</h3>
+<p><strong>方法</strong>：生成 90 天 × 每天 300 条 = 27,000 条记录、600 个 UID、12 个分区；先用 C2-1 <code>buildFromRecords</code> 建立 600 个候选，再对<code>buildCandidateFeatures(records, pool)</code> 连续运行 5 次，记录墙钟耗时。</p>
+<p><strong>实际结果（Node.js v24.19.0，Windows 11）</strong>：</p>
+<pre class="code" data-lang="text"><code>records = 27000
+candidates = 600
+featureCandidates = 600
+timings = 184.4, 161.6, 177.5, 160.1, 156.1 ms
+min = 156.1 ms
+median = 161.6 ms
+max = 184.4 ms
+summary = ready 600 / partial 0 / missing 0，observedVideoCount 27000</code></pre>
+<p>这是<strong>合成数据</strong>上的单机观察，不是真实用户数据压测，也不代表浏览器环境耗时。本报告没有编造任何未测得的数字。</p>
+<h3>13.2 稳定性措施</h3>
+<ul><li>输入记录与候选池均不被修改；<code>cleanRecord</code> / <code>mergeByBvid</code> 返回新对象。</li><li><code>watchMs</code> 累加使用安全整数封顶，非法 / 负值 / <code>NaN</code> 安全降级。</li><li>超长标题先按 UTF-16 截断，再按码点截断；超长分区名提前拒绝。</li><li>词表与输出词元均有上限，避免异常数据造成无界内存增长。</li><li>结果可 JSON 序列化，不含 <code>Map</code> / <code>Set</code> / <code>undefined</code>。</li><li>所有排序都有确定的第二排序键，结果与输入顺序无关。</li><li>不使用 Node 专有运行时 API；模块只依赖 <code>globalThis</code> 和 <code>stats.js</code>。</li></ul>
+<hr>
+<h2 id="sec-15">14. 回滚方式</h2>
+<p>本阶段开始前已创建快照：</p>
+<pre class="code" data-lang="text"><code>D:\Bili-Daily\rollback\before-c2-3-features\</code></pre>
+<p>包含 10 个既有文件的原样副本和 <code>README.md</code>。C2-3 没有修改这些文件；如需恢复或清理，在 <code>D:\Bili-Daily</code> 下执行：</p>
+<pre class="code" data-lang="powershell"><code># 仅当既有文件被误改时恢复
+Copy-Item rollback\before-c2-3-features\*.js . -Force
+
+# 如需完全移除 C2-3 新增文件
+Remove-Item candidate-features.js, test-candidate-features.js -ErrorAction SilentlyContinue</code></pre>
+<p>回滚不触碰 <code>chrome.storage.local</code>，也不会删除任何真实观看数据。恢复后重新运行原有 143 项测试，应全部通过。</p>
+<hr>
+<h2 id="sec-16">15. 已知限制与 C3 的数据需求</h2>
+<h3>15.1 已知限制</h3>
+<ol><li><strong>只做特征，不做排序</strong>：没有 TF-IDF、余弦相似度、MMR、时间衰减或个性化评分。</li><li><strong>英文按字符 bigram</strong>：<code>Hello</code> 会生成 <code>he</code> / <code>el</code> / <code>ll</code> / <code>lo</code>，不是完整单词；本阶段不引入分词器或词典。</li><li><strong>标题是词面特征</strong>：无法识别同义词、语义或反讽；标题党、重复标题会直接反映在词频中。</li><li><strong>缺失 UID 的旧记录被排除</strong>：这是身份安全策略的代价，可能损失部分老数据。</li><li><strong>冲突视频整体排除</strong>：若冲突来自采集 bug，会损失该视频的全部特征；目前只在诊断中暴露，不做自动修复。</li><li><strong>覆盖率阈值是启发式</strong>：2 个视频 / 5 分钟 / 50% 只是保守起点，尚未用真实分布校准。</li><li><strong>无真实数据验证</strong>：本阶段禁止读写 <code>chrome.storage.local</code>，所有测试均为固定夹具；合成性能数字不代表真实规模。</li><li><strong><code>featureStatus</code> 不是兴趣强度</strong>：<code>ready</code> 只表示数据条件满足，不代表用户真的喜欢该 UP 主。</li><li><strong>分区与标题依赖记录字段</strong>：如果记录本身缺失分区或标题，本模块不会从页面、API 或昵称反推。</li></ol>
+<h3>15.2 C3 需要补齐的输入</h3>
+<ul><li>明确的排序目标与评价口径（例如：回访概率、观看时长、分区多样性）。</li><li>真实数据上的特征分布抽样，用于校准覆盖率阈值与样本量阈值。</li><li>对冲突视频的人工 / 规则复核流程，决定是否可以恢复部分归属。</li><li>时间衰减、分区偏好、词元权重的设计文档与验收标准。</li><li>若要做语义特征，需要另行评审是否引入模型或词典；本阶段明确未引入。</li><li>UI / 存储 / 新采集均未开始，需在 C3 或后续阶段单独评审。</li></ul>
+<hr>
+<h2 id="sec-17">结语</h2>
+<p>C2-3 已完成：新增纯函数特征模块与 38 项测试，原有 143 项测试继续通过，语法检查通过，既有文件未被修改，回滚快照可用。</p>
+<p><strong>本阶段到此停止，等待审核，不进入 C3。</strong></p>
+  <div class="footer">
+    <span>Bili Daily · 开发报告</span>
+    <span>Bili Daily C2-3 验收报告：候选 UP 主内容特征建模</span>
+  </div>
+</main>
+</body>
+</html>

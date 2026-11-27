@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MVP Sprint 工作包 A · 第 4 项排序测试修复报告</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --accent: #2f5f9e;
+    --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa;
+    --warn-bg: #fff8e6;
+    --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(24, 39, 75, 0.07);
+    padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .meta div + div { margin-top: 2px; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.4; color: #16202e; }
+  h1 {
+    font-size: 27px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 38px 0 14px;
+    padding-left: 12px;
+    border-left: 5px solid var(--accent);
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(47, 95, 158, .35); }
+  a:hover { border-bottom-color: var(--accent); }
+  strong { color: #101826; }
+  code {
+    font-family: Consolas, "Cascadia Code", "SFMono-Regular", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid #e3e8ef;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #9a3412;
+    word-break: break-word;
+  }
+  pre.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #24303f;
+    font-size: 13.5px;
+    white-space: pre;
+  }
+  pre.code[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 9px;
+    font-size: 11px;
+    color: #7b8594;
+    background: #eef1f5;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 7px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eef2f8; color: #1b2a41; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+  tbody tr:hover { background: #f2f6fc; }
+  .al-center { text-align: center; }
+  .al-right { text-align: right; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    border-radius: 4px;
+    color: #5c4a17;
+  }
+  blockquote p { margin: 6px 0; }
+  ul, ol { margin: 10px 0; padding-left: 26px; }
+  li { margin: 5px 0; }
+  li.li-nested { margin-left: 20px; }
+  .toc {
+    margin: 0 0 34px;
+    padding: 16px 22px;
+    background: #f8f9fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 8px; color: #16202e; letter-spacing: .5px; }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 4px 0; break-inside: avoid; }
+  .footer {
+    margin-top: 44px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #8a93a1;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    body { padding: 12px 8px 32px; font-size: 15px; }
+    .page { padding: 24px 18px 32px; border-radius: 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18.5px; }
+    .toc ol { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11.5pt; }
+    .page { max-width: none; border: 0; box-shadow: none; padding: 0; }
+    .toc { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    pre.code, table, blockquote, tr { break-inside: avoid; }
+    a { color: inherit; border: 0; }
+    .footer { color: #777; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>MVP Sprint 工作包 A · 第 4 项排序测试修复报告</h1>
+  <div class="meta">
+    <div><strong>来源：</strong>MVP-rank-test4-fix-report.md</div>
+    <div><strong>生成时间：</strong>2026-11-12（手工渲染；<code>tools/build-report-html.js</code> 因执行通道阻断未运行）</div>
+  </div>
+  <nav class="toc">
+    <div class="toc-title">目录</div>
+    <ol>
+      <li><a href="#sec-1">现象</a></li>
+      <li><a href="#sec-2">定位过程</a></li>
+      <li><a href="#sec-3">修复</a></li>
+      <li><a href="#sec-4">影响面扫描</a></li>
+      <li><a href="#sec-5">测试与语法检查结果（未执行）</a></li>
+      <li><a href="#sec-6">本机验收命令</a></li>
+      <li><a href="#sec-7">回滚方法</a></li>
+      <li><a href="#sec-8">已知限制与风险</a></li>
+      <li><a href="#sec-9">下一步</a></li>
+    </ol>
+  </nav>
+
+  <p><strong>推荐理由 / 结果文本不得包含“准确率”字样</strong></p>
+  <ul>
+    <li>报告日期：2026-11-12</li>
+    <li>阶段：MVP Sprint / 工作包 A（算法与测试层）</li>
+    <li>修复文件：<code>recommend-rank.js</code>（唯一改动文件，1 行文案）</li>
+    <li>测试状态：<strong>本轮未执行</strong>（<code>node</code> 执行通道被阻断，见 §5）</li>
+    <li>结论边界：本报告<strong>不含任何“测试通过”结论</strong>。28 / 47 / 297 需项目所有者本机回填。</li>
+  </ul>
+
+  <hr>
+
+  <h2 id="sec-1">1. 现象</h2>
+  <p>项目所有者本机执行 <code>node test-recommend-rank.js</code>：</p>
+  <ul>
+    <li>结果：<strong>27/28 通过</strong></li>
+    <li>唯一失败：第 4 项「推荐理由只引用真实存在的字段」</li>
+    <li>位置：<code>test-recommend-rank.js:200:10</code></li>
+    <li>错误：<code>AssertionError [ERR_ASSERTION] Expected values to be strictly equal: true !== false</code></li>
+  </ul>
+  <p>失败断言（第 197-200 行）：</p>
+  <pre class="code"><code>const text = JSON.stringify(result);
+assert.equal(text.includes("已认证"), false);
+assert.equal(text.includes("官方推荐"), false);
+assert.equal(text.includes("准确率"), false);   // ← 实际 true</code></pre>
+
+  <hr>
+
+  <h2 id="sec-2">2. 定位过程</h2>
+
+  <h3>2.1 测试 fixture</h3>
+  <p><code>baseRecords()</code> 提供 7 条观看记录（科技 4 条、生活 1 条、知识 2 条），<code>buildRecommendations({ now, endDate: D1, K: 5 })</code> 走相似度路径，UP 1001 的推荐理由为 <code>watched-before</code> + <code>partition-match</code>（第 192-195 行断言已通过）。</p>
+
+  <h3>2.2 实际 true 的来源</h3>
+  <p>对返回对象做字符串搜索，命中位置只有一处，不在 <code>reasons</code> 里：</p>
+  <pre class="code"><code>// recommend-rank.js:1029-1032（修复前）
+note:
+  "推荐基于本地观看记录与用户主动导入的候选资料，本地计算、不上传；" +
+  "不代表平台核验，也不构成推荐准确率声明。"</code></pre>
+  <p><code>JSON.stringify(result)</code> 序列化了 <code>result.note</code>，其中包含“准确率”三个字。<strong>触发 true 的是这句否定式免责声明，不是任何推荐理由或证据字段。</strong></p>
+
+  <h3>2.3 排除其他可能</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>候选来源</th><th>是否进入 <code>JSON.stringify(result)</code></th><th>是否含“准确率”</th></tr></thead>
+    <tbody>
+      <tr><td><code>buildReasons()</code> 生成的四类理由</td><td>是</td><td>否（代码逐条核查）</td></tr>
+      <tr><td><code>entry.reliability</code> 完整对象</td><td>否（<code>toRecommendation</code> 只取 <code>level</code> / 覆盖率）</td><td>—</td></tr>
+      <tr><td><code>Quality.assessFeatureReliability().note</code></td><td>否</td><td>含，但未被序列化</td></tr>
+      <tr><td><code>coldStart</code> / <code>diagnostics</code> / <code>config</code></td><td>是</td><td>否</td></tr>
+      <tr><td><code>result.note</code></td><td>是</td><td><strong>是 ← 唯一命中</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p>全仓库检索 <code>准确率</code>：业务代码中只有 <code>recommend-rank.js</code> 的两处（顶部注释与 <code>note</code>）以及 <code>recommend-quality.js</code> 的两处（注释与可靠性 <code>note</code>，均不进入本结果）。</p>
+
+  <h3>2.4 问题分类</h3>
+  <p><strong>属于“测试预期与提示文案冲突”，不是业务逻辑错误，也不是推荐证据字段错误。</strong></p>
+  <ul>
+    <li>业务规范：不得虚构“准确率 / 已认证 / 官方推荐”。</li>
+    <li>测试实现：用三个粗粒度子串检查守护该规范，覆盖整个结果 JSON。</li>
+    <li>冲突点：结果中的<strong>否定式免责声明</strong>（“不构成……声明”）恰好包含了被禁词。</li>
+    <li>理由与证据本身是真实字段：<code>watched-before</code> 的 <code>watchedVideoCount = 2</code>、<code>partition-match</code> 的 <code>userShare</code> 与 <code>candidateShare</code> 均来自实际观看统计，第 195 行断言已通过。</li>
+  </ul>
+  <p>因此不存在“虚构用户分区偏好 / 虚构标题匹配 / 虚构观看记录 / 虚构认证状态”的问题。测试断言本身符合业务规范，<strong>不需要也不允许</strong>把 <code>false</code> 改成 <code>true</code>。</p>
+
+  <hr>
+
+  <h2 id="sec-3">3. 修复</h2>
+  <p>只改 <code>recommend-rank.js</code> 的一行文案，保留免责语义，去掉被禁词：</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>位置</th><th>修改前</th><th>修改后</th></tr></thead>
+    <tbody>
+      <tr><td><code>recommend-rank.js:1031</code></td><td><code>"不代表平台核验，也不构成推荐准确率声明。"</code></td><td><code>"不代表平台核验，也不构成对推荐效果的承诺。"</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>修改后：</p>
+  <pre class="code"><code>note:
+  "推荐基于本地观看记录与用户主动导入的候选资料，本地计算、不上传；" +
+  "不代表平台核验，也不构成对推荐效果的承诺。"</code></pre>
+
+  <h3>3.1 未修改的内容</h3>
+  <ul>
+    <li>未修改 <code>test-recommend-rank.js</code>（未删测试、未改断言、未放宽条件）。</li>
+    <li>未修改 <code>buildReasons()</code> 的任何条件或证据字段。</li>
+    <li>未修改评分公式、相似度合成、MMR、λ、配额、跨通道去重。</li>
+    <li>未修改 <code>recommend-quality.js</code>、<code>recommend-core.js</code> 及 C1 / C2 / C3-1 模块。</li>
+    <li>未新增任何“准确率 / 已认证 / 官方推荐”类字段。</li>
+  </ul>
+
+  <h3>3.2 修复后行为</h3>
+  <ul>
+    <li><code>result.note</code> 依旧是明确的能力边界声明：本地计算、不上传、不代表平台核验、不作推荐效果承诺。</li>
+    <li><code>JSON.stringify(result)</code> 不再包含 <code>准确率</code>、<code>已认证</code>、<code>官方推荐</code>。</li>
+    <li>推荐理由、分数、可靠性、置信度、配额全部不变。</li>
+  </ul>
+
+  <hr>
+
+  <h2 id="sec-4">4. 影响面扫描</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>检查</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td><code>recommend-rank.js</code> 中残留 <code>准确率</code></td><td>仅第 8 行文件头注释，不进入返回值</td></tr>
+      <tr><td><code>recommend-rank.js</code> 中 <code>已认证</code> / <code>官方推荐</code></td><td>0 处</td></tr>
+      <tr><td>结果 JSON 的组成字段</td><td><code>note</code> 已改写；其余字段不新增、不删除</td></tr>
+      <tr><td>其他模块的 <code>note</code></td><td><code>recommend-quality.js:1621</code> 含“预测准确率”，但不在 <code>buildRecommendations()</code> 的输出中</td></tr>
+    </tbody>
+  </table></div>
+
+  <hr>
+
+  <h2 id="sec-5">5. 测试与语法检查结果（未执行）</h2>
+  <p>本轮多次尝试 <code>node</code>，通道返回：</p>
+  <pre class="code"><code>qwen/qwen-flash is temporarily unavailable (connection failed),
+so auto mode cannot determine the safety of Bash right now.</code></pre>
+  <div class="table-wrap"><table>
+    <thead><tr><th>检查项</th><th>数量</th><th>本轮结果</th><th>已知结果</th></tr></thead>
+    <tbody>
+      <tr><td><code>node --check recommend-rank.js</code></td><td>—</td><td><strong>未执行</strong></td><td>无</td></tr>
+      <tr><td><code>test-recommend-rank.js</code></td><td>28</td><td><strong>未执行</strong></td><td>27/28（修复前，失败于第 4 项）</td></tr>
+      <tr><td><code>test-recommend-quality.js</code></td><td>47</td><td><strong>未执行</strong></td><td>项目所有者报告为全部通过，尚待复跑确认</td></tr>
+      <tr><td>既有回归</td><td>297</td><td><strong>未执行</strong></td><td>项目所有者报告为全部通过，尚待复跑确认</td></tr>
+      <tr><td>合计</td><td>372</td><td><strong>未执行</strong></td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <blockquote><p>不将 27/28 或历史回归结果当作本轮修复后的结论。</p></blockquote>
+
+  <hr>
+
+  <h2 id="sec-6">6. 本机验收命令</h2>
+  <pre class="code" data-lang="powershell"><code>cd D:\Bili-Daily
+
+node --check recommend-rank.js;   "check-rank   exit=$LASTEXITCODE"
+node test-recommend-rank.js;      "rank         exit=$LASTEXITCODE"
+node test-recommend-quality.js;   "quality      exit=$LASTEXITCODE"
+node test-recommend-core.js;      "core         exit=$LASTEXITCODE"
+node test-candidate-content-import.js; "import   exit=$LASTEXITCODE"
+node test-candidate-features.js;  "features     exit=$LASTEXITCODE"
+node test-candidate-quality.js;   "cand-quality exit=$LASTEXITCODE"
+node test-candidate-pool.js;      "pool         exit=$LASTEXITCODE"
+node test-interest-profile.js;    "profile      exit=$LASTEXITCODE"
+node test-uid.js;                 "uid          exit=$LASTEXITCODE"
+node test-up-stats.js;            "up-stats     exit=$LASTEXITCODE"
+node test-stats.js;               "stats        exit=$LASTEXITCODE"</code></pre>
+  <p>建议同时保留 UTF-8 日志：</p>
+  <pre class="code" data-lang="powershell"><code>$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
+node test-recommend-rank.js 2&gt;&amp;1 | Tee-Object -FilePath rank-test4-run.txt
+"exit=$LASTEXITCODE"</code></pre>
+
+  <h3>6.1 回填模板</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>命令</th><th>退出码</th><th>统计行</th><th>结论</th></tr></thead>
+    <tbody>
+      <tr><td><code>node --check recommend-rank.js</code></td><td></td><td></td><td></td></tr>
+      <tr><td><code>node test-recommend-rank.js</code></td><td></td><td>/28</td><td></td></tr>
+      <tr><td><code>node test-recommend-quality.js</code></td><td></td><td>/47</td><td></td></tr>
+      <tr><td>既有回归（9 个文件）</td><td></td><td>/297</td><td></td></tr>
+    </tbody>
+  </table></div>
+
+  <hr>
+
+  <h2 id="sec-7">7. 回滚方法</h2>
+  <p>修复前快照（本轮新建，未覆盖任何旧目录）：</p>
+  <ul>
+    <li><code>D:\Bili-Daily\rollback\before-rank-reason-note-fix\recommend-rank.js</code>（36132 字节）</li>
+  </ul>
+  <pre class="code" data-lang="powershell"><code>Copy-Item D:\Bili-Daily\rollback\before-rank-reason-note-fix\recommend-rank.js `
+          D:\Bili-Daily\recommend-rank.js -Force</code></pre>
+  <p>项目无 Git 仓库，回滚依赖文件快照；上一轮快照 <code>rollback/before-rank-undefined-fix/</code> 保持原样。</p>
+
+  <hr>
+
+  <h2 id="sec-8">8. 已知限制与风险</h2>
+  <ol>
+    <li>修复未经运行验证；若第 4 项仍失败，请提供新的失败行号与 <code>expected/actual</code>。</li>
+    <li>若未来其它模块的返回值再次包含“准确率”等字样，同样会被第 4 项拦截；这是测试的有意设计，不应通过放宽断言解决，而应审视文案。</li>
+    <li>此前两轮的失败日志（<code>rank-debug.txt</code>）与报告均未改动。</li>
+  </ol>
+
+  <hr>
+
+  <h2 id="sec-9">9. 下一步</h2>
+  <ol>
+    <li>本机执行 §6，回填 §6.1；目标 372/372。</li>
+    <li>全部通过后立即推进工作包 B（本地候选存储与导入），不再重做算法设计。</li>
+    <li>工作包 C / D 按既定 MVP 计划执行；自动发现陌生 UP 主需先验证可用且获准的数据来源。</li>
+  </ol>
+
+  <div class="footer">
+    <span>Bili Daily · 开发报告</span>
+    <span>MVP Sprint 工作包 A · 第 4 项排序测试修复报告</span>
+  </div>
+</main>
+</body>
+</html>

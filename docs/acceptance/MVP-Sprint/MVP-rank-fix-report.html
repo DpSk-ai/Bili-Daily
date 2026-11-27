@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MVP Sprint 工作包 A · 排序层缺陷修复报告</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5b6472;
+    --line: #dfe3ea;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --accent: #2f5f9e;
+    --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa;
+    --warn-bg: #fff8e6;
+    --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(24, 39, 75, 0.07);
+    padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .meta div + div { margin-top: 2px; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.4; color: #16202e; }
+  h1 {
+    font-size: 27px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--accent);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 38px 0 14px;
+    padding-left: 12px;
+    border-left: 5px solid var(--accent);
+  }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(47, 95, 158, .35); }
+  a:hover { border-bottom-color: var(--accent); }
+  strong { color: #101826; }
+  code {
+    font-family: Consolas, "Cascadia Code", "SFMono-Regular", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    border: 1px solid #e3e8ef;
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #9a3412;
+    word-break: break-word;
+  }
+  pre.code {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre.code code {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #24303f;
+    font-size: 13.5px;
+    white-space: pre;
+  }
+  pre.code[data-lang]::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 9px;
+    font-size: 11px;
+    color: #7b8594;
+    background: #eef1f5;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 7px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eef2f8; color: #1b2a41; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #fafbfd; }
+  tbody tr:hover { background: #f2f6fc; }
+  .al-center { text-align: center; }
+  .al-right { text-align: right; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-border);
+    border-radius: 4px;
+    color: #5c4a17;
+  }
+  blockquote p { margin: 6px 0; }
+  ul, ol { margin: 10px 0; padding-left: 26px; }
+  li { margin: 5px 0; }
+  li.li-nested { margin-left: 20px; }
+  .toc {
+    margin: 0 0 34px;
+    padding: 16px 22px;
+    background: #f8f9fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 8px; color: #16202e; letter-spacing: .5px; }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 4px 0; break-inside: avoid; }
+  .footer {
+    margin-top: 44px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: #8a93a1;
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    body { padding: 12px 8px 32px; font-size: 15px; }
+    .page { padding: 24px 18px 32px; border-radius: 6px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18.5px; }
+    .toc ol { columns: 1; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 11.5pt; }
+    .page { max-width: none; border: 0; box-shadow: none; padding: 0; }
+    .toc { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    pre.code, table, blockquote, tr { break-inside: avoid; }
+    a { color: inherit; border: 0; }
+    .footer { color: #777; }
+    @page { size: A4; margin: 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>MVP Sprint 工作包 A · 排序层缺陷修复报告</h1>
+  <div class="meta">
+    <div><strong>来源：</strong>MVP-rank-fix-report.md</div>
+    <div><strong>生成时间：</strong>2026-11-12（手工渲染；<code>tools/build-report-html.js</code> 因执行通道阻断未运行）</div>
+  </div>
+  <nav class="toc">
+    <div class="toc-title">目录</div>
+    <ol>
+      <li><a href="#sec-1">事实来源与时间线</a></li>
+      <li><a href="#sec-2">根本原因</a></li>
+      <li><a href="#sec-3">精确修改位置</a></li>
+      <li><a href="#sec-4">同类变量问题扫描</a></li>
+      <li><a href="#sec-5">修改前后的行为区别</a></li>
+      <li><a href="#sec-6">测试与语法检查结果（未执行）</a></li>
+      <li><a href="#sec-7">执行命令与退出码（需本机回填）</a></li>
+      <li><a href="#sec-8">回滚方法</a></li>
+      <li><a href="#sec-9">风险与已知限制</a></li>
+      <li><a href="#sec-10">下一步</a></li>
+    </ol>
+  </nav>
+
+  <p><strong><code>ReferenceError: userPartitionVector is not defined</code></strong></p>
+
+  <ul>
+    <li>报告日期：2026-11-12</li>
+    <li>阶段：MVP Sprint / 工作包 A（算法与测试层）</li>
+    <li>修复文件：<code>recommend-rank.js</code>（唯一改动文件）</li>
+    <li>代码状态：<strong>两处缺陷已在工作区修正</strong></li>
+    <li>测试状态：<strong>本轮未执行</strong>（Bash / <code>node</code> 执行通道被阻断，见 §5）</li>
+    <li>结论边界：本报告<strong>不含任何“测试通过”结论</strong>。28 / 47 / 297 三项测试均需项目所有者本机执行后回填。</li>
+  </ul>
+
+  <hr>
+
+  <h2 id="sec-1">1. 事实来源与时间线</h2>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>时间</th><th>事件</th><th>证据</th></tr></thead>
+    <tbody>
+      <tr><td>2026-11-12 14:34</td><td>项目所有者在 PowerShell 运行 <code>node test-recommend-rank.js</code>，结果 <code>9/28 通过</code>，19 项失败</td><td><code>rank-debug.txt</code>（UTF-16LE，未改动）</td></tr>
+      <tr><td>2026-11-12 14:39</td><td>修复前快照落盘；两处调用点改为显式传参</td><td><code>rollback/before-rank-undefined-fix/</code>（36102 字节，含缺陷）</td></tr>
+      <tr><td>2026-11-12 14:39</td><td>工作区 <code>recommend-rank.js</code> 变为 36132 字节（+30 字节 = 两处 <code>: userPartition</code>）</td><td>文件大小对照</td></tr>
+      <tr><td>2026-11-12（本轮）</td><td>静态复核当前工作区：两处均已修复；未能执行 <code>node</code></td><td>本报告 §2–§4</td></tr>
+    </tbody>
+  </table></div>
+
+  <blockquote>
+    <p><strong>重要</strong>：<code>rank-debug.txt</code> 生成于修复<strong>之前</strong>。其中的行号 620 / 584 对应的是修复前的文件内容。当前工作区第 620 行已经是 <code>userPartitionVector: userPartition</code>，不可能再在该行抛 <code>ReferenceError</code>。如果本机再次运行仍报同一错误，请先确认运行的是 <code>D:\Bili-Daily\recommend-rank.js</code>（这是测试 <code>require</code> 的唯一路径），再生成新的日志。</p>
+  </blockquote>
+
+  <hr>
+
+  <h2 id="sec-2">2. 根本原因</h2>
+
+  <h3>2.1 main 通道</h3>
+  <p><code>buildRecommendations()</code> 中：</p>
+  <pre class="code"><code>const userPartition = Quality.buildDecayedUserPartitionVector(source.records, vectorOptions);</code></pre>
+  <p><code>collectMainLane()</code> 的签名解构出的变量名是 <code>userPartition</code>：</p>
+  <pre class="code"><code>function collectMainLane(context) {
+  const { source, userPartition, userText, now, config, similarityMode } = context;</code></pre>
+  <p>但调用 <code>buildEntry</code> 时，对象字面量使用了<strong>未声明的简写属性</strong> <code>userPartitionVector</code>：</p>
+  <pre class="code"><code>buildEntry(draft, combined.score, partitionSimilarity, textSimilarity, config, {
+  partitionVector: draft.partitionVector,
+  textVector,
+  userTextVector,
+  userPartitionVector        // ← 简写 = userPartitionVector: userPartitionVector
+})</code></pre>
+  <p>在该函数作用域内没有任何名为 <code>userPartitionVector</code> 的绑定，因此求值对象字面量时立即抛出 <code>ReferenceError</code>。这不是“值是 undefined”，而是<strong>标识符本身不存在</strong>。</p>
+  <p><code>buildEntry</code> 期望的形状是 <code>vectors.userPartitionVector.vector</code>：</p>
+  <pre class="code"><code>userPartitionVector:
+  vectorInfo.userPartitionVector &amp;&amp;
+  isPlainObject(vectorInfo.userPartitionVector.vector)
+    ? vectorInfo.userPartitionVector.vector
+    : null,</code></pre>
+  <p>而 <code>Quality.buildDecayedUserPartitionVector()</code> 的返回值正是带 <code>.vector</code> 的包装对象（<code>recommend-quality.js:806-844</code>：<code>{ kind, space, side, basis, status, available, vector, ... }</code>）。关闭衰减时它委托 <code>Core.buildUserPartitionVector()</code>，形状一致。因此正确的值就是 <code>userPartition</code>。</p>
+
+  <h3>2.2 exploration 通道</h3>
+  <p><code>collectExplorationLane()</code> 存在<strong>完全相同</strong>的缺陷（修复前第 785 行）：</p>
+  <pre class="code"><code>const { source, userPartition, userText, now, config } = context;
+...
+buildExplorationEntry(draft, combined.score, partitionSimilarity, textSimilarity, config, {
+  partitionVector: draft.partitionVector,
+  textVector,
+  userTextVector,
+  userPartitionVector        // ← 同一个未声明标识符
+})</code></pre>
+  <p><code>buildExplorationEntry</code> 同样读取 <code>vectors.userPartitionVector.vector</code>（<code>recommend-rank.js:829-832</code>）。</p>
+  <p>本次失败日志中没有出现该行号，是因为 main 通道先抛错：<code>collectMainLane</code> 在 <code>buildRecommendations</code> 中先于 <code>collectExplorationLane</code> 执行。<strong>不是该处没有问题。</strong></p>
+
+  <h3>2.3 为什么不是其他原因</h3>
+  <ul>
+    <li><code>userTextVector</code> 在两条通道内都有 <code>const</code> 声明（<code>:582</code>、<code>:750</code>），不构成同类问题。</li>
+    <li><code>textVector</code> 在 <code>forEach</code> 回调内声明（<code>:585</code>、<code>:753</code>）。</li>
+    <li><code>draft.partitionVector</code> 由 <code>Core.buildCandidatePartitionVector()</code> 生成。</li>
+    <li>异常栈固定在同一层 <code>collectMainLane (recommend-rank.js:584)</code>，19 条 FAIL 全部同因。</li>
+  </ul>
+
+  <hr>
+
+  <h2 id="sec-3">3. 精确修改位置</h2>
+  <p>只改两个对象字面量，共 2 处、每处 1 行：</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>文件:行</th><th>修改前</th><th>修改后</th></tr></thead>
+    <tbody>
+      <tr><td><code>recommend-rank.js:620</code></td><td><code>userPartitionVector</code></td><td><code>userPartitionVector: userPartition</code></td></tr>
+      <tr><td><code>recommend-rank.js:785</code></td><td><code>userPartitionVector</code></td><td><code>userPartitionVector: userPartition</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <p>修改后源码（节选）：</p>
+  <pre class="code"><code>// main lane，recommend-rank.js:615-622
+entries.push(
+  buildEntry(draft, combined.score, partitionSimilarity, textSimilarity, config, {
+    partitionVector: draft.partitionVector,
+    textVector,
+    userTextVector,
+    userPartitionVector: userPartition
+  })
+);</code></pre>
+  <pre class="code"><code>// exploration lane，recommend-rank.js:780-787
+entries.push(
+  buildExplorationEntry(draft, combined.score, partitionSimilarity, textSimilarity, config, {
+    partitionVector: draft.partitionVector,
+    textVector,
+    userTextVector,
+    userPartitionVector: userPartition
+  })
+);</code></pre>
+
+  <h3>3.1 未修改的内容</h3>
+  <ul>
+    <li>未改动 <code>buildEntry</code> / <code>buildExplorationEntry</code> 的签名与取值逻辑。</li>
+    <li>未改动 <code>buildRecommendations</code> 中用户向量的构建方式。</li>
+    <li>未改动任何阈值、权重、衰减公式、冷启动门槛。</li>
+    <li>未改动 <code>recommend-quality.js</code>、<code>recommend-core.js</code>、C1 / C2 / C3-1 任何业务模块。</li>
+    <li>未修改任何测试文件，未跳过测试，未放宽断言。</li>
+    <li>未用全 0 向量或其他伪造数据填补缺失值。</li>
+  </ul>
+
+  <h3>3.2 关于“本轮是否再次编辑”</h3>
+  <p>本轮复核时，上述两处修正<strong>已经存在于工作区</strong>（上一轮修复写入，见 <code>rollback/before-rank-undefined-fix/README.md</code>）。本轮没有再对代码做第三次改动——因为再改就会偏离最小修复原则。本轮工作是：</p>
+  <ol>
+    <li>逐行复核两处调用与两个 <code>buildEntry</code> 的取值约定；</li>
+    <li>扫描全文件其余简写属性，确认无同类未声明标识符（§4）；</li>
+    <li>记录修复前/后行为差异（§5）；</li>
+    <li>归档本报告。</li>
+  </ol>
+
+  <hr>
+
+  <h2 id="sec-4">4. 同类变量问题扫描</h2>
+  <p>对 <code>recommend-rank.js</code> 全文件执行“对象字面量简写属性”扫描（正则 <code>^\s+[A-Za-z_$][A-Za-z0-9_$]*,?\s*$</code>），逐个核对是否在作用域内声明：</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>行</th><th>简写</th><th>声明处</th><th>结论</th></tr></thead>
+    <tbody>
+      <tr><td>94-95</td><td><code>code, message</code></td><td><code>reason(code, message, evidence)</code></td><td>正常</td></tr>
+      <tr><td>129 / 135</td><td><code>K</code></td><td><code>normalizeConfig</code> 内 <code>const K</code></td><td>正常</td></tr>
+      <tr><td>374 / 378</td><td><code>userShare</code></td><td><code>buildReasons</code> 内 <code>const userShare</code></td><td>正常</td></tr>
+      <tr><td>431</td><td><code>config</code></td><td><code>buildRecommendations</code> 参数链</td><td>正常</td></tr>
+      <tr><td>445</td><td><code>vectorOptions</code></td><td><code>:435</code></td><td>正常</td></tr>
+      <tr><td>470-475 / 482-486</td><td><code>source, userPartition, userText, now, config, similarityMode</code></td><td><code>buildRecommendations</code> 内均已绑定</td><td>正常</td></tr>
+      <tr><td>618-619 / 783-784</td><td><code>textVector, userTextVector</code></td><td><code>:585 / :582</code>、<code>:753 / :750</code></td><td>正常</td></tr>
+      <tr><td>670 / 682 / 833 / 847</td><td><code>reliability, config</code></td><td><code>buildEntry</code> / <code>buildExplorationEntry</code> 内</td><td>正常</td></tr>
+      <tr><td>875 / 889 / 899</td><td><code>explorationSorted, remaining, mainQuota</code></td><td><code>finalizeSimilarityLanes</code> 内</td><td>正常</td></tr>
+      <tr><td>1064-1070</td><td><code>MODULE_KIND</code> 等</td><td>顶层 <code>const</code></td><td>正常</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>结论：除已修复的两处外，未发现其他未声明的简写属性。</strong></p>
+
+  <p>依赖符号的可用性也已核对：</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>符号</th><th>来源</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td><code>Quality.buildDecayedUserPartitionVector</code></td><td><code>recommend-quality.js:664</code>，导出 <code>:1787</code></td><td>存在</td></tr>
+      <tr><td><code>Quality.buildDecayedUserTextCounts</code></td><td><code>:854</code>，导出 <code>:1788</code></td><td>存在</td></tr>
+      <tr><td><code>Core.buildCandidatePartitionVector</code></td><td><code>recommend-core.js:746</code></td><td>存在</td></tr>
+      <tr><td><code>Core.buildCandidateTextCounts</code></td><td><code>:923</code></td><td>存在</td></tr>
+      <tr><td><code>Core.computeIdf</code> / <code>buildTfIdfVector</code> / <code>compareVectors</code></td><td><code>:1183 / :1464 / :1750</code></td><td>存在</td></tr>
+      <tr><td><code>Import.assessImportedContentCandidates</code></td><td><code>candidate-content-import.js:1547</code></td><td>存在</td></tr>
+      <tr><td><code>Quality.assessFeatureReliability</code> 的 <code>coverage.partition.ratio</code></td><td><code>recommend-quality.js:1528-1535, 1574-1586</code></td><td>存在</td></tr>
+    </tbody>
+  </table></div>
+
+  <hr>
+
+  <h2 id="sec-5">5. 修改前后的行为区别</h2>
+
+  <h3>5.1 修复前</h3>
+  <ul>
+    <li><code>similarityMode === true</code> 且 main 通道存在可评分候选时，构造 <code>buildEntry</code> 参数对象即抛 <code>ReferenceError</code>，<strong>整条 <code>buildRecommendations()</code> 调用失败</strong>。</li>
+    <li>结果：<code>test-recommend-rank.js</code> 中所有进入相似度路径的用例失败（19 项）。</li>
+    <li>exploration 通道即使被调用也会在同一位置失败，只是 main 先抛。</li>
+    <li><code>returning-only</code>（冷启动数据不足）路径传 <code>vectors = undefined</code>，不经过该对象字面量，所以那 9 项能通过。</li>
+  </ul>
+
+  <h3>5.2 修复后</h3>
+  <ul>
+    <li><code>buildEntry</code> / <code>buildExplorationEntry</code> 收到 <code>userPartitionVector</code> = <code>Quality</code> 返回的包装对象；内部按既有约定取出 <code>.vector</code> 与 <code>.basis</code>，供 <code>buildReasons()</code> 的 <code>partition-match</code> 理由使用。</li>
+    <li>若用户分区向量不可用（<code>available === false</code>，<code>.vector === null</code>），仍按原逻辑落为 <code>null</code>，<strong>不会伪造 0 向量</strong>，也不会生成 <code>partition-match</code> 理由。</li>
+    <li>数值口径、排序权重、MMR、配额、去重逻辑零变化。</li>
+    <li>关闭衰减路径与 C3-1 的行为一致性不受影响（<code>Quality</code> 委托逻辑未动）。</li>
+  </ul>
+
+  <hr>
+
+  <h2 id="sec-6">6. 测试与语法检查结果（未执行）</h2>
+  <p>本轮执行通道在被调用时返回：</p>
+  <pre class="code"><code>qwen/qwen-flash is temporarily unavailable (connection failed),
+so auto mode cannot determine the safety of Bash right now.</code></pre>
+  <p>因此以下结果<strong>全部为未执行</strong>，不得视为通过：</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>检查项</th><th>数量</th><th>本轮结果</th><th>最近一次已知结果</th></tr></thead>
+    <tbody>
+      <tr><td><code>node --check recommend-rank.js</code></td><td>—</td><td><strong>未执行</strong></td><td>无记录</td></tr>
+      <tr><td><code>test-recommend-rank.js</code></td><td>28</td><td><strong>未执行</strong></td><td>9/28（2026-11-12 14:34，修复前）</td></tr>
+      <tr><td><code>test-recommend-quality.js</code></td><td>47</td><td><strong>未执行</strong></td><td>无记录</td></tr>
+      <tr><td>既有回归</td><td>297</td><td><strong>未执行</strong></td><td>无记录</td></tr>
+      <tr><td>合计</td><td>372</td><td><strong>未执行</strong></td><td>—</td></tr>
+    </tbody>
+  </table></div>
+
+  <hr>
+
+  <h2 id="sec-7">7. 执行命令与退出码（需本机回填）</h2>
+  <p>在 <code>D:\Bili-Daily</code> 打开 PowerShell，逐条执行。<code>$LASTEXITCODE</code> 为该条命令的退出码（<code>0</code> 为成功）；每条测试自身的统计行（如 <code>28/28 通过</code>）也请一并记录。</p>
+  <pre class="code" data-lang="powershell"><code>cd D:\Bili-Daily
+
+node --check recommend-rank.js;   "check-rank   exit=$LASTEXITCODE"
+node test-recommend-rank.js;      "rank         exit=$LASTEXITCODE"
+node test-recommend-quality.js;   "quality      exit=$LASTEXITCODE"
+node test-recommend-core.js;      "core         exit=$LASTEXITCODE"
+node test-candidate-content-import.js; "import   exit=$LASTEXITCODE"
+node test-candidate-features.js;  "features     exit=$LASTEXITCODE"
+node test-candidate-quality.js;   "cand-quality exit=$LASTEXITCODE"
+node test-candidate-pool.js;      "pool         exit=$LASTEXITCODE"
+node test-interest-profile.js;    "profile      exit=$LASTEXITCODE"
+node test-uid.js;                 "uid          exit=$LASTEXITCODE"
+node test-up-stats.js;            "up-stats     exit=$LASTEXITCODE"
+node test-stats.js;               "stats        exit=$LASTEXITCODE"</code></pre>
+
+  <h3>7.1 建议的日志重定向（避免 UTF-16 乱码）</h3>
+  <pre class="code" data-lang="powershell"><code>$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
+node test-recommend-rank.js 2&gt;&amp;1 | Tee-Object -FilePath rank-fix-run.txt
+"exit=$LASTEXITCODE"</code></pre>
+
+  <h3>7.2 回填模板</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>命令</th><th>退出码</th><th>统计行</th><th>结论</th></tr></thead>
+    <tbody>
+      <tr><td><code>node --check recommend-rank.js</code></td><td></td><td></td><td></td></tr>
+      <tr><td><code>node test-recommend-rank.js</code></td><td></td><td>/28</td><td></td></tr>
+      <tr><td><code>node test-recommend-quality.js</code></td><td></td><td>/47</td><td></td></tr>
+      <tr><td>既有回归（9 个文件）</td><td></td><td>/297</td><td></td></tr>
+    </tbody>
+  </table></div>
+
+  <hr>
+
+  <h2 id="sec-8">8. 回滚方法</h2>
+  <p>修复前快照已存在，<strong>未覆盖任何其他 rollback 子目录</strong>：</p>
+  <ul>
+    <li><code>D:\Bili-Daily\rollback\before-rank-undefined-fix\recommend-rank.js</code>（36102 字节，含两处缺陷）</li>
+    <li><code>D:\Bili-Daily\rollback\before-rank-undefined-fix\README.md</code></li>
+  </ul>
+  <pre class="code" data-lang="powershell"><code>Copy-Item D:\Bili-Daily\rollback\before-rank-undefined-fix\recommend-rank.js `
+          D:\Bili-Daily\recommend-rank.js -Force</code></pre>
+  <p>项目当前没有 Git 仓库，因此未创建提交；回滚依赖上述文件快照。</p>
+
+  <hr>
+
+  <h2 id="sec-9">9. 风险与已知限制</h2>
+  <ol>
+    <li><strong>修复未经运行验证</strong>：语法与逻辑为静态复核结论，可能存在未暴露的问题。</li>
+    <li>若本机复跑仍报同一条 <code>ReferenceError</code>，请确认：
+      <ul>
+        <li>运行目录与 <code>require</code> 路径都是 <code>D:\Bili-Daily\recommend-rank.js</code>；</li>
+        <li>文件第 620 行为 <code>userPartitionVector: userPartition</code>（而不是简写）。</li>
+      </ul>
+    </li>
+    <li><code>rank-debug.txt</code> 是修复前的历史日志，<strong>保留未改动</strong>；不要把它当作修复后的结果。</li>
+    <li>本报告 §6 的三项测试数字均为“未执行”，在回填前不得对外声称 372 项通过。</li>
+  </ol>
+
+  <hr>
+
+  <h2 id="sec-10">10. 下一步</h2>
+  <ol>
+    <li>本机执行 §7 命令，回填 §7.2 表格；若 28 项仍有失败，生成新日志并定位。</li>
+    <li>28 项通过后，允许继续推进工作包 B（导入存储层）与工作包 C（popup 集成）。</li>
+    <li>单文件 HTML 由本报告同名生成（见 <code>MVP-rank-fix-report.html</code>）。</li>
+  </ol>
+
+  <div class="footer">
+    <span>Bili Daily · 开发报告</span>
+    <span>MVP Sprint 工作包 A · 排序层缺陷修复报告</span>
+  </div>
+</main>
+</body>
+</html>

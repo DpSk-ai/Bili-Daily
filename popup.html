@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bili Daily · Neon Edition</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="app">
+      <div class="ambient ambient-cyan" aria-hidden="true"></div>
+      <div class="ambient ambient-magenta" aria-hidden="true"></div>
+      <div class="grid-veil" aria-hidden="true"></div>
+
+      <header class="hero">
+        <div class="hero-main">
+          <div class="brand">
+            <span class="logo" aria-hidden="true"></span>
+            <div class="hero-text">
+              <p class="kicker"><span class="kicker-dot" aria-hidden="true"></span>LOCAL ONLY // NEON EDITION</p>
+              <h1>BILI DAILY<span class="title-slash">//</span><span class="title-neon">NEON</span></h1>
+            </div>
+          </div>
+          <div class="hero-status" data-hero-status aria-live="polite">
+            <span class="status-dot" data-hero-dot aria-hidden="true"></span>
+            <span data-hero-status-text>本地链路 · 待机</span>
+          </div>
+        </div>
+
+        <div class="assistant" aria-hidden="false">
+          <span class="assistant-ring ring-a" aria-hidden="true"></span>
+          <span class="assistant-ring ring-b" aria-hidden="true"></span>
+          <img
+            src="assets/neon-assistant.svg"
+            alt="NEO-01 原创全息助手"
+            class="assistant-img"
+            data-assistant
+          >
+          <span class="assistant-fallback" aria-hidden="true">NEO-01</span>
+          <span class="assistant-tag" aria-hidden="true">NEO-01</span>
+        </div>
+
+        <div
+          class="dev-switch"
+          data-dev-switch
+          role="group"
+          aria-label="开发模式：切换统计日期"
+          hidden
+        >
+          <button type="button" class="dev-option" data-date-option="yesterday" aria-pressed="false">昨日</button>
+          <button type="button" class="dev-option" data-date-option="today" aria-pressed="false">今天</button>
+        </div>
+        <div class="scanline" aria-hidden="true"></div>
+      </header>
+
+      <div class="hero-rule" aria-hidden="true"><span></span></div>
+
+      <section class="card card-summary" data-accent="cyan" aria-labelledby="yesterday-title">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <span class="card-index" aria-hidden="true">01</span>
+            <h2 id="yesterday-title">昨日观看总结</h2>
+          </div>
+          <span class="pill" data-field="date">昨日回顾</span>
+        </div>
+        <div class="stat-row">
+          <div class="stat">
+            <span class="stat-value" data-field="count">—</span>
+            <span class="stat-label">有效视频</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" data-field="duration">—</span>
+            <span class="stat-label">观看时长</span>
+          </div>
+        </div>
+        <p class="line" data-field="partition">等待收集观看数据</p>
+        <p class="line muted" data-field="periods-summary">等待收集观看数据</p>
+        <ol class="up-list" data-field="ups" hidden></ol>
+        <p class="line muted" data-field="ups-empty">等待收集观看数据</p>
+        <p class="line muted" data-field="ups-note" hidden></p>
+      </section>
+
+      <section class="card card-profile" data-accent="violet" aria-labelledby="profile-title">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <span class="card-index" aria-hidden="true">02</span>
+            <h2 id="profile-title">最近 7 天兴趣画像</h2>
+          </div>
+          <span class="pill pill-cyan" data-field="profile-status">读取中</span>
+        </div>
+        <p class="line strong" data-field="profile-main">正在统计近期兴趣…</p>
+        <div class="bars" data-profile-bars></div>
+        <p class="line muted" data-field="profile-ups"></p>
+      </section>
+
+      <section class="card card-recommend" data-accent="magenta" aria-labelledby="rec-title">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <span class="card-index" aria-hidden="true">03</span>
+            <h2 id="rec-title">今日 UP 主推荐</h2>
+          </div>
+          <button type="button" class="ghost small" data-refresh>刷新</button>
+        </div>
+        <p class="line muted" data-field="rec-status" aria-live="polite">正在计算推荐…</p>
+        <ol class="rec-list" data-recommendations></ol>
+        <p class="line footnote" data-field="rec-footnote" hidden></p>
+      </section>
+
+      <section class="card card-discovery" data-accent="cyan" aria-labelledby="discovery-title">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <span class="card-index" aria-hidden="true">04</span>
+            <h2 id="discovery-title">自动发现新 UP 主</h2>
+          </div>
+          <span class="pill pill-gray" data-field="discovery-status">读取中</span>
+        </div>
+        <p class="line muted">
+          仅在你正常浏览 B 站视频页、且本功能开启时，读取页面已经渲染的「相关推荐」卡片中可见的 BV、UP UID、昵称、标题，以及页面明确提供的分区。不会自动点击、自动滚动或批量打开视频，不读取 Cookie / token，也不上传数据。
+        </p>
+        <div class="discovery-counts">
+          <div class="stat">
+            <span class="stat-value" data-field="discovery-discovered">—</span>
+            <span class="stat-label">新发现 UP 主</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" data-field="discovery-recommendable">—</span>
+            <span class="stat-label">可进入探索</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" data-field="discovery-insufficient">—</span>
+            <span class="stat-label">数据不足</span>
+          </div>
+        </div>
+        <p class="line" data-field="discovery-message" aria-live="polite"></p>
+        <div class="button-row">
+          <button type="button" class="primary" data-discovery-toggle aria-pressed="false">开启自动发现</button>
+          <button type="button" class="ghost" data-discovery-reorganize>手动重新整理</button>
+          <button type="button" class="ghost danger" data-discovery-clear hidden>清除页面观察候选</button>
+        </div>
+        <p class="line muted" data-field="discovery-action-status" aria-live="polite"></p>
+        <p class="line footnote">
+          候选只会在开启功能期间、你正常浏览视频页并出现相关推荐卡片时逐步积累。页面观察仅代表本地看到过这些信息，不代表账号经过 B 站官方验证。
+        </p>
+      </section>
+
+      <section class="card card-import" data-accent="cyan" aria-labelledby="import-title">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <span class="card-index" aria-hidden="true">05</span>
+            <h2 id="import-title">候选导入与管理</h2>
+          </div>
+          <span class="pill pill-gold">user-provided</span>
+        </div>
+        <p class="line muted">
+          选择 JSON 文件 → 预览校验结果 → 确认后才会写入本地。导入候选只进入探索通道，不会混入观看记录。
+        </p>
+        <label class="file-drop" for="import-file">
+          <span class="file-drop-title">选择候选 JSON 文件</span>
+          <span class="file-drop-hint">最大 1 MiB · schemaVersion 1 · userConfirmed 必须为 true</span>
+          <input id="import-file" type="file" accept=".json,application/json" data-import-file>
+        </label>
+        <div class="import-preview" data-import-preview hidden>
+          <p class="line" data-field="import-preview-text"></p>
+          <div class="button-row">
+            <button type="button" class="primary" data-import-confirm>确认导入</button>
+            <button type="button" class="ghost" data-import-cancel>取消</button>
+          </div>
+        </div>
+        <p class="line muted" data-field="import-status" aria-live="polite"></p>
+        <div class="import-list" data-import-list></div>
+        <button type="button" class="ghost danger" data-import-clear hidden>清空全部导入</button>
+      </section>
+
+      <section class="card card-data" data-accent="lime" aria-labelledby="data-title">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <span class="card-index" aria-hidden="true">06</span>
+            <h2 id="data-title">数据舱 · 本地备份</h2>
+          </div>
+          <span class="pill pill-gray" data-field="data-status">待命</span>
+        </div>
+        <p class="line muted">
+          导出观看记录、候选导入、页面观察与自动发现设置四个本地键。恢复前会预览数量和警告，确认后才写入；不会上传，也不会改动未包含在备份中的键。
+        </p>
+        <div class="button-row">
+          <button type="button" class="primary" data-data-export>导出全部数据</button>
+          <label class="file-drop file-drop-inline" for="data-file">
+            <span class="file-drop-title">选择备份文件</span>
+            <span class="file-drop-hint">bili-daily-backup v1 · 最大 5 MiB</span>
+            <input id="data-file" type="file" accept=".json,application/json" data-data-file>
+          </label>
+        </div>
+        <div class="import-preview" data-data-preview hidden>
+          <p class="line" data-field="data-preview-text"></p>
+          <div class="button-row">
+            <button type="button" class="primary" data-data-confirm>确认恢复</button>
+            <button type="button" class="ghost" data-data-cancel>取消</button>
+          </div>
+        </div>
+        <p class="line muted" data-field="data-status-line" aria-live="polite"></p>
+        <p class="line footnote">
+          备份文件包含本地观看偏好与候选信息，请自行妥善保管。恢复会覆盖备份中包含的同名键，建议先导出一份当前数据。
+        </p>
+      </section>
+
+      <footer>
+        <p class="footer-line"><span class="footer-dot" aria-hidden="true"></span>LOCAL STORAGE · NO UPLOAD</p>
+        <p class="footer-build">BILI DAILY v1.1 // NEON EDITION</p>
+      </footer>
+    </main>
+
+    <script src="storage.js"></script>
+    <script src="stats.js"></script>
+    <script src="interest-profile.js"></script>
+    <script src="candidate-pool.js"></script>
+    <script src="candidate-features.js"></script>
+    <script src="candidate-content-import.js"></script>
+    <script src="recommend-core.js"></script>
+    <script src="recommend-quality.js"></script>
+    <script src="recommend-rank.js"></script>
+    <script src="candidate-store.js"></script>
+    <script src="discovered-candidate-store.js"></script>
+    <script src="recommend-service.js"></script>
+    <script src="data-backup.js"></script>
+    <script src="dev-config.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

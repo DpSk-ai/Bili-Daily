@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>候选持久化测试启动失败修复记录</title>
+<style>
+  :root {
+    --bg: #0b0e17;
+    --panel: #141a2b;
+    --panel-2: #1b2338;
+    --line: #2a3552;
+    --text: #e6e9f5;
+    --muted: #9aa5c4;
+    --accent: #7c5cff;
+    --accent-2: #34d1c4;
+    --warn: #ffb547;
+    --fail: #ff5d7a;
+    --ok: #45e0a8;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: radial-gradient(1000px 600px at 15% -10%, #221a44 0%, transparent 60%),
+                radial-gradient(900px 500px at 100% 0%, #102f36 0%, transparent 55%),
+                var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    background: rgba(20, 26, 43, 0.92);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 36px 40px 44px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  }
+  h1, h2, h3 { line-height: 1.35; }
+  h1 {
+    font-size: 26px;
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(90deg, #b9a8ff, #6fe6d9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h2 {
+    font-size: 19px;
+    margin: 34px 0 12px;
+    padding-left: 12px;
+    border-left: 4px solid var(--accent);
+  }
+  h3 { font-size: 16px; margin: 22px 0 8px; color: #c9c2ff; }
+  p { margin: 10px 0; }
+  ul, ol { margin: 8px 0 12px; padding-left: 24px; }
+  li { margin: 5px 0; }
+  code {
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 13px;
+    background: #0d1120;
+    border: 1px solid #283250;
+    border-radius: 5px;
+    padding: 1px 6px;
+    color: #9ff3e7;
+  }
+  pre {
+    background: #0a0e19;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 12px 0 18px;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #d7dcf0;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 20px;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 9px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--panel-2); color: #cfd6ee; font-weight: 600; }
+  tbody tr:nth-child(even) td { background: rgba(255, 255, 255, 0.02); }
+  hr { border: none; border-top: 1px solid var(--line); margin: 30px 0; }
+  strong { color: #ffffff; }
+  .meta {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 0 0 24px;
+  }
+  .meta ul { margin: 0; }
+  .callout {
+    border-left: 4px solid var(--warn);
+    background: rgba(255, 181, 71, 0.08);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 16px 0;
+  }
+  .callout p { margin: 4px 0; }
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    padding: 1px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--fail);
+    color: var(--fail);
+    margin-left: 6px;
+    vertical-align: 2px;
+  }
+  .diff-add { color: var(--ok); }
+  .diff-del { color: var(--fail); }
+  @media (max-width: 640px) {
+    body { padding: 16px 8px 40px; }
+    main { padding: 22px 16px 30px; }
+    table { font-size: 13px; }
+    th, td { padding: 7px 8px; }
+  }
+  @media print {
+    body { background: #fff; color: #111; padding: 0; }
+    main { box-shadow: none; border: none; background: #fff; max-width: none; }
+    h1 { color: #111; background: none; -webkit-text-fill-color: #111; }
+    h2, h3, strong { color: #111; }
+    pre, code, .meta, .callout { background: #f5f5f5; color: #111; }
+    pre code { color: #111; }
+    th { background: #eee; }
+    th, td { border-color: #bbb; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>候选持久化测试启动失败修复记录</h1>
+
+  <div class="meta">
+    <ul>
+      <li>日期：2026-11-12</li>
+      <li>范围：<code>test-candidate-store.js</code> 模块加载顺序</li>
+      <li>修改文件：仅 <code>test-candidate-store.js</code></li>
+      <li>业务逻辑：未修改 <code>candidate-store.js</code></li>
+      <li>既有测试：未修改</li>
+      <li>断言：未删除、未放宽</li>
+      <li>测试执行状态：<strong>Claude Code 未执行</strong>（命令通道被阻断）</li>
+    </ul>
+  </div>
+
+  <h2>1. 原始失败记录（用户提供）</h2>
+  <p>运行 <code>node test-candidate-store.js</code> 时，在进入任何测试之前立即抛出：</p>
+<pre><code>Error: Bili Daily candidate-content-import.js 需要先加载 candidate-features.js</code></pre>
+  <p>定位：<code>test-candidate-store.js</code> 第 15～17 行的 <code>require</code> 区块。</p>
+  <p>原始加载顺序（修复前）：</p>
+<pre><code>require(path.join(__dirname, "stats.js"));
+require(path.join(__dirname, "candidate-content-import.js"));
+require(path.join(__dirname, "candidate-store.js"));</code></pre>
+
+  <h2>2. 依赖审查</h2>
+  <table>
+    <thead>
+      <tr><th>模块</th><th>源码位置</th><th>实际依赖</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>candidate-features.js</code></td>
+        <td>第 10 行注释、第 47～56 行校验</td>
+        <td>只依赖 <code>stats.js</code>；要求 <code>Stats.cleanRecord</code>、<code>Stats.mergeByBvid</code>、<code>Stats.parseDateKey</code></td>
+      </tr>
+      <tr>
+        <td><code>candidate-content-import.js</code></td>
+        <td>第 9～12 行注释、第 57～72 行校验</td>
+        <td>依赖 <code>stats.js</code> 与 <code>candidate-features.js</code>；要求 <code>Features.extractTitleBigrams</code></td>
+      </tr>
+      <tr>
+        <td><code>candidate-store.js</code></td>
+        <td>第 32～37 行</td>
+        <td>依赖 <code>candidate-content-import.js</code>；缺失时直接抛错</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><code>candidate-content-import.js</code> 的启动校验：</p>
+<pre><code>const Stats = global.BiliDailyStats;
+const Features = global.BiliDailyCandidateFeatures;
+
+if (!Stats || typeof Stats.cleanRecord !== "function" || typeof Stats.parseDateKey !== "function") {
+  throw new Error("Bili Daily candidate-content-import.js 需要先加载 stats.js");
+}
+if (!Features || typeof Features.extractTitleBigrams !== "function") {
+  throw new Error(
+    "Bili Daily candidate-content-import.js 需要先加载 candidate-features.js"
+  );
+}</code></pre>
+  <p>因此，测试脚本必须先加载 <code>stats.js</code>，再加载 <code>candidate-features.js</code>，然后才能加载 <code>candidate-content-import.js</code> 与 <code>candidate-store.js</code>。</p>
+
+  <h2>3. 最小修复</h2>
+  <p><code>test-candidate-store.js</code> 顶部只调整 require 顺序，新增一行：</p>
+<pre><code> require(path.join(__dirname, "stats.js"));
+<span class="diff-add">+require(path.join(__dirname, "candidate-features.js"));</span>
+ require(path.join(__dirname, "candidate-content-import.js"));
+ require(path.join(__dirname, "candidate-store.js"));</code></pre>
+  <p>最终顺序：</p>
+<pre><code>require(path.join(__dirname, "stats.js"));
+require(path.join(__dirname, "candidate-features.js"));
+require(path.join(__dirname, "candidate-content-import.js"));
+require(path.join(__dirname, "candidate-store.js"));</code></pre>
+  <p>说明：</p>
+  <ul>
+    <li>没有修改 <code>candidate-store.js</code> 的任何业务逻辑。</li>
+    <li>没有修改旧的 372 项测试。</li>
+    <li>没有删除或放宽测试 1～28 的断言。</li>
+    <li><code>test-recommend-service.js</code> 原本已经按 <code>stats.js</code> → <code>candidate-features.js</code> → <code>candidate-content-import.js</code> 的顺序加载，无需改动。</li>
+  </ul>
+
+  <h2>4. 修复前快照</h2>
+  <p>目录：<code>rollback/before-candidate-store-test-fix/</code></p>
+  <table>
+    <thead><tr><th>文件</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>test-candidate-store.js</code></td><td>修复前的测试脚本（缺少 <code>candidate-features.js</code>）</td></tr>
+      <tr><td><code>README.md</code></td><td>回滚说明</td></tr>
+    </tbody>
+  </table>
+  <p>回滚：</p>
+<pre><code>cd D:\Bili-Daily
+Copy-Item rollback\before-candidate-store-test-fix\test-candidate-store.js . -Force</code></pre>
+
+  <h2>5. 测试执行状态</h2>
+
+  <h3>5.1 Claude Code 侧</h3>
+  <p>本轮<strong>没有执行</strong> <code>node --check test-candidate-store.js</code> 与 <code>node test-candidate-store.js</code>。命令工具持续返回：</p>
+<pre><code>qwen/qwen-flash is temporarily unavailable (connection failed), so auto mode cannot determine the safety of Bash right now.</code></pre>
+  <div class="callout">
+    <p>因此：</p>
+    <ul>
+      <li>不宣称 28/28 通过；</li>
+      <li>不宣称 422/422 通过；</li>
+      <li>后续业务断言是否仍有失败，当前无法判断。</li>
+    </ul>
+  </div>
+
+  <h3>5.2 本机 PowerShell 验证命令</h3>
+<pre><code>cd D:\Bili-Daily
+
+node --check test-candidate-store.js
+node test-candidate-store.js
+
+# 新增测试
+node test-recommend-service.js
+
+# 既有回归
+node test-recommend-rank.js
+node test-recommend-quality.js
+node test-stats.js
+node test-up-stats.js
+node test-uid.js
+node test-interest-profile.js
+node test-candidate-pool.js
+node test-candidate-quality.js
+node test-candidate-features.js
+node test-candidate-content-import.js
+node test-recommend-core.js</code></pre>
+  <p>目标：</p>
+  <ul>
+    <li><code>test-candidate-store.js</code>：<strong>28/28 通过</strong>；</li>
+    <li>全部新增与既有测试：<strong>422/422 通过</strong>（既有 372 + 新增 28 + 22）。</li>
+  </ul>
+
+  <h3>5.3 如果出现后续失败</h3>
+  <p>依赖加载错误已经消除后，任何新失败都必须根据真实断言输出定位：</p>
+  <ul>
+    <li>如果是测试预期与模块真实行为不一致，修测试预期或修对应模块，<strong>不得归因于依赖顺序</strong>；</li>
+    <li>不得删除测试、跳过测试或放宽断言；</li>
+    <li>不得伪造通过结果。</li>
+  </ul>
+  <p>请把 <code>node test-candidate-store.js</code> 的完整输出回填，以便继续处理真实的业务断言失败。</p>
+
+  <hr>
+
+  <h2>6. 当前状态</h2>
+  <ul>
+    <li>代码修复：完成（仅一处 require 顺序）。</li>
+    <li>回滚快照：已保存。</li>
+    <li>自动化验证：待本机执行。</li>
+    <li>Edge 验收：仍待项目所有者执行。</li>
+  </ul>
+</main>
+</body>
+</html>

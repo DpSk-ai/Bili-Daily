@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-labelledby="neoTitle">
+  <title id="neoTitle">NEO-01 原创全息助手</title>
+  <defs>
+    <linearGradient id="hair" x1="52" y1="34" x2="192" y2="206" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#111a3d"/>
+      <stop offset="0.55" stop-color="#1c2c63"/>
+      <stop offset="1" stop-color="#0b1026"/>
+    </linearGradient>
+    <linearGradient id="hairEdge" x1="64" y1="44" x2="186" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5cf2ff"/>
+      <stop offset="0.45" stop-color="#7d7bff"/>
+      <stop offset="1" stop-color="#ff4fd8"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="92" y1="78" x2="158" y2="172" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff1ec"/>
+      <stop offset="0.62" stop-color="#ffd9df"/>
+      <stop offset="1" stop-color="#efb7cc"/>
+    </linearGradient>
+    <linearGradient id="suit" x1="58" y1="168" x2="190" y2="236" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#101a3a"/>
+      <stop offset="0.55" stop-color="#0a1128"/>
+      <stop offset="1" stop-color="#151f45"/>
+    </linearGradient>
+    <linearGradient id="visor" x1="78" y1="112" x2="168" y2="132" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5cf2ff"/>
+      <stop offset="0.52" stop-color="#9af7ff"/>
+      <stop offset="1" stop-color="#ff4fd8"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="24" y1="24" x2="216" y2="216" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5cf2ff"/>
+      <stop offset="0.5" stop-color="#9b7bff"/>
+      <stop offset="1" stop-color="#ff4fd8"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#5cf2ff" stop-opacity="0.34"/>
+      <stop offset="0.62" stop-color="#5cf2ff" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#5cf2ff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- holographic halo -->
+  <circle cx="120" cy="120" r="112" fill="url(#halo)"/>
+  <circle cx="120" cy="120" r="104" fill="none" stroke="url(#ring)" stroke-opacity="0.42" stroke-width="1"/>
+  <circle cx="120" cy="120" r="92" fill="none" stroke="#5cf2ff" stroke-opacity="0.30" stroke-width="1" stroke-dasharray="3 9"/>
+  <circle cx="120" cy="120" r="80" fill="none" stroke="#ff4fd8" stroke-opacity="0.22" stroke-width="1" stroke-dasharray="18 12"/>
+  <g stroke="#5cf2ff" stroke-opacity="0.55" stroke-width="1.4">
+    <path d="M24 120h10"/>
+    <path d="M206 120h10"/>
+    <path d="M120 24v10"/>
+    <path d="M120 206v10"/>
+  </g>
+  <g fill="#ff4fd8" opacity="0.8">
+    <circle cx="120" cy="16" r="2"/>
+    <circle cx="224" cy="120" r="2"/>
+    <circle cx="120" cy="224" r="2"/>
+    <circle cx="16" cy="120" r="2"/>
+  </g>
+
+  <!-- shoulders / high collar -->
+  <path d="M45 236c2-34 26-55 55-63l20-5 20 5c29 8 53 29 55 63z" fill="url(#suit)" stroke="#5cf2ff" stroke-opacity="0.28"/>
+  <path d="M84 182l36 26 36-26 9 10-45 32-45-32z" fill="#0a1024" stroke="#5cf2ff" stroke-opacity="0.55"/>
+  <path d="M120 208v28" stroke="#ff4fd8" stroke-opacity="0.6" stroke-width="1.2"/>
+  <path d="M70 224c8-18 18-28 30-34" stroke="#5cf2ff" stroke-opacity="0.45" stroke-width="1.2" fill="none"/>
+  <path d="M170 224c-8-18-18-28-30-34" stroke="#ff4fd8" stroke-opacity="0.45" stroke-width="1.2" fill="none"/>
+
+  <!-- neck -->
+  <path d="M105 160h30v24c0 7-7 12-15 12s-15-5-15-12z" fill="url(#skin)"/>
+  <path d="M105 176c8 5 22 5 30 0" stroke="#d895b4" stroke-opacity="0.55" fill="none"/>
+
+  <!-- face -->
+  <path d="M83 101c0-25 16-43 37-43s37 18 37 43v15c0 27-16 48-37 48s-37-21-37-48z" fill="url(#skin)"/>
+  <!-- ears -->
+  <path d="M82 113c-8-2-12 4-11 12 1 8 6 11 12 9z" fill="#f3c2d1"/>
+  <path d="M158 113c8-2 12 4 11 12-1 8-6 11-12 9z" fill="#f3c2d1"/>
+
+  <!-- hair silhouette -->
+  <path d="M69 111c-4-38 16-66 51-66 34 0 55 25 52 62-2-9-8-15-14-19-3 10-9 16-17 20 1-9-2-16-7-21-11 13-28 20-48 20 3 5 3 10 1 15-4-6-10-9-18-11z" fill="url(#hair)" stroke="url(#hairEdge)" stroke-opacity="0.55" stroke-width="1.4"/>
+  <path d="M71 99c-8 22-8 43 0 58-13-8-19-21-18-37 1-9 7-17 18-21z" fill="url(#hair)"/>
+  <path d="M169 98c9 20 9 42 1 60 13-8 19-21 18-37-1-10-8-18-19-23z" fill="url(#hair)"/>
+  <g stroke="url(#hairEdge)" stroke-width="1.3" fill="none" opacity="0.75">
+    <path d="M92 63c9 9 20 14 33 15"/>
+    <path d="M149 60c-6 12-14 20-25 25"/>
+    <path d="M76 138c-2 18 2 31 11 40"/>
+    <path d="M164 138c2 18-2 31-11 40"/>
+  </g>
+
+  <!-- bangs -->
+  <path d="M84 92c9-15 22-23 38-23 14 0 26 6 34 18-9-4-17-6-25-5 3 4 5 8 5 13-8-7-18-11-30-11-8 0-15 3-22 8z" fill="#0d1430"/>
+  <path d="M96 78c7 6 15 10 25 12" stroke="#5cf2ff" stroke-opacity="0.5" stroke-width="1.2" fill="none"/>
+
+  <!-- visor / eyes -->
+  <path d="M83 117c12-6 25-8 37-8s25 2 37 8l-2 10c-11-4-23-6-35-6s-24 2-35 6z" fill="#0a1230" stroke="#5cf2ff" stroke-opacity="0.5"/>
+  <path d="M87 119c11-4 22-5 33-5s22 1 33 5l-1 5c-10-3-21-4-32-4s-22 1-32 4z" fill="url(#visor)" filter="url(#glow)"/>
+  <path d="M90 121c10-3 20-4 30-4s20 1 30 4" stroke="#ffffff" stroke-opacity="0.8" stroke-width="1" fill="none"/>
+  <g fill="#ff4fd8" filter="url(#softGlow)">
+    <circle cx="103" cy="122" r="2.2"/>
+    <circle cx="137" cy="122" r="2.2"/>
+  </g>
+
+  <!-- nose + mouth -->
+  <path d="M120 129v8l-5 3" stroke="#d38fa9" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <path d="M112 148c5 3 11 3 16 0" stroke="#b86786" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+
+  <!-- headphones -->
+  <path d="M80 104a41 41 0 0 1 80 0" fill="none" stroke="#141d42" stroke-width="8"/>
+  <path d="M80 104a41 41 0 0 1 80 0" fill="none" stroke="#5cf2ff" stroke-opacity="0.55" stroke-width="1.5"/>
+  <g>
+    <rect x="70" y="103" width="17" height="27" rx="7" fill="#111a3d" stroke="#5cf2ff" stroke-opacity="0.8"/>
+    <rect x="153" y="103" width="17" height="27" rx="7" fill="#111a3d" stroke="#ff4fd8" stroke-opacity="0.8"/>
+    <path d="M78.5 110v14" stroke="#5cf2ff" stroke-width="2" stroke-linecap="round"/>
+    <path d="M161.5 110v14" stroke="#ff4fd8" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- collar lights -->
+  <g filter="url(#softGlow)">
+    <path d="M96 195h48" stroke="#5cf2ff" stroke-width="2" stroke-linecap="round"/>
+    <path d="M104 201h32" stroke="#ff4fd8" stroke-width="1.4" stroke-linecap="round" opacity="0.85"/>
+  </g>
+
+  <!-- HUD ticks -->
+  <g stroke="#5cf2ff" stroke-opacity="0.5" stroke-width="1">
+    <path d="M196 72h12"/>
+    <path d="M202 66v12"/>
+    <path d="M32 168h10"/>
+    <path d="M37 163v10"/>
+  </g>
+  <g fill="#5cf2ff" opacity="0.7">
+    <rect x="196" y="84" width="12" height="2" rx="1"/>
+    <rect x="196" y="89" width="8" height="2" rx="1"/>
+    <rect x="32" y="180" width="12" height="2" rx="1"/>
+  </g>
+</svg>

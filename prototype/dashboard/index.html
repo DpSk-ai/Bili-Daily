@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bili Daily Dashboard - NEON DREAM Prototype</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Background -->
+    <div class="bg-layer">
+      <div class="bg-glow bg-glow-cyan"></div>
+      <div class="bg-glow bg-glow-violet"></div>
+      <div class="bg-grid"></div>
+      <canvas id="bgParticles" class="bg-particles"></canvas>
+    </div>
+
+    <!-- Top Navigation -->
+    <nav class="topnav">
+      <div class="topnav-brand">
+        <div class="brand-icon">BD</div>
+        <h1 class="brand-title">BILI DAILY <span class="brand-accent">// NEON</span></h1>
+      </div>
+      <div class="topnav-tabs">
+        <button class="tab tab-active">总览</button>
+        <button class="tab">数据</button>
+        <button class="tab">设置</button>
+      </div>
+      <div class="topnav-status">
+        <span class="status-dot"></span>
+        <span class="status-text">本地模式</span>
+      </div>
+    </nav>
+
+    <!-- NEO Character -->
+    <div class="neo-character">
+      <!-- NEO / RIN 正面立绘 -->
+      <img src="../../assets/neo-reference.png.png"
+           alt="NEO / RIN"
+           class="neo-portrait"
+           loading="lazy">
+      <div class="neo-glow"></div>
+      <div class="neo-label">
+        <span class="neo-name">NEO // RIN</span>
+        <span class="neo-subtitle">Neural Echo Observer</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="content">
+
+      <!-- Hero Section: 昨日回顾 -->
+      <section class="hero-section">
+        <div class="hero-content">
+          <div class="hero-label">
+            <span class="hero-dot"></span>
+            <span>YESTERDAY RECAP</span>
+          </div>
+          <h2 class="hero-title">昨日观看</h2>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="hero-stat-value" id="heroVideoCount">12</div>
+              <div class="hero-stat-label">视频</div>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <div class="hero-stat-value" id="heroDuration">3.1</div>
+              <div class="hero-stat-label">小时</div>
+            </div>
+          </div>
+          <p class="hero-text" id="heroSummary">主要观看动画 42%、游戏 28%，活跃时段：午间、晚间、深夜</p>
+        </div>
+      </section>
+
+      <!-- Timeline & Profile Grid -->
+      <div class="grid-2col">
+        <section class="card card-timeline">
+          <div class="card-header">
+            <h3 class="card-title"><span class="card-index">01</span>观看时间轴</h3>
+          </div>
+          <div class="timeline" id="timeline">
+            <!-- Timeline items will be rendered here -->
+          </div>
+        </section>
+
+        <section class="card card-profile-large">
+          <div class="card-header">
+            <h3 class="card-title"><span class="card-index">02</span>7 天兴趣画像</h3>
+            <span class="pill pill-ready">就绪</span>
+          </div>
+          <canvas id="radarChartLarge" width="600" height="300"></canvas>
+          <div class="dimension-bars" id="dimensionBars">
+            <!-- Dimension bars will be rendered here -->
+          </div>
+        </section>
+      </div>
+
+      <!-- UP Leaderboard -->
+      <section class="card card-leaderboard">
+        <div class="card-header">
+          <h3 class="card-title"><span class="card-index">03</span>UP 主排行榜</h3>
+          <span class="pill pill-info">最近 7 天</span>
+        </div>
+        <div class="leaderboard-grid" id="leaderboard">
+          <!-- Leaderboard items will be rendered here -->
+        </div>
+      </section>
+
+      <!-- Recommendations & Discovery Grid -->
+      <div class="grid-2col grid-recdiscovery">
+        <section class="card card-recommendations-full">
+          <div class="card-header">
+            <h3 class="card-title"><span class="card-index">04</span>今日推荐</h3>
+            <button class="btn btn-ghost btn-sm" id="refreshRec">
+              <span class="btn-icon">↻</span>
+              刷新
+            </button>
+          </div>
+          <div class="rec-cards" id="recCards">
+            <!-- Recommendation cards will be rendered here -->
+          </div>
+        </section>
+
+        <section class="card card-discovery">
+          <div class="card-header">
+            <h3 class="card-title"><span class="card-index">05</span>自动发现</h3>
+            <span class="pill pill-cyan" id="discoveryStatus">已开启</span>
+          </div>
+          <div class="discovery-stats">
+            <div class="discovery-stat">
+              <div class="discovery-value" id="discoveredCount">23</div>
+              <div class="discovery-label">新发现</div>
+            </div>
+            <div class="discovery-stat">
+              <div class="discovery-value" id="recommendableCount">8</div>
+              <div class="discovery-label">可探索</div>
+            </div>
+          </div>
+          <p class="card-text">已从相关推荐中发现 <strong>23</strong> 位新 UP 主，其中 <strong>8</strong> 位数据充足可进入探索通道。</p>
+          <div class="button-group">
+            <button class="btn btn-primary btn-sm">管理候选</button>
+            <button class="btn btn-ghost btn-sm">重新整理</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Collapsible: Import & Data -->
+      <details class="collapsible">
+        <summary class="collapsible-header">
+          <span class="collapsible-title">候选导入 & 数据舱</span>
+          <span class="collapsible-icon">▼</span>
+        </summary>
+        <div class="collapsible-content">
+          <div class="grid-2col">
+            <div class="card card-inline">
+              <h4 class="card-subtitle">候选导入</h4>
+              <p class="card-text-sm">选择 JSON 文件，预览后确认导入。导入候选进入探索通道，不混入观看记录。</p>
+              <button class="btn btn-secondary btn-sm">选择文件</button>
+            </div>
+            <div class="card card-inline">
+              <h4 class="card-subtitle">数据舱备份</h4>
+              <p class="card-text-sm">导出或恢复观看记录、候选、发现设置。仅本地存储，不上传。</p>
+              <div class="button-group">
+                <button class="btn btn-secondary btn-sm">导出</button>
+                <button class="btn btn-secondary btn-sm">恢复</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p class="footer-text">
+        <span class="footer-dot"></span>
+        LOCAL STORAGE · NO UPLOAD · NEON EDITION v1.1
+      </p>
+    </footer>
+
+  </div>
+
+  <script src="../mock-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

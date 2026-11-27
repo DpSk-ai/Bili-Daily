@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自动发现三个失败测试套件修复报告</title>
+<style>
+  :root {
+    --ink: #1f2430; --muted: #5b6472; --line: #dfe3ea; --bg: #f4f6f9;
+    --card: #ffffff; --accent: #2f5f9e; --accent-soft: #eaf1fb;
+    --code-bg: #f6f8fa; --warn-bg: #fff8e6; --warn-border: #e0a800;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 16px 64px; background: var(--bg); color: var(--ink);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    font-size: 15.5px; line-height: 1.78;
+  }
+  .page {
+    max-width: 980px; margin: 0 auto; background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; box-shadow: 0 2px 14px rgba(24,39,75,.07); padding: 44px 52px 52px;
+  }
+  .meta {
+    margin: 0 0 26px; padding: 10px 14px; background: var(--accent-soft);
+    border-left: 4px solid var(--accent); border-radius: 4px; color: var(--muted);
+    font-size: 13px; line-height: 1.6;
+  }
+  h1 { font-size: 27px; margin: 0 0 20px; padding-bottom: 14px; border-bottom: 2px solid var(--accent); }
+  h2 { font-size: 21px; margin: 38px 0 14px; padding-left: 12px; border-left: 5px solid var(--accent); }
+  h3 { font-size: 17.5px; margin: 26px 0 10px; color: var(--accent); }
+  p { margin: 10px 0; }
+  ul, ol { padding-left: 26px; }
+  li { margin: 5px 0; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px;
+    font-family: Consolas, "Courier New", monospace; font-size: 90%; }
+  pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px; overflow-x: auto; line-height: 1.55; }
+  pre code { background: none; padding: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14.5px; }
+  th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--accent-soft); }
+  .warn { background: var(--warn-bg); border-left: 4px solid var(--warn-border);
+    padding: 12px 16px; border-radius: 4px; margin: 16px 0; }
+  .ok { color: #1e6b34; font-weight: 600; }
+  .bad { color: #a02a2a; font-weight: 600; }
+  footer { margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 13px; }
+  @media (max-width: 720px) { .page { padding: 28px 20px 36px; } body { padding: 16px 8px 40px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>自动发现三个失败测试套件修复报告</h1>
+  <div class="meta">
+    <div>日期：2026-11-12</div>
+    <div>项目：Bili Daily（个人自用版）</div>
+    <div>范围：修复 store / integration / performance 三个测试套件的真实失败</div>
+    <div>HTML 说明：命令通道阻断，本文件按 Markdown 内容手工整理；Markdown 为事实来源。</div>
+  </div>
+
+  <div class="warn">
+    <strong>执行状态：</strong>本轮在 Claude Code 环境中的 <code>node --check</code> / <code>node test-*.js</code>
+    <strong>未执行</strong>，环境返回
+    <code>qwen/qwen-flash is temporarily unavailable (connection failed), so auto mode cannot determine the safety of Bash/WebFetch right now.</code>
+    只有只读检查、<code>node --version</code>（v24.19.0）和快照复制成功。
+    本报告<strong>不声称 495 项已通过</strong>。
+  </div>
+
+  <h2 id="sec-1">1. 本机真实失败</h2>
+  <p>用户本机结果：17 个测试套件中 <span class="ok">14 个通过</span>，<span class="bad">3 个失败</span>；10 个 JS 文件语法检查通过。</p>
+  <ul>
+    <li><code>test-discovered-candidate-store.js</code></li>
+    <li><code>test-auto-discovery-integration.js</code></li>
+    <li><code>test-auto-discovery-performance.js</code></li>
+  </ul>
+
+  <h3>1.1 store 套件启动即失败</h3>
+  <pre><code>D:\Bili-Daily\candidate-features.js:55
+throw new Error("Bili Daily candidate-features.js 需要先加载 stats.js");
+    at D:\Bili-Daily\test-discovered-candidate-store.js:41:1</code></pre>
+
+  <h3>1.2 integration 套件 17/22，失败第 14–18 项</h3>
+  <pre><code>FAIL 14. buildView 在观察不足时显示 insufficient 与真实数量
+  actual: 'enabled'  expected: 'insufficient'
+
+FAIL 15. buildView 在候选可推荐时显示 has-candidates 并生成页面来源卡片
+  actual: 'enabled'  expected: 'has-candidates'
+
+FAIL 16. 关闭开关后已积累候选仍可推荐，但状态明确为关闭
+  assert.ok(view.recommendations.some((item) => item.upUid === "3001"))
+
+FAIL 17. 重复打开弹窗不改变存储输入，也不产生额外候选
+  0 !== 1
+
+FAIL 18. 恶意额外字段不会出现在服务视图或推荐理由里
+  assert.ok(card)</code></pre>
+
+  <h3>1.3 performance 套件</h3>
+  <p>用户本机确认失败；当前只取得 store 与 integration 的独立日志，<strong>没有取得 performance 套件的独立错误文本</strong>。
+     其 require 列表同样缺少 <code>stats.js</code>，而 <code>candidate-features.js</code> 在加载时硬性检查
+     <code>BiliDailyStats.cleanRecord / mergeByBvid / parseDateKey</code>，缺失即抛错。因此按实际依赖链修复，
+     不把“未取得日志”写成“已定位完整堆栈”。</p>
+
+  <h2 id="sec-2">2. 根因与修复</h2>
+
+  <h3>2.1 依赖顺序（store / performance）</h3>
+  <pre><code>stats.js
+  ← candidate-features.js（加载时检查 Stats.cleanRecord / mergeByBvid / parseDateKey）
+  ← discovered-candidate-store.js（调用 Features.extractTitleBigrams）</code></pre>
+  <p><code>storage.js</code> 只提供 <code>BiliDailyStorage</code>，不能替代 <code>stats.js</code>。</p>
+  <p>修复后的 require 顺序：</p>
+  <pre><code>// test-discovered-candidate-store.js
+require(storage.js);
+require(stats.js);              // 新增
+require(candidate-features.js);
+require(discovered-candidate-store.js);
+
+// test-auto-discovery-performance.js
+require(stats.js);              // 新增
+require(candidate-features.js);
+require(discovered-candidate-store.js);
+require(candidate-discovery.js);</code></pre>
+  <p>只改测试加载顺序，未修改业务模块来掩盖初始化错误。</p>
+
+  <h3>2.2 服务层把观察数组误判为非对象（integration 14–18）</h3>
+  <pre><code>// 修复前
+const discoveredStore =
+  isPlainObject(source.discoveredStore) &&
+  isPlainObject(source.discoveredStore.observations)   // 数组永远不满足
+    ? source.discoveredStore
+    : DiscoveredStore.emptyStore();
+
+// 修复后
+const discoveredStore =
+  isPlainObject(source.discoveredStore) &&
+  Array.isArray(source.discoveredStore.observations)
+    ? source.discoveredStore
+    : DiscoveredStore.emptyStore();</code></pre>
+  <p><code>discoveredStore.observations</code> 是数组，<code>isPlainObject([])</code> 为 <code>false</code>，
+     所以服务层永远使用空存储构建 discovery 证据：<code>summary.total</code> 恒为 0，
+     状态只能是 <code>enabled</code>，无法出现 <code>insufficient</code> / <code>has-candidates</code>；
+     推荐层也收不到 3001。测试 12 / 13 只检查空存储或关闭状态，所以此前通过。</p>
+  <p>这是服务层对真实数据契约的错误判断，不是测试断言问题。修复未改变候选准入规则、身份冲突规则、观看记录结构或手动导入结构。</p>
+
+  <h2 id="sec-3">3. 修改文件</h2>
+  <table>
+    <thead><tr><th>文件</th><th>修改</th></tr></thead>
+    <tbody>
+      <tr><td><code>test-discovered-candidate-store.js</code></td><td>在 <code>storage.js</code> 后补 <code>stats.js</code> require</td></tr>
+      <tr><td><code>test-auto-discovery-performance.js</code></td><td>在 <code>candidate-features.js</code> 前补 <code>stats.js</code> require</td></tr>
+      <tr><td><code>recommend-service.js</code></td><td><code>isPlainObject(observations)</code> → <code>Array.isArray(observations)</code></td></tr>
+      <tr><td><code>test-auto-discovery-integration.js</code></td><td><strong>未修改</strong>（保留原断言）</td></tr>
+    </tbody>
+  </table>
+  <p>回滚快照：<code>rollback/before-auto-discovery-test-fixes/</code>，含 README 与修改前副本。</p>
+
+  <h2 id="sec-4">4. 修复后的静态核对</h2>
+  <ul>
+    <li><strong>page-observed 来源</strong>：store 适配层固定 <code>provenance: "page-observed"</code>；排序层保留该来源。</li>
+    <li><strong>准入</strong>：<code>eligibleForExploration</code> 由视频数、标题覆盖、分区覆盖/降级、身份冲突共同决定；服务层修复后能收到非空 <code>summary</code>。</li>
+    <li><strong>数据结构</strong>：服务层向排序层传 <code>{sidecar, assessment}</code>，测试使用同一结构。</li>
+    <li><strong>同 UID 去重</strong>：手动导入 UID 集合排除自动发现同 UID（test 5 / 21 已通过）。</li>
+    <li><strong>已观看 UP</strong>：适配层排除自动发现；排序层跨通道去重保证 main 优先（test 4 / 22 已通过）。</li>
+    <li><strong>低置信度</strong>：page-observed 统一 <code>approximate: true</code>、<code>confidence: "low"</code>（test 2 / 8 已通过）。</li>
+    <li><strong>推荐理由</strong>：由真实观察视频数生成，不包含官方认证表述（test 3 / 11 已通过）。</li>
+  </ul>
+
+  <h2 id="sec-5">5. 预期修复结果（未执行，需本机确认）</h2>
+  <table>
+    <thead><tr><th>套件</th><th>声明测试数</th><th>修复前</th><th>修复后预期</th></tr></thead>
+    <tbody>
+      <tr><td><code>test-discovered-candidate-store.js</code></td><td>26</td><td>启动失败，0 项执行</td><td>26/26</td></tr>
+      <tr><td><code>test-auto-discovery-integration.js</code></td><td>22</td><td>17/22</td><td>22/22</td></tr>
+      <tr><td><code>test-auto-discovery-performance.js</code></td><td>3</td><td>启动失败</td><td>3/3</td></tr>
+      <tr><td><code>test-candidate-discovery.js</code></td><td>22</td><td>用户本机通过</td><td>22/22</td></tr>
+      <tr><td>新增合计</td><td>73</td><td>—</td><td>73/73（预期）</td></tr>
+      <tr><td>既有 13 套件</td><td>422</td><td>用户本机通过</td><td>422/422（预期）</td></tr>
+      <tr><td>总计</td><td>495</td><td>—</td><td><strong>495/495（预期，未验证）</strong></td></tr>
+    </tbody>
+  </table>
+  <p><strong>以上“修复后预期”不是通过数。</strong>任何 495/495 结论都必须以本机输出为准。</p>
+
+  <h2 id="sec-6">6. 本机复核命令</h2>
+  <pre><code>node --check recommend-service.js
+node --check test-discovered-candidate-store.js
+node --check test-auto-discovery-performance.js
+
+node test-discovered-candidate-store.js
+node test-auto-discovery-integration.js
+node test-auto-discovery-performance.js
+node test-candidate-discovery.js</code></pre>
+  <p>新增 4 个套件应输出各自的 <code>N/N 通过</code> 且退出码为 0。既有 13 套件命令见 Markdown 报告第 6 节。</p>
+
+  <h2 id="sec-7">7. 约束核对</h2>
+  <ul>
+    <li>未修改 <code>biliDailyRecords</code> 结构与写入逻辑。</li>
+    <li>未修改候选准入、身份冲突、在线核验规则。</li>
+    <li>未新增浏览器权限、host_permissions、后台脚本或网络请求。</li>
+    <li>未删除、跳过或放宽任何测试断言。</li>
+    <li>未修改已通过套件的业务逻辑。</li>
+    <li>未伪造测试结果；未执行项均标记“未执行”。</li>
+  </ul>
+
+  <h2 id="sec-8">8. 对 Edge popup 的影响</h2>
+  <p>本次只修改服务层一个数组判断和两个测试文件的 require 顺序。popup 仍通过
+     <code>DiscoveredStore.readStore()</code> 读取存储并把 <code>discoveredResult.store</code>
+     传给 <code>RecommendService.buildView()</code>；修复后该存储第一次能真正进入 discovery 证据构建。
+     弹窗结构、按钮、存储键与权限均未变化。</p>
+
+  <h2 id="sec-9">9. 回滚</h2>
+  <pre><code>Copy-Item -Force rollback\before-auto-discovery-test-fixes\recommend-service.js recommend-service.js
+Copy-Item -Force rollback\before-auto-discovery-test-fixes\test-discovered-candidate-store.js test-discovered-candidate-store.js
+Copy-Item -Force rollback\before-auto-discovery-test-fixes\test-auto-discovery-performance.js test-auto-discovery-performance.js
+Copy-Item -Force rollback\before-auto-discovery-test-fixes\test-auto-discovery-integration.js test-auto-discovery-integration.js</code></pre>
+  <p><code>test-auto-discovery-integration.js</code> 当前未修改，快照中的副本仅为对照。</p>
+
+  <h2 id="sec-10">10. 下一步</h2>
+  <ol>
+    <li>在本机执行第 6 节命令并回填真实 <code>N/M</code> 与退出码。</li>
+    <li>若仍有失败，提供该套件完整错误输出；不要先改断言。</li>
+    <li>495/495 确认后，再按《自动发现新 UP 主开发报告》第 13 节做 Edge 真实页面验收。</li>
+  </ol>
+
+  <footer>Bili Daily · 自动发现三个失败测试套件修复报告 · 2026-11-12</footer>
+</div>
+</body>
+</html>

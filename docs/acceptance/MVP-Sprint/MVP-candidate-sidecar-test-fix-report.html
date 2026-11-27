@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>候选 sidecar 测试第 25 / 26 项修复报告</title>
+<style>
+  :root {
+    --bg: #0b0e17; --panel: #141a2b; --panel-2: #1b2338; --line: #2a3552;
+    --text: #e6e9f5; --muted: #9aa5c4; --accent: #7c5cff; --accent-2: #34d1c4;
+    --warn: #ffb547; --fail: #ff5d7a; --ok: #45e0a8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 16px 64px;
+    background: radial-gradient(1000px 600px at 15% -10%, #221a44 0%, transparent 60%),
+                radial-gradient(900px 500px at 100% 0%, #102f36 0%, transparent 55%), var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    line-height: 1.7; font-size: 15px;
+  }
+  main {
+    max-width: 980px; margin: 0 auto; background: rgba(20, 26, 43, 0.92);
+    border: 1px solid var(--line); border-radius: 16px; padding: 36px 40px 44px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  }
+  h1, h2, h3 { line-height: 1.35; }
+  h1 {
+    font-size: 26px; margin: 0 0 20px; padding-bottom: 14px; border-bottom: 1px solid var(--line);
+    background: linear-gradient(90deg, #b9a8ff, #6fe6d9);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  h2 { font-size: 19px; margin: 34px 0 12px; padding-left: 12px; border-left: 4px solid var(--accent); }
+  h3 { font-size: 16px; margin: 22px 0 8px; color: #c9c2ff; }
+  p { margin: 10px 0; }
+  ul, ol { margin: 8px 0 12px; padding-left: 24px; }
+  li { margin: 5px 0; }
+  code {
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace; font-size: 13px;
+    background: #0d1120; border: 1px solid #283250; border-radius: 5px;
+    padding: 1px 6px; color: #9ff3e7;
+  }
+  pre {
+    background: #0a0e19; border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px; overflow-x: auto; margin: 12px 0 18px;
+  }
+  pre code {
+    background: none; border: none; padding: 0; color: #d7dcf0;
+    font-size: 13px; line-height: 1.6; white-space: pre;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 14px; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--panel-2); color: #cfd6ee; font-weight: 600; }
+  tbody tr:nth-child(even) td { background: rgba(255, 255, 255, 0.02); }
+  hr { border: none; border-top: 1px solid var(--line); margin: 30px 0; }
+  strong { color: #fff; }
+  .meta { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 0 0 24px; }
+  .meta ul { margin: 0; }
+  .callout { border-left: 4px solid var(--warn); background: rgba(255, 181, 71, 0.08); border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
+  .callout p { margin: 4px 0; }
+  .diff-add { color: var(--ok); }
+  .diff-del { color: var(--fail); }
+  @media (max-width: 640px) {
+    body { padding: 16px 8px 40px; }
+    main { padding: 22px 16px 30px; }
+    table { font-size: 13px; }
+    th, td { padding: 7px 8px; }
+  }
+  @media print {
+    body { background: #fff; color: #111; padding: 0; }
+    main { box-shadow: none; border: none; background: #fff; max-width: none; }
+    h1 { color: #111; background: none; -webkit-text-fill-color: #111; }
+    h2, h3, strong { color: #111; }
+    pre, code, .meta, .callout { background: #f5f5f5; color: #111; }
+    pre code { color: #111; }
+    th { background: #eee; }
+    th, td { border-color: #bbb; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>候选 sidecar 测试第 25 / 26 项修复报告</h1>
+
+  <div class="meta">
+    <ul>
+      <li>日期：2026-11-12</li>
+      <li>范围：<code>test-candidate-store.js</code> 第 25、26 项对 C2-4B sidecar 数据契约的断言</li>
+      <li>实际修改文件：仅 <code>test-candidate-store.js</code></li>
+      <li><code>candidate-store.js</code>：本轮未修改</li>
+      <li>C2-4B 正式接口：未修改</li>
+      <li>既有测试：未修改</li>
+      <li>断言：未删除、未跳过、未放宽；第 25 项改为更强断言，第 26 项追加同 BV 去重断言</li>
+      <li>修复后测试状态：<strong>Claude Code 未执行</strong>（命令通道再次被安全分类器阻断）</li>
+    </ul>
+  </div>
+
+  <h2>1. 原始失败记录（用户本机执行）</h2>
+  <p>命令：</p>
+<pre><code>cd D:\Bili-Daily
+node test-candidate-store.js</code></pre>
+  <p>结果：<strong>26/28 通过</strong>。</p>
+  <p>失败第 25 项：<code>buildSidecar 为导入候选生成可用的 C2-4B 证据</code></p>
+<pre><code>TypeError: Cannot read properties of undefined (reading 'onlineVerified')
+test-candidate-store.js:489:42</code></pre>
+  <p>失败第 26 项：<code>同一 UID 出现在多个批次时 sidecar 合并身份</code></p>
+<pre><code>TypeError: Cannot read properties of undefined (reading 'importedVideoCount')
+test-candidate-store.js:502:56</code></pre>
+  <p>其余 26 项通过。退出码未在用户输出中回填。</p>
+
+  <h2>2. C2-4B 正式数据契约核对</h2>
+
+  <h3>2.1 <code>buildCandidateContentEvidence()</code> 的直接产出（sidecar）</h3>
+  <p>源码：<code>candidate-content-import.js:1217-1391</code></p>
+  <p>sidecar 顶层字段：</p>
+<pre><code>schemaVersion, kind, provenance, lane, status, reason,
+userConfirmed, exportedAt, sourceNote,
+candidates, summary, diagnostics, limits, thresholds, note</code></pre>
+  <p><code>candidates[]</code> 每项的真实字段（<code>candidate-content-import.js:1092-1147</code>）：</p>
+<pre><code>upUid, upName, names, nameConflict,
+provenance, lane, observedAt, observedAtState,
+videos,
+partitionCounts, titleTokens, titleTokenStats,
+importedVideoCount, observedVideoCount, usableVideoCount,
+importedTitleCount, importedPartitionCount,
+partitionCoverage, titleCoverage,
+partitionCoverageState, titleCoverageState, coverageBasis,
+contentStatus, conflictVideoCount, metadataConflictVideoCount,
+conflicts, videosTruncated, globalVideoLimitDropped, reasons</code></pre>
+  <p>结论：</p>
+  <ul>
+    <li><code>importedVideoCount</code> 在 <strong>sidecar 候选的顶层</strong>，不在 <code>contentEvidence</code> 下。</li>
+    <li><code>provenance</code>、<code>lane</code> 也在 <strong>sidecar 候选的顶层</strong>。</li>
+    <li>sidecar 候选<strong>没有</strong> <code>identityEvidence</code> / <code>contentEvidence</code> 字段，也<strong>没有</strong> <code>onlineVerified</code> 字段。</li>
+    <li>sidecar 顶层 <code>note</code> 明确写着“用户提供的内容证据，未在线核验”。</li>
+  </ul>
+
+  <h3>2.2 <code>assessImportedContentCandidates()</code> 的产出（正式评估结果）</h3>
+  <p>源码：<code>candidate-content-import.js:1720-1764</code></p>
+<pre><code>candidates[] {
+  upUid, upName, provenance, lane, observedAt, observedAtState, freshness,
+  identityEvidence: { uid, uidFormatValid, provenance, userConfirmed,
+                      fromWatchHistory, fromUserInput, sources,
+                      onlineVerified: false, ... },
+  contentEvidence: { importedVideoCount, trustedVideoCount, ... },
+  promotion: { eligibleForExploration, status, reasons, thresholds }
+}</code></pre>
+  <p>结论：</p>
+  <ul>
+    <li><code>onlineVerified</code> 的正式位置是 <strong><code>assessment.candidates[].identityEvidence.onlineVerified</code></strong>，本阶段恒为 <code>false</code>。</li>
+    <li><code>importedVideoCount</code> 在评估结果中位于 <strong><code>contentEvidence.importedVideoCount</code></strong>，值等于 sidecar 候选去重后的 <code>videos.length</code>。</li>
+  </ul>
+
+  <h3>2.3 <code>candidate-store.js</code> 的 <code>buildSidecar()</code></h3>
+  <p>源码：<code>candidate-store.js:484-490</code></p>
+<pre><code>function buildSidecar(store, options) {
+  const document = toImportDocument(store);
+  if (!document) return null;
+  const parsed = Import.parseCandidateContentImport(document);
+  if (parsed.status !== "ok") return null;
+  return Import.buildCandidateContentEvidence(parsed, options);
+}</code></pre>
+  <p>它只做“批次 → 单个导入文档 → 重新解析 → 原生构建”，<strong>原样返回 C2-4B sidecar</strong>，没有二次包装，也没有丢字段。</p>
+
+  <h3>2.4 下游使用方式</h3>
+  <ul>
+    <li><code>recommend-service.js:348-352</code>：把 sidecar 直接传给 <code>Rank.buildRecommendations({ ..., sidecar })</code>。</li>
+    <li><code>recommend-rank.js:703</code>：在探索通道内调用 <code>assessImportedContentCandidates(sidecar, records, ...)</code>；随后从 <strong>sidecar 候选顶层</strong>读取 <code>importedVideoCount</code>（<code>recommend-rank.js:838-841</code>），并用 sidecar 候选构建分区/文本向量。</li>
+    <li><code>recommend-rank.js</code> 从不假设 sidecar 候选带 <code>identityEvidence</code> / <code>contentEvidence</code>。</li>
+  </ul>
+  <div class="callout">
+    <p><strong>结论：数据结构本身正确，错误只在 <code>test-candidate-store.js</code> 的断言假设。</strong>不需要修改 <code>candidate-store.js</code>，更不能为了测试去改 C2-4B 正式接口。</p>
+  </div>
+
+  <h2>3. 修复前后对比</h2>
+
+  <h3>3.1 第 25 项</h3>
+  <p>修复前（错误假设）：</p>
+<pre><code>assert.notEqual(sidecar.status, "invalid");
+sidecar.candidates.forEach((item) =&gt; {
+  assert.equal(item.provenance, "user-provided");
+  assert.equal(item.identityEvidence.onlineVerified, false); // undefined
+  assert.equal(item.lane, "exploration");
+});</code></pre>
+  <p>修复后（正式契约 + 更强断言）：</p>
+<pre><code>assert.equal(sidecar.kind, "bili-daily-candidate-content");
+assert.equal(sidecar.provenance, "user-provided");
+assert.equal(sidecar.lane, "exploration");
+assert.equal(sidecar.status, "ok");
+assert.ok(sidecar.note.includes("未在线核验"));
+assert.equal(sidecar.candidates.length, 2);
+const byUid = new Map(sidecar.candidates.map((item) =&gt; [item.upUid, item]));
+assert.equal(byUid.get("2001").importedVideoCount, 3);
+assert.equal(byUid.get("2002").importedVideoCount, 2);
+sidecar.candidates.forEach((item) =&gt; {
+  assert.equal(item.provenance, "user-provided");
+  assert.equal(item.lane, "exploration");
+});
+
+// onlineVerified 只在正式评估结果里，且恒为 false
+const assessment = Import.assessImportedContentCandidates(sidecar, {}, { now: BASE });
+assert.equal(assessment.status, "ok");
+assert.equal(assessment.candidates.length, 2);
+assessment.candidates.forEach((item) =&gt; {
+  assert.equal(item.identityEvidence.onlineVerified, false);
+  assert.equal(item.identityEvidence.fromWatchHistory, false);
+});</code></pre>
+  <p>说明：</p>
+  <ul>
+    <li>没有把 <code>onlineVerified</code> 伪造成 <code>true</code>；相反，验证了正式评估结果中恒为 <code>false</code>。</li>
+    <li>增加 <code>fromWatchHistory === false</code>，确认导入候选没有被冒充成观看记录。</li>
+    <li>断言由“存在即可”收紧为 <code>status === "ok"</code>、具体视频数与来源通道。</li>
+  </ul>
+
+  <h3>3.2 第 26 项</h3>
+  <p>修复前：</p>
+<pre><code>assert.equal(sidecar.candidates.length, 1, "同一 UID 在 sidecar 中应合并");
+assert.equal(sidecar.candidates[0].contentEvidence.importedVideoCount, 2); // undefined</code></pre>
+  <p>修复后：</p>
+<pre><code>assert.equal(sidecar.candidates.length, 1, "同一 UID 在 sidecar 中应合并");
+assert.equal(sidecar.candidates[0].provenance, "user-provided");
+assert.equal(sidecar.candidates[0].lane, "exploration");
+assert.equal(sidecar.candidates[0].importedVideoCount, 2);
+
+// 同一 UID 再次导入已存在的 BV：仍只算一个视频
+await Store.importText(
+  JSON.stringify(document([candidate("8101", "同人", [video(2, "科技评测", "科技")])]))
+);
+const dedupedRead = await Store.readStore();
+const deduped = Store.buildSidecar(dedupedRead.store, { now: BASE });
+assert.equal(deduped.candidates.length, 1);
+assert.equal(deduped.candidates[0].importedVideoCount, 2, "同一 UID 的同一 BV 不得重复计数");</code></pre>
+
+  <h2>4. 同 UID / 同 BV 去重规则</h2>
+  <p>依据 <code>candidate-content-import.js</code> 的实现：</p>
+  <ol>
+    <li><strong>同 UID 跨批次</strong>：<code>candidate-store.js</code> 的 <code>toImportDocument()</code> 把多个批次摊平成候选数组；<code>mergeCandidates()</code> 以 <code>upUid</code> 为键合并，<code>diagnostics.candidatesMerged</code> 递增。</li>
+    <li><strong>同 UID 同 BV</strong>：<code>mergeCandidates()</code> 以 <code>bvid</code> 为键收集所有变体；<code>resolveVideo()</code> 对变体做一次归并，<code>diagnostics.duplicateVideos += variants.length - 1</code>。</li>
+    <li><strong>计数</strong>：<code>importedVideoCount = videos.length</code>，即 <strong>UID + BV 去重后的视频数</strong>，不是原始出现次数。</li>
+    <li><strong>元数据冲突</strong>：同一 BV 的标题或分区出现两个不同非空值时，标记 <code>metadata-conflict</code>，该视频不参与内容特征；缺失 + 有值不视为冲突。</li>
+    <li><strong>跨 UID 同 BV</strong>：同一 BV 被不同 UID 声明时标记 <code>uid-conflict</code>，不参与任何一方的内容特征。</li>
+  </ol>
+  <p>第 26 项新增的重复导入断言直接验证第 1～3 条。</p>
+
+  <h2>5. 实际修改文件</h2>
+  <table>
+    <thead><tr><th>文件</th><th>修改</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>test-candidate-store.js</code></td>
+        <td>第 25 项改用 sidecar 顶层字段，并通过正式评估结果验证 <code>onlineVerified === false</code>；第 26 项改用顶层 <code>importedVideoCount</code>，追加同 BV 去重断言</td>
+      </tr>
+      <tr>
+        <td><code>rollback/before-candidate-sidecar-test-fix/README.md</code></td>
+        <td>新增回滚说明</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>未修改：</p>
+  <ul>
+    <li><code>candidate-store.js</code></li>
+    <li><code>candidate-content-import.js</code></li>
+    <li><code>recommend-service.js</code></li>
+    <li><code>recommend-rank.js</code></li>
+    <li><code>popup.html</code> / <code>popup.css</code> / <code>popup.js</code></li>
+    <li><code>biliDailyRecords</code> 相关代码</li>
+    <li>其余 26 项测试</li>
+  </ul>
+
+  <h2>6. 测试与退出码</h2>
+
+  <h3>6.1 修复前（用户本机）</h3>
+  <table>
+    <thead><tr><th>命令</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td><code>node test-candidate-store.js</code></td><td>26/28 通过；第 25、26 项 TypeError；退出码未回填</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 修复后（Claude Code）</h3>
+  <p>本轮<strong>没有执行</strong>以下命令：</p>
+<pre><code>node --check test-candidate-store.js
+node --check candidate-store.js
+node test-candidate-store.js
+node test-recommend-service.js
+node test-candidate-content-import.js</code></pre>
+  <p>原因：命令工具再次返回：</p>
+<pre><code>qwen/qwen-flash is temporarily unavailable (connection failed), so auto mode cannot determine the safety of Bash right now.</code></pre>
+  <div class="callout">
+    <p>因此：</p>
+    <ul>
+      <li>不宣称 28/28 通过；</li>
+      <li>不宣称 422/422 通过；</li>
+      <li>不提供虚构的退出码。</li>
+    </ul>
+  </div>
+
+  <h3>6.3 需要在本机执行的完整命令</h3>
+<pre><code>cd D:\Bili-Daily
+
+node --check test-candidate-store.js
+node --check candidate-store.js
+node test-candidate-store.js
+
+node test-recommend-service.js
+node test-candidate-content-import.js
+
+# 完整回归
+node test-recommend-rank.js
+node test-recommend-quality.js
+node test-stats.js
+node test-up-stats.js
+node test-uid.js
+node test-interest-profile.js
+node test-candidate-pool.js
+node test-candidate-quality.js
+node test-candidate-features.js
+node test-recommend-core.js</code></pre>
+  <p>目标：</p>
+  <ul>
+    <li><code>test-candidate-store.js</code>：<strong>28/28</strong>，退出码 0；</li>
+    <li>全部 13 个测试文件：<strong>422/422</strong>（既有 372 + 新增 28 + 22），全部退出码 0。</li>
+  </ul>
+  <p>请回填每个脚本末尾的 <code>N/M 通过</code> 与退出码。若仍有失败，按真实断言输出定位，不把新失败归因于加载顺序或字段契约猜测。</p>
+
+  <h2>7. 回滚方法</h2>
+  <p>快照目录：<code>rollback/before-candidate-sidecar-test-fix/</code></p>
+<pre><code>cd D:\Bili-Daily
+Copy-Item rollback\before-candidate-sidecar-test-fix\test-candidate-store.js . -Force
+Copy-Item rollback\before-candidate-sidecar-test-fix\candidate-store.js . -Force</code></pre>
+  <p>回滚只影响测试文件与候选存储模块存档；不会触碰 <code>biliDailyRecords</code>、<code>biliDailyCandidateImports</code> 或弹窗功能。</p>
+
+  <h2>8. 当前状态</h2>
+  <ul>
+    <li>第 25、26 项根因：已确认是测试断言对 C2-4B 返回结构的错误假设，不是业务模块缺陷。</li>
+    <li>修复：仅测试文件，未改正式接口。</li>
+    <li>回滚快照：已保存。</li>
+    <li>自动化验证：待本机执行。</li>
+    <li>下一步：完整回归通过后，继续按既定方向推进“自动发现陌生 UP 主”的可行性实现与权限审批。</li>
+  </ul>
+</main>
+</body>
+</html>

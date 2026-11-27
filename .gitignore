@@ -1,0 +1,30 @@
+# 开发环境
+node_modules/
+venv/
+.venv/
+__pycache__/
+.env
+.env.*
+!.env.example
+
+# 历史快照
+snapshots/
+rollback/
+
+# 日志和测试调试输出
+*.log
+*-debug.txt
+*-error.txt
+debug-*.txt
+reports/
+
+# 本地配置与个人数据
+*.local.json
+*-storage-backup*.json
+biliDailyRecords*.json
+biliDailyCandidateImports*.json
+biliDailyDiscoveredCandidates*.json
+
+# 系统临时文件
+.DS_Store
+Thumbs.db
